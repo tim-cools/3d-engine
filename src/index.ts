@@ -1,5 +1,4 @@
 import './index.css';
-import {inspect} from "util";
 
 class Colors {
   public static readonly red: string = "red";
@@ -9,64 +8,120 @@ class Colors {
   public static readonly lightgray: string = "lightgray";
 }
 
-class Coordinate {
+interface Coordinate {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+}
 
-  public originalX: number;
-  public originalY: number;
-  public originalZ: number;
+class TransformableCoordinate implements Coordinate {
 
-  public x: number;
-  public y: number;
-  public z: number;
+  private readonly original: Coordinate;
+  private current: Coordinate;
+
+  public get x(): number {
+    return this.current.x;
+  }
+
+  public get y(): number {
+    return this.current.y;
+  }
+
+  public get z(): number {
+    return this.current.z;
+  }
+
+  constructor(coordinate: Coordinate) {
+    this.original = coordinate;
+    this.current = this.original;
+  }
+
+  public static new(x: number, y: number, z: number) {
+    const coordinate = new CoordinateValue(x, y, z);
+    return new TransformableCoordinate(coordinate);
+  }
+
+  transform(transformers: readonly Transformer[]) {
+      this.current = transform(this.original, transformers);
+  }
+}
+
+function transform(value: Coordinate, transformers: readonly Transformer[]): Coordinate {
+  for (const transformer of transformers) {
+    value = transformer(value);
+  }
+  return value;
+}
+
+class CoordinateValue implements Coordinate {
+
+  public readonly x: number;
+  public readonly y: number;
+  public readonly z: number;
 
   constructor(x: number, y: number, z: number) {
-    this.x = this.originalX = x;
-    this.y = this.originalY = y;
-    this.z = this.originalZ = z;
+    this.x = x;
+    this.y = y;
+    this.z = z;
   }
+}
 
-  public subtract(position: Coordinate) {
-    return new Coordinate(
-      this.x - position.x,
-      this.y - position.y,
-      this.z - position.z
+interface Transformer {
+  (value: Coordinate): Coordinate;
+}
+
+function move(xOffset: number | null = null, yOffset: number | null = null, zOffset: number | null = null): Transformer {
+  return (value: Coordinate): Coordinate =>
+    new CoordinateValue(
+      xOffset ? value.x + xOffset : value.x,
+      yOffset ? value.y + yOffset : value.y,
+      zOffset ? value.z + zOffset : value.z);
+}
+
+function subtract(position: Coordinate) {
+  return (value: Coordinate): Coordinate =>
+    new CoordinateValue(
+      value.x - position.x,
+      value.y - position.y,
+      value.z - position.z
     );
-  }
+}
 
-  move(xOffset: number | null = null, yOffset: number | null = null, zOffset: number | null = null) {
-    if (xOffset) {
-      this.x += xOffset;
-    }
-    if (yOffset) {
-      this.y += yOffset;
-    }
-    if (zOffset) {
-      this.z += zOffset;
-    }
-  }
+function rotateX(radiant: number) {
+  return (value: Coordinate): Coordinate =>
+    new CoordinateValue(
+      value.x,
+      value.y * Math.cos(radiant) + value.z * -Math.sin(radiant),
+      value.y * Math.sin(radiant) + value.z *  Math.cos(radiant)
+    );
+}
 
-  rotateX(radiant: number) {
-    this.y = this.originalY * Math.cos(radiant) + this.originalZ * -Math.sin(radiant);
-    this.z = this.originalY * Math.sin(radiant) + this.originalZ *  Math.cos(radiant);
-  }
+function rotateY(radiant: number) {
+  return (value: Coordinate): Coordinate =>
+    new CoordinateValue(
+      value.x *  Math.cos(radiant) + value.z * Math.sin(radiant),
+      value.y,
+      value.x * -Math.sin(radiant) + value.z * Math.cos(radiant)
+    );
+}
 
-  rotateY(radiant: number) {
-    this.x = this.originalX *  Math.cos(radiant) + this.originalZ * Math.sin(radiant);
-    this.z = this.originalX * -Math.sin(radiant) + this.originalZ * Math.cos(radiant);
-  }
+function rotateZ(radiant: number) {
+  return (value: Coordinate): Coordinate =>
+    new CoordinateValue(
+      value.x * Math.cos(radiant) + value.y * -Math.sin(radiant),
+      value.x * Math.sin(radiant) + value.y *  Math.cos(radiant),
+      value.z
+    );
+}
 
-  rotateZ(radiant: number) {
-    this.x = this.originalX * Math.cos(radiant) + this.originalY * -Math.sin(radiant);
-    this.y = this.originalX * Math.sin(radiant) + this.originalY *  Math.cos(radiant);
-  }
+function translate(translate: Coordinate) {
+  return (value: Coordinate): Coordinate =>
+    new CoordinateValue(value.x + translate.x, value.y + translate.y, value.z + translate.z);
+}
 
-  translate(translate: Coordinate) {
-    return new Coordinate(this.x + translate.x, this.y + translate.y, this.z + translate.z);
-  }
-
-  scale(scale: Size) {
-    return new Coordinate(this.x * scale.x, this.y * scale.y, this.z * scale.z);
-  }
+function scale(scale: Size) {
+  return (value: Coordinate): Coordinate =>
+    new CoordinateValue(value.x * scale.x, value.y * scale.y, value.z * scale.z);
 }
 
 class Orientation {
@@ -94,16 +149,65 @@ class Size {
     this.z = z;
   }
 
-  public transformAdd(coordinate: Coordinate, transformX: boolean, transformY: boolean, transformZ: boolean) {
-    return new Coordinate(
-      transformX ? coordinate.x + this.x : coordinate.x,
-      transformY ? coordinate.y + this.y : coordinate.y,
-      transformZ ? coordinate.z + this.z : coordinate.z,
-    );
+  transformableCoordinate(x: number, y: number, z: number): TransformableCoordinate {
+    const coordinate = new CoordinateValue(this.x * x, this.y * y, this.z * z);
+    return new TransformableCoordinate(coordinate);
+  }
+}
+
+class Rotation {
+
+  private xTransformer: Transformer | null = null;
+  private yTransformer: Transformer | null = null;
+  private zTransformer: Transformer | null = null;
+
+  public x: number = 0;
+  public y: number = 0;
+  public z: number = 0;
+
+  constructor(x: number, y: number, z: number) {
+    this.updateX(x);
+    this.updateY(y);
+    this.updateZ(z);
   }
 
-  coordinate(x: number, y: number, z: number) {
-    return new Coordinate(this.x * x, this.y * y, this.z * z);
+  private updateX(x: number) {
+    if (this.x == x) return;
+    this.x = x;
+    this.xTransformer = x != 0 ? rotateX(x) : null;
+  }
+
+  private updateY(y: number) {
+    if (this.y == y) return;
+    this.y = y;
+    this.yTransformer = y != 0 ? rotateY(y) : null;
+  }
+
+  private updateZ(z: number) {
+    if (this.z == z) return;
+    this.z = z;
+    this.zTransformer = z != 0 ? rotateZ(z) : null;
+  }
+
+  transformer(): Transformer {
+    return (value: Coordinate): Coordinate => {
+      if (this.xTransformer) {
+        value = this.xTransformer(value);
+      }
+      if (this.yTransformer) {
+        value = this.yTransformer(value);
+      }
+      if (this.zTransformer) {
+        value = this.zTransformer(value);
+      }
+      return value;
+    };
+  }
+
+  rotate(x: number, y: number, z: number) {
+    this.updateX(this.x + x);
+    this.updateY(this.y + y);
+    this.updateZ(this.z + z);
   }
 }
 
@@ -125,22 +229,22 @@ class Coordinate2D {
 class Line implements Shape {
 
   public readonly color: string;
-  public readonly begin: Coordinate;
-  public readonly end: Coordinate;
+  public readonly begin: TransformableCoordinate;
+  public readonly end: TransformableCoordinate;
 
   public get z() {
     return (this.begin.z + this.end.z) / 2;
   }
 
-  constructor(color: string, begin: Coordinate, end: Coordinate) {
+  constructor(color: string, begin: TransformableCoordinate, end: TransformableCoordinate) {
     this.color = color;
     this.begin = begin;
     this.end = end;
   }
 
   static new(color: string, xBegin: number, yBegin: number, zBegin: number, xEnd: number, yEnd: number, zEnd: number) {
-    const begin = new Coordinate(xBegin, yBegin, zBegin);
-    const end = new Coordinate(xEnd, yEnd, zEnd);
+    const begin = TransformableCoordinate.new(xBegin, yBegin, zBegin);
+    const end = TransformableCoordinate.new(xEnd, yEnd, zEnd);
     return new Line(color, begin, end);
   }
 
@@ -156,13 +260,18 @@ class Line implements Shape {
     context.lineTo(end.x, end.y);
     context.stroke();
   }
+
+  transform(transformers: readonly Transformer[]) {
+    this.begin.transform(transformers);
+    this.end.transform(transformers);
+  }
 }
 
 class Point implements Shape {
 
   public readonly color: string;
   public readonly size: number;
-  public readonly coordinate: Coordinate;
+  public readonly coordinate: TransformableCoordinate;
 
   public get z() {
     return this.coordinate.z;
@@ -171,7 +280,7 @@ class Point implements Shape {
   constructor(color: string, x: number, y: number, z: number, size: number) {
     this.color = color;
     this.size = size;
-    this.coordinate = new Coordinate(x, y, z);
+    this.coordinate = TransformableCoordinate.new(x, y, z);
   }
 
   public render(translate: Coordinate, scale: Size, context: CanvasRenderingContext2D) {
@@ -241,11 +350,11 @@ class Cube implements Object {
   private readonly shapesValue: Line[];
   private size: Size;
 
-  public readonly translate: Coordinate;
+  public readonly translate: TransformableCoordinate;
   public readonly scale: Size = new Size(1, 1, 1);
 
   constructor(position: Coordinate, size: Size) {
-    this.translate = position;
+    this.translate = new TransformableCoordinate(position);
     this.size = size;
     this.shapesValue = this.createShapes();
   }
@@ -261,15 +370,17 @@ class Cube implements Object {
       shape.end.rotateX(offset);
       shape.begin.rotateY(offset);
       shape.end.rotateY(offset); */
-      shape.begin.rotateZ(offset);
-      shape.end.rotateZ(offset);
+      shape.transform([
+        //rotateZ(offset),
+        rotateX(offset),
+        //rotateY(offset),
+      ]);
     }
   }
 
   private segments(color: string, beginX: number, beginY: number, beginZ: number, endX: number, endY: number, endZ: number) {
 
-    const segmentsNumber = 10;
-    let result = [];
+    const segmentsNumber = 25;
     const animateX = beginX != endX;
     const animateY = beginY != endY;
     const animateZ = beginZ != endZ;
@@ -281,6 +392,7 @@ class Cube implements Object {
     const ySize = Math.abs(beginY) + Math.abs(endY);
     const zSize = Math.abs(beginZ) + Math.abs(endZ);
 
+    const result = [];
     for (let index = 1; index <= segmentsNumber; index++) {
       const x = animateX ? (xSize * (1 / segmentsNumber) * index) + beginX : beginX;
       const y = animateY ? (ySize * (1 / segmentsNumber) * index) + beginY : beginY;
@@ -289,8 +401,8 @@ class Cube implements Object {
       result.push(
         new Line(
           color,
-          this.size.coordinate(startX, startY, startZ),
-          this.size.coordinate(x, y, z)));
+          this.size.transformableCoordinate(startX, startY, startZ),
+          this.size.transformableCoordinate(x, y, z)));
 
       startX = x;
       startY = y;
@@ -325,7 +437,7 @@ class Cube implements Object {
 
 class Overlay implements Object {
 
-  public readonly translate: Coordinate = new Coordinate(0, 0, 0);
+  public readonly translate: TransformableCoordinate = TransformableCoordinate.new(0, 0, 0);
   public readonly scale: Size = new Size(1, 1, 1);
 
   public shapes(): readonly Shape[] {
@@ -351,7 +463,7 @@ class Raster implements Object {
   private readonly step: number;
   private readonly shapesValue: readonly Shape[];
 
-  public readonly translate: Coordinate = new Coordinate(0, 0, 0);
+  public readonly translate: TransformableCoordinate = TransformableCoordinate.new(0, 0, 0);
   public readonly scale: Size = new Size(1, 1, 1);
 
   constructor(size: number, step: number) {
@@ -366,7 +478,7 @@ class Raster implements Object {
     for (let x = -half ; x <= half ; x += this.step) {
       for (let y = -half ; y <= half ; y += this.step) {
         for (let z = -half ; z <= half ; z += this.step) {
-          result.push(new Point(Colors.lightgray, x, y, z, 2))
+          result.push(new Point(Colors.red, x, y, z, 2))
         }
       }
     }
@@ -392,13 +504,15 @@ class World {
   private readonly objects: Object[] = [];
 
   constructor() {
-    this.objects.push(new Cube(new Coordinate(0, 0, 0), new Size(200, 200, 200)));
-    this.objects.push(new Cube(new Coordinate(500, 0, 0), new Size(200, 200, 200)));
-    this.objects.push(new Cube(new Coordinate(-500, 0, 0), new Size(200, 200, 200)));
-    this.objects.push(new Cube(new Coordinate(0, 500, 0), new Size(200, 200, 200)));
-    this.objects.push(new Cube(new Coordinate(0, -500, 0), new Size(200, 200, 200)));
+    //this.objects.push(new Cube(new CoordinateValue(0, 0, 0), new Size(200, 200, 200)));
+    this.objects.push(new Cube(new CoordinateValue(500, 0, 0), new Size(200, 200, 200)));
+    this.objects.push(new Cube(new CoordinateValue(-500, 0, 0), new Size(200, 200, 200)));
+    this.objects.push(new Cube(new CoordinateValue(0, 500, 0), new Size(200, 200, 200)));
+    this.objects.push(new Cube(new CoordinateValue(0, -500, 0), new Size(200, 200, 200)));
+    this.objects.push(new Cube(new CoordinateValue(0, 0, 500), new Size(200, 200, 200)));
+    this.objects.push(new Cube(new CoordinateValue(0, 0, -500), new Size(200, 200, 200)));
     this.objects.push(new Overlay());
-    this.objects.push(new Raster(1000, 100));
+    this.objects.push(new Raster(1200, 200));
   }
 
   public update(difference: number) {
@@ -431,18 +545,30 @@ class ViewController {
   private mouseIsDown: boolean = false;
   private mouseX: number = 0;
   private mouseY: number = 0;
+  private shiftDown: boolean = false;
   private view: View;
 
   constructor(view: View) {
     this.view = view;
-    canvas.addEventListener('scroll', this.scroll.bind(this));
     canvas.addEventListener('mousemove', this.mouseMove.bind(this));
     canvas.addEventListener('mouseup', this.mouseUp.bind(this));
     canvas.addEventListener('mousedown', this.mouseDown.bind(this));
+    window.addEventListener('keyup', this.keyUp.bind(this));
+    window.addEventListener('keydown', this.keyDown.bind(this));
   }
 
-  private scroll(event: Event) {
-    console.log("event: "+ event);
+  private keyUp(event: KeyboardEvent) {
+    console.log("keyUp: " + event.key);
+    if (event.key == "Shift") {
+      this.shiftDown = false;
+    }
+  }
+
+  private keyDown(event: KeyboardEvent) {
+    console.log("keyDown: " + event.key);
+    if (event.key == "Shift") {
+      this.shiftDown = true;
+    }
   }
 
   private mouseDown(event: MouseEvent) {
@@ -456,24 +582,31 @@ class ViewController {
   }
 
   private mouseMove(event: MouseEvent): any {
-    if (this.mouseIsDown) {
-      const offsetX = this.mouseX - event.x;
-      const offsetY = this.mouseY - event.y;
+
+    if (!this.mouseIsDown) return;
+
+    const offsetX = this.mouseX - event.x;
+    const offsetY = this.mouseY - event.y;
+    if (this.shiftDown) {
       view.moveCamera(offsetX, offsetY);
-      this.mouseX = event.x;
-      this.mouseY = event.y;
+    } else {
+      view.rotate(-offsetY / 100, offsetX / 100, 0);
     }
+    this.mouseX = event.x;
+    this.mouseY = event.y;
   }
 }
-
 
 class View {
 
   private readonly viewport_size: number = 1;
 
-  private camera: Coordinate = new Coordinate(0, 0, 1500);
+  private rotation: Rotation = new Rotation(0, 0, 0);
 
-  public translate(coordinate: Coordinate, translate: Coordinate | null = null, scale: Size | null = null): Coordinate2D {
+  private viewPort: Coordinate = new CoordinateValue(0, 0, 750);
+  private camera: Coordinate = TransformableCoordinate.new(0, 0, 1500);
+
+  public translate(coordinate: Coordinate, translation: Coordinate | null = null, ratio: Size | null = null): Coordinate2D {
 
     const width = canvas.width;
     const height = canvas.height;
@@ -485,27 +618,34 @@ class View {
     const u = coordinate.x + coordinate.z * viewPoint; // (coordinate.x > 0 ? viewPoint : -viewPoint);
     const v = coordinate.y + coordinate.z * viewPoint; // (coordinate.y > 0 ? viewPoint : -viewPoint);
     return new Coordinate2D(widthMiddle + u, heightMiddle + v)
-*/
-    const e: Coordinate = new Coordinate(0, 0, 750);
-    if (translate) {
-      coordinate = coordinate.translate(translate);
+    */
+
+    const transformers = [];
+    if (translation) {
+      transformers.push(translate(translation));
     }
-    if (scale) {
-      coordinate = coordinate.scale(scale);
+    if (ratio) {
+      transformers.push(scale(ratio));
     }
-    const d = coordinate.subtract(this.camera);
+    transformers.push(this.rotation.transformer())
+    transformers.push(subtract(this.camera));
+    const d = transform(coordinate, transformers);
 
     //const u = e.z / d.z * d.x + e.x;
     //const v = e.z / d.z * d.y + e.y;
 
-    const u = e.z / d.z * d.x; // + e.x;
-    const v = e.z / d.z * d.y; // + e.y;
+    const u = this.viewPort.z / d.z * d.x; // + e.x;
+    const v = this.viewPort.z / d.z * d.y; // + e.y;
 
     return new Coordinate2D(widthMiddle + u, heightMiddle + v)
   }
 
   moveCamera(x: number, y: number) {
-    this.camera.move(x, y);
+    this.camera = transform(this.camera, [move(x, y)]);
+  }
+
+  rotate(x: number, y: number, z: number) {
+    this.rotation.rotate(x, y, z);
   }
 }
 
@@ -527,9 +667,7 @@ function updateState(time: number) {
 }
 
 function render(world: World) {
-
   context.clearRect(0, 0, canvas.width, canvas.height);
-
   world.render(canvas)
 }
 
