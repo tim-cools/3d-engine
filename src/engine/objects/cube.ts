@@ -21,7 +21,7 @@ export class Cube extends ModelObject {
   }
 
   private static createModel(position: Point, size: any, style: ObjectStyle) {
-    const model = CubeModel.create(25)
+    const model = CubeModel.create(4)
     return new SpaceModel(model, position, size)
   }
 }
