@@ -1,36 +1,14 @@
-import {Object} from ".";
-import {Line, Shape} from "../shapes";
-import {
-  Size,
-  View,
-  Coordinate,
-  CoordinateValue,
-  TransformableCoordinate,
-  rotateY,
-  rotateZ,
-  Transformations,
-  Colors
-} from "..";
+import {LineShape, Shape} from "../shapes";
+import {Colors} from "..";
+import {Size, Point, rotateY, rotateZ} from "../models";
+import {BaseObject3D} from "./object"
 
-export class Sphere implements Object {
+export class Sphere extends BaseObject3D {
 
-  private readonly view: View;
-  private readonly shapesValue: Line[];
-  private readonly translate: TransformableCoordinate;
-  private readonly scale: Size = new Size(1, 1, 1);
-  private readonly size: Size;
+  private readonly shapesValue: LineShape[];
 
-  public get transformations(): Transformations {
-    return {
-      move: this.translate,
-      scale: this.scale
-    }
-  }
-
-  constructor(view: View, position: Coordinate, size: Size) {
-    this.view = view;
-    this.translate = new TransformableCoordinate(position);
-    this.size = size;
+  constructor(id: string, position: Point, size: Size) {
+    super(id, position, size)
     this.shapesValue = this.createShapes();
   }
 
@@ -56,7 +34,7 @@ export class Sphere implements Object {
     const size = 1;
     const half = size / 2;
     const pi = 3.14159;
-    const startTop = new CoordinateValue(0, -half, 0);
+    const startTop = new Point(0, -half, 0);
 
     const result = [];
     const rotateNext = rotateY(pi / segmentsNumber);
@@ -71,20 +49,20 @@ export class Sphere implements Object {
         const nextVertical = rotateHorizontal(rotateVertical(startTop));
 
         result.push(
-          new Line(
-            this.view,
+          new LineShape(
+            `${this.id}.line.${indexHorizontal}.${indexVertical}`,
             color,
-            this.size.scaleCoordinate(valueVertical),
-            this.size.scaleCoordinate(nextVertical)));
+            valueVertical,
+            nextVertical));
 
         if (indexVertical > 0 && indexVertical <= segmentsNumber) {
           const nextHorizontal = rotateNext(valueVertical);
           result.push(
-            new Line(
-              this.view,
+            new LineShape(
+              `${this.id}.line.${indexHorizontal}.${indexVertical}.h`,
               color,
-              this.size.scaleCoordinate(valueVertical),
-              this.size.scaleCoordinate(nextHorizontal)));
+              valueVertical,
+              nextHorizontal));
         }
 
         valueVertical = nextVertical;

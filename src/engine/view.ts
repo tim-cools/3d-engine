@@ -1,50 +1,91 @@
-import {Rotation} from "./rotation";
-import {Coordinate, Coordinate2D, CoordinateValue, TransformableCoordinate} from "./coordinate";
-import {subtract, moveBy, transform} from "./transformations";
+import {Rotation, Space2D} from "./models"
+import {Point2D, Point, TransformablePoint} from "./models"
+import {
+  subtract,
+  moveBy,
+  transform,
+  Transformer
+} from "./models"
 
-export class View {
+export interface View2D {
+  translate(point: Point): Point2D
+  translateMany(point: readonly Point[]): readonly Point2D[]
+}
 
-  private canvas: HTMLCanvasElement;
+export class View implements View2D {
 
-  private rotation: Rotation = new Rotation(-45, -45, 0);
+//  private static defaultRotation: Rotation = new Rotation(Rotation.eight, Rotation.eight,Rotation.eight)
+  private static defaultRotation: Rotation = Rotation.default
 
-  private viewPort: Coordinate = new CoordinateValue(0, 0, 750);
-  private camera: Coordinate = TransformableCoordinate.new(0, 0, 1500);
+  private rotation: Rotation = View.defaultRotation
 
-  public get width(): number {
-    return this.canvas.width;
+  private viewPort: Point = new Point(0, 0, -.75)
+  private camera: Point = TransformablePoint.new(0, 0, -1.5)
+
+  get width(): number {
+    return this.canvas.width
   }
 
-  public get height(): number {
-    return this.canvas.height;
+  get height(): number {
+    return this.canvas.height
   }
+
+  canvas: HTMLCanvasElement
 
   constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+    this.canvas = canvas
   }
 
-  public translate(coordinate: Coordinate): Coordinate2D {
+  translate(coordinate: Point): Point2D {
 
-    const widthMiddle = this.width / 2;
-    const heightMiddle = this.height / 2;
+    const widthMiddle = this.width / 2
+    const heightMiddle = this.height / 2
 
     const transformers = [
-      this.rotation.transformer(),
+      ...this.rotation.transformers,
       subtract(this.camera)
-    ];
+    ]
 
-    const transformed = transform(coordinate, transformers);
-    const u = this.viewPort.z / transformed.z * transformed.x; // + e.x;
-    const v = this.viewPort.z / transformed.z * transformed.y; // + e.y;
+    const transformed = transform(coordinate, transformers)
+    const u = this.viewPort.z / transformed.z * transformed.x // + e.x
+    const v = this.viewPort.z / transformed.z * transformed.y // + e.y
 
-    return new Coordinate2D(widthMiddle - u, heightMiddle + v)
+    let x = widthMiddle - u * this.height
+    let y = heightMiddle + v * this.height
+
+    return new Point2D(x, y)
   }
 
-  moveCamera(x: number, y: number) {
-    this.camera = transform(this.camera, [moveBy(x, y)]);
+  moveCamera(x: number | null, y: number | null, z: number | null) {
+    this.camera = transform(this.camera, [moveBy(x, y, z)])
   }
 
-  rotate(x: number, y: number, z: number) {
-    this.rotation.rotate(x, y, z);
+  rotate(x: number, y: number) {
+    this.rotation.rotate(x, y)
+  }
+
+  translateMany(points: readonly Point[]): readonly Point2D[] {
+    return points.map(value => this.translate(value))
+  }
+
+  reset() {
+    this.rotation = View.defaultRotation
+    this.viewPort = new Point(0, 0, -750)
+    this.camera = TransformablePoint.new(0, 0, -1500)
+  }
+
+  toViewCoordinateZ(coordinate: Point) {
+    const viewCoordinates = transform(coordinate, this.rotation.transformers)
+    return viewCoordinates.z
+  }
+
+  space2D(): Space2D {
+    const width = this.width
+    const height = this.height
+    return {
+      translate(point: Point2D): Point2D {
+        return new Point2D(width * point.x, height * point.y)
+      }
+    }
   }
 }

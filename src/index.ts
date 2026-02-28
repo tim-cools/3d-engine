@@ -1,17 +1,9 @@
-import './index.css';
-import {Engine} from "./engine";
+import './index.css'
+import {Engine} from "./engine"
 
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+const canvas = document.getElementById("canvas") as HTMLCanvasElement
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const engine = new Engine(canvas, context);
-
-function update(time: number) {
-  engine.update(time)
-  window.requestAnimationFrame(update);
-}
-
-window.requestAnimationFrame(update);
+const engine = new Engine(canvas)
+engine.start()

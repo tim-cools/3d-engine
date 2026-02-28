@@ -1,19 +1,16 @@
-import {View} from "../view";
-import {Point, Shape} from "../shapes";
-import {Transformations} from "../transformations";
+import {PointShape, Shape} from "../shapes";
 import {Colors} from "../colors";
+import {Point, Size} from "../models"
+import {BaseObject3D} from "./object"
 
-export class Raster implements Object {
+export class Raster extends BaseObject3D {
 
-  private readonly view: View;
   private readonly size: number;
   private readonly step: number;
   private readonly shapesValue: readonly Shape[];
 
-  public readonly transformations: Transformations = {};
-
-  constructor(view: View, size: number, step: number) {
-    this.view = view
+  constructor(id: string, size: number, step: number) {
+    super(id, Point.null, Size.default);
     this.size = size;
     this.step = step;
     this.shapesValue = this.createShapes();
@@ -25,7 +22,8 @@ export class Raster implements Object {
     for (let x = -half; x <= half; x += this.step) {
       for (let y = -half; y <= half; y += this.step) {
         for (let z = -half; z <= half; z += this.step) {
-          result.push(new Point(this.view, Colors.darkGray, x, y, z, 2))
+          const pointShape = new PointShape(`${this.id}.point.${x}.${y}.${z}`, Colors.darkGray, x, y, z, 2);
+          result.push(pointShape)
         }
       }
     }

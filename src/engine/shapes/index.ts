@@ -1,4 +1,6 @@
-export * from './shape';
-export * from './line';
-export * from './line2D' ;
-export * from './point';
+export * from './shape'
+export * from './lineShape'
+export * from './line2DShape'
+export * from './pointShape'
+export * from './text2DShape'
+export * from './pathShape'

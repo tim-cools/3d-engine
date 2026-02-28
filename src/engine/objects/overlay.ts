@@ -1,26 +1,25 @@
-import {Object} from ".";
-import {Colors, Transformations, View} from "..";
-import {Line2D, Shape} from "../shapes";
+import {Colors} from "..";
+import {Line2DShape, Shape, Shape2D} from "../shapes"
+import {BaseObject2D} from "./object"
 
-export class Overlay implements Object {
+export class Overlay extends BaseObject2D {
 
-  private view: View;
+  readonly id: string;
 
-  public readonly transformations: Transformations = {};
-
-  constructor(view: View) {
-    this.view = view;
+  constructor(id: string) {
+    super(id)
+    this.id = id;
   }
 
-  public shapes(): readonly Shape[] {
+  public shapes(): readonly Shape2D[] {
 
-    const width = this.view.width;
-    const height = this.view.height;
-    const widthMiddle = width / 2;
-    const heightMiddle = height / 2;
+    const width = 1;
+    const height = 1;
+    const widthMiddle = 0.5;
+    const heightMiddle = 0.5;
 
-    const horizontal = Line2D.new(Colors.white, 0, heightMiddle, width, heightMiddle);
-    const vertical = Line2D.new(Colors.white, widthMiddle, 0, widthMiddle, height);
+    const horizontal = Line2DShape.new(this.id + ".h", Colors.white, 0, heightMiddle, width, heightMiddle);
+    const vertical = Line2DShape.new(this.id + ".v", Colors.white, widthMiddle, 0, widthMiddle, height);
 
     return [horizontal, vertical];
   }
