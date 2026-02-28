@@ -1,8 +1,8 @@
 import {Size, Point, rotateY, rotateZ, Model, Segment, Triangle} from "../models"
 import {betweenTolerance, equalsTolerance} from "./equals"
 
-const size = 1;
-const half = size / 2;
+const size = 1
+const half = size / 2
 
 export class SphereModel extends Model {
 
@@ -19,38 +19,38 @@ export class SphereModel extends Model {
 
   public static createSphere(segmentsNumber: number): {segments: Segment[], triangles: Triangle[]} {
 
-    const pi = Math.PI;
-    const startTop = new Point(0, -half, 0);
+    const pi = Math.PI
+    const startTop = new Point(0, -half, 0)
 
-    const segments: Segment[] = [];
-    const triangles: Triangle[] = [];
-    const rotateNext = rotateY(pi / segmentsNumber);
+    const segments: Segment[] = []
+    const triangles: Triangle[] = []
+    const rotateNext = rotateY(pi / segmentsNumber)
 
-    for (let indexHorizontal = 0; indexHorizontal <= segmentsNumber * 2; indexHorizontal++) {
+    for (let indexHorizontal = 0 indexHorizontal <= segmentsNumber * 2 indexHorizontal++) {
 
-      const rotateHorizontal = rotateY(pi / segmentsNumber * indexHorizontal);
-      let valueVertical = startTop;
-      for (let indexVertical = 0; indexVertical <= segmentsNumber; indexVertical++) {
+      const rotateHorizontal = rotateY(pi / segmentsNumber * indexHorizontal)
+      let valueVertical = startTop
+      for (let indexVertical = 0 indexVertical <= segmentsNumber indexVertical++) {
 
-        const rotateVertical = rotateZ(pi / segmentsNumber * indexVertical);
-        const nextVertical = rotateHorizontal(rotateVertical(startTop));
+        const rotateVertical = rotateZ(pi / segmentsNumber * indexVertical)
+        const nextVertical = rotateHorizontal(rotateVertical(startTop))
 
-        segments.push(new Segment(valueVertical, nextVertical));
+        segments.push(new Segment(valueVertical, nextVertical))
 
         if (indexVertical > 0 && indexVertical <= segmentsNumber) {
-          const nextHorizontal = rotateNext(valueVertical);
-          segments.push(new Segment(valueVertical, nextHorizontal));
+          const nextHorizontal = rotateNext(valueVertical)
+          segments.push(new Segment(valueVertical, nextHorizontal))
 
-          const nextVerticalHorizontal = rotateNext(nextVertical);
+          const nextVerticalHorizontal = rotateNext(nextVertical)
           triangles.push(new Triangle(valueVertical, nextVertical, nextHorizontal))
           triangles.push(new Triangle(nextVertical, nextHorizontal, nextVerticalHorizontal))
         }
 
-        valueVertical = nextVertical;
+        valueVertical = nextVertical
       }
     }
 
-    return {segments, triangles};
+    return {segments, triangles}
   }
 
   private static contains() {

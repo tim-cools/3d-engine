@@ -6,7 +6,7 @@ import {nothing, Nothing} from "../nothing"
 
 export class ModelObject extends BaseObject3D implements HasObjectStyle {
 
-  private boundariesValue: Boundaries | Nothing = nothing;
+  private boundariesValue: Boundaries | Nothing = nothing
 
   private readonly color: Color
   private readonly model: Model
@@ -30,7 +30,7 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
   }
 
   setStyle(style: ObjectStyle) {
-    console.log("setStyle: "+ style);
+    console.log("setStyle: "+ style)
     this.style = style
     this.shapesValue = this.createShapes()
   }
@@ -57,7 +57,7 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
 
   private wireframe(showBoundaries: boolean) {
     const result: UpdatableShape[] = []
-    for (let index = 0 ; index < this.model.segments.length ; index++) {
+    for (let index = 0  index < this.model.segments.length  index++) {
       const vertex = this.model.segments[index]
       result.push(new LineShape(this.id + ".line." + index, this.color, new TransformablePoint(vertex.begin), new TransformablePoint(vertex.end)))
     }
@@ -70,7 +70,7 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
 
     const boundaries = this.boundaries
     const cubeModel = CubeModel.create(1, boundaries.min, boundaries.max)
-    for (let index = 0; index < cubeModel.segments.length; index++) {
+    for (let index = 0 index < cubeModel.segments.length index++) {
       const vertex = cubeModel.segments[index]
       result.push(new LineShape(this.id + ".boundary." + index, Colors.gray.middle, new TransformablePoint(vertex.begin), new TransformablePoint(vertex.end)))
     }
@@ -78,7 +78,7 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
 
   private solid() {
     const result: UpdatableShape[] = []
-    for (let index = 0 ; index < this.model.triangles.length ; index++) {
+    for (let index = 0  index < this.model.triangles.length  index++) {
       const triangle = this.model.triangles[index]
       result.push(new PathShape(
         this.id + ".triangle." + index,
@@ -89,16 +89,16 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
   }
 
   private facesWireframe() {
-    const added: Map<string, any> = new Map();
+    const added: Map<string, any> = new Map()
     const result: UpdatableShape[] = []
-    for (let index = 0 ; index < this.model.triangles.length ; index++) {
+    for (let index = 0  index < this.model.triangles.length  index++) {
       const triangle = this.model.triangles[index]
       const key = `-${triangle.point1}-${triangle.point2}-${triangle.point3}` // todo sort so it's always the same
       if (!added.has(key)) {
         result.push(new LineShape(this.id + ".line." + index, this.color, new TransformablePoint(triangle.point1), new TransformablePoint(triangle.point2)))
         result.push(new LineShape(this.id + ".line." + index, this.color, new TransformablePoint(triangle.point2), new TransformablePoint(triangle.point3)))
         result.push(new LineShape(this.id + ".line." + index, this.color, new TransformablePoint(triangle.point3), new TransformablePoint(triangle.point1)))
-        added.set(key, {});
+        added.set(key, {})
       }
     }
     return result

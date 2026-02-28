@@ -87,13 +87,13 @@ export class SubtractModel extends Model{
   private static partial(subtract: SpaceModel, segment: Segment, intersections: Point[]): Segment | Nothing {
     console.log("partial: " + segment)
 
-    for (let i = 0; i < subtract.model.triangles.length; i++){
+    for (let i = 0 i < subtract.model.triangles.length i++){
       const triangle = subtract.model.triangles[i]
       const translated = translateSpaceTriangle(triangle, subtract)
       // console.log(" >" + i + "> " + translated)
 
 /*      if (i == 147) {
-        debugger;
+        debugger
       }*/
 
       if (equalsTolerancePoint(translated.point1, segment.begin) || equalsTolerancePoint(translated.point1, segment.end)
@@ -123,10 +123,10 @@ export class SubtractModel extends Model{
   }
 
   private static closestPoint(intersections: Point[], point: Point) {
-    let closest = intersections[0];
-    let closestDistance = point.distanceToPoint(intersections[0]);
-    let closestIndex = 0;
-    for (let i = 1; i < intersections.length; i++){
+    let closest = intersections[0]
+    let closestDistance = point.distanceToPoint(intersections[0])
+    let closestIndex = 0
+    for (let i = 1 i < intersections.length i++){
       const intersection = intersections[i]
       const distance = point.distanceToPoint(intersection)
 
@@ -137,6 +137,6 @@ export class SubtractModel extends Model{
       }
     }
     intersections.splice(closestIndex, 1)
-    return closest;
+    return closest
   }
 }

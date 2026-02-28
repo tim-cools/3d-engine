@@ -1,2 +1,2 @@
-export * from './assert';
-export * from './arrayFunctions';
+export * from './assert'
+export * from './arrayFunctions'

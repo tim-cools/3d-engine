@@ -38,7 +38,7 @@ export function scenes(): readonly Scene[] {
     cubesAndSphere(),
     //subtractCube(),
     subtractSphere(),
-  ];
+  ]
 
   return [intro(scenes), ...scenes]
 }

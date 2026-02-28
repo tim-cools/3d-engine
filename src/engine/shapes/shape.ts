@@ -6,12 +6,12 @@ export interface UpdatableShape extends Shape {
 }
 
 export interface Shape2D {
-  readonly id: string;
+  readonly id: string
   render(space: Space2D, view: View2D, context: CanvasRenderingContext2D): void
 }
 
 export interface Shape {
-  readonly id: string;
+  readonly id: string
   render(space: Space, view: View2D, context: CanvasRenderingContext2D): void
   boundaries(space: Space): Boundaries
 }

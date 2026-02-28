@@ -17,13 +17,13 @@ export class AxisModel extends Model {
       new Segment(new Point(-1, 0, 0), new Point(1, 0,0)),
       new Segment(new Point(0, -1, 0), new Point(0, 1,0)),
       new Segment(new Point(0, 0, -1), new Point(0, 0,1)),
-    ];
+    ]
 
     const triangles = [
       new Triangle(new Point(-1, 0, 0), new Point(1, 0,0), new Point(1, 0,0)),
       new Triangle(new Point(0, -1, 0), new Point(0, 1,0), new Point(0, 1,0)),
       new Triangle(new Point(0, 0, -1), new Point(0, 0,1), new Point(0, 0,1)),
-    ];
+    ]
 
     return new AxisModel(segments, triangles)
   }

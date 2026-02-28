@@ -6,7 +6,7 @@ import {Colors} from "../colors"
 export class Cube extends ModelObject {
 
   constructor(id: string, position: Point, size: Size, style: ObjectStyle = ObjectStyle.Wireframe) {
-    super(id, Colors.primary.darker, Cube.createModel(position, size, style));
+    super(id, Colors.primary.darker, Cube.createModel(position, size, style))
   }
 
   public update(timeMilliseconds: number): void {
@@ -21,7 +21,7 @@ export class Cube extends ModelObject {
   }
 
   private static createModel(position: Point, size: any, style: ObjectStyle) {
-    const model = CubeModel.create(25);
-    return new SpaceModel(model, position, size);
+    const model = CubeModel.create(25)
+    return new SpaceModel(model, position, size)
   }
 }

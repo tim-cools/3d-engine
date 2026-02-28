@@ -1,5 +1,5 @@
-import {equalsTolerance} from "./equals";
-import {FiniteObject, Plane, Point, Segment, Vector} from "./basics";
+import {equalsTolerance} from "./equals"
+import {FiniteObject, Plane, Point, Segment, Vector} from "./basics"
 
 export class Triangle implements FiniteObject {
 
@@ -16,26 +16,26 @@ export class Triangle implements FiniteObject {
   normal() {
     return Vector.fromPoints(this.point1, this.point2)
       .cross(Vector.fromPoints(this.point1, this.point3))
-      .normalize();
+      .normalize()
   }
 
   plane() {
-    return new Plane(this.point1, this.normal());
+    return new Plane(this.point1, this.normal())
   }
 
   pointLocation(point: Point): number {
-    const projection = point.projectionToPlane(this.plane());
+    const projection = point.projectionToPlane(this.plane())
     if (equalsTolerance(point.distanceToPoint(projection), 0)) {
-      return this.inPlanePointLocation(projection);
+      return this.inPlanePointLocation(projection)
     } else {
-      return -1; // Point is outside
+      return -1 // Point is outside
     }
   }
 
   private area() {
-    const vector1 = Vector.fromPoints(this.point1, this.point2);
-    const vector2 = Vector.fromPoints(this.point1, this.point3);
-    return 0.5 * vector1.cross(vector2).norm();
+    const vector1 = Vector.fromPoints(this.point1, this.point2)
+    const vector2 = Vector.fromPoints(this.point1, this.point3)
+    return 0.5 * vector1.cross(vector2).norm()
   }
 
   private inPlanePointLocation(point: Point) {
@@ -43,30 +43,30 @@ export class Triangle implements FiniteObject {
     if (point.belongsTo(new Segment(this.point1, this.point2))
      || point.belongsTo(new Segment(this.point1, this.point3))
      || point.belongsTo(new Segment(this.point3, this.point2))) {
-      return 0; // Point is on boundary
+      return 0 // Point is on boundary
     }
 
-    const area = this.area();
+    const area = this.area()
     const alpha = Vector.fromPoints(point, this.point2)
-      .cross(Vector.fromPoints(point, this.point3)).norm() / (2 * area);
+      .cross(Vector.fromPoints(point, this.point3)).norm() / (2 * area)
     const beta = Vector.fromPoints(point, this.point3)
-      .cross(Vector.fromPoints(point, this.point1)).norm() / (2 * area);
+      .cross(Vector.fromPoints(point, this.point1)).norm() / (2 * area)
     const gamma = Vector.fromPoints(point, this.point1)
-      .cross(Vector.fromPoints(point, this.point2)).norm() / (2 * area);
+      .cross(Vector.fromPoints(point, this.point2)).norm() / (2 * area)
 
     if (equalsTolerance(((alpha + beta + gamma) - 1.0) * (this.ab() + this.bc() + this.ac()) / 3, 0.0)) {
-      return 1; // Point is strictly inside
+      return 1 // Point is strictly inside
     } else {
-      return -1;
+      return -1
     }
   }
 
   ab() {
-    return this.point1.distanceToPoint(this.point2);
+    return this.point1.distanceToPoint(this.point2)
   }
 
   bc() {
-    return this.point2.distanceToPoint(this.point3);
+    return this.point2.distanceToPoint(this.point3)
   }
 
   ac() {

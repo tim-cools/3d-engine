@@ -11,11 +11,11 @@ export class Rotation {
 
   static default = new Rotation()
 
-  private transformersValue: Transformer[] = [];
-  private direction: Point = Point.null;
+  private transformersValue: Transformer[] = []
+  private direction: Point = Point.null
 
   get transformers(): Transformer[] {
-    return this.transformersValue;
+    return this.transformersValue
   }
 
   constructor() {
@@ -32,10 +32,10 @@ export class Rotation {
   }
 
   private updateTransformation(rotated: Point) {
-    this.direction = rotated;
+    this.direction = rotated
 
-    const theta = Math.atan2(rotated.x, rotated.y);
-    const phi = Math.asin(rotated.z);
+    const theta = Math.atan2(rotated.x, rotated.y)
+    const phi = Math.asin(rotated.z)
 
 //    console.log(`radiants:  theta: ${theta}, phi =: ${phi}`)
 

@@ -33,7 +33,7 @@ export class PathShape implements Shape {
     context.lineWidth = 3
     context.beginPath()
     context.moveTo(pointsView[pointsView.length - 1].x, pointsView[pointsView.length - 1].y)
-    for (let index = 0 ; index < pointsView.length ; index ++) {
+    for (let index = 0  index < pointsView.length  index ++) {
       context.lineTo(pointsView[index].x, pointsView[index].y)
     }
     context.fill()

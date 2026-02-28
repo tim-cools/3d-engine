@@ -1,27 +1,27 @@
-import {Point} from "./basics";
+import {Point} from "./basics"
 
-export const tolerance = 1E-6;
+export const tolerance = 1E-6
 
 export function equalsTolerance(value1: number, value2: number) {
   let difference = Math.abs(value1 - value2)
-  return difference <= tolerance;
+  return difference <= tolerance
 }
 
 export function betweenTolerance(value: number, loweBoundInclusive: number, upperBoundInclusive: number) {
-  return greaterTolerance(value, loweBoundInclusive) && smallerTolerance(value, upperBoundInclusive);
+  return greaterTolerance(value, loweBoundInclusive) && smallerTolerance(value, upperBoundInclusive)
 }
 
 export function equalsTolerancePoint(point1: Point, point2: Point) {
   return equalsTolerance(point1.x, point2.x)
       && equalsTolerance(point1.y, point2.y)
-      && equalsTolerance(point1.z, point2.z);
+      && equalsTolerance(point1.z, point2.z)
 }
 
 export function smallerTolerance(value1: number, value2: number): boolean {
-  return (value1 - value2) < -tolerance;
+  return (value1 - value2) < -tolerance
 }
 
 export function greaterTolerance(value1: number, value2: number): boolean {
-  return (value1 - value2) > tolerance;
+  return (value1 - value2) > tolerance
 }
 

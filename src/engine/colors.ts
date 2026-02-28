@@ -1,14 +1,14 @@
-export type Color = string;
+export type Color = string
 
 export class Colors {
 
-  public static readonly red: string = "red";
-  public static readonly yellow: string = "yellow";
-  public static readonly green: string = "green";
-  public static readonly blue: string = "blue";
-  public static readonly white: string = "white";
-  public static readonly lightGray: string = "lightgray";
-  public static readonly darkGray: string = "darkgray";
+  public static readonly red: string = "red"
+  public static readonly yellow: string = "yellow"
+  public static readonly green: string = "green"
+  public static readonly blue: string = "blue"
+  public static readonly white: string = "white"
+  public static readonly lightGray: string = "lightgray"
+  public static readonly darkGray: string = "darkgray"
 
   public static primary = {
     dark: "#001333",

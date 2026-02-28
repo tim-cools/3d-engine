@@ -11,13 +11,13 @@ type ObjectRender = {
 
 export class World {
 
-  private readonly logEnabled = false;
+  private readonly logEnabled = false
 
   private readonly lastZ: Map<string, number> = new Map()
   private readonly scenes: readonly Scene[] = []
   private readonly view: View
 
-  private objectStyle: ObjectStyle = ObjectStyle.Wireframe;
+  private objectStyle: ObjectStyle = ObjectStyle.Wireframe
   private scene: Scene
 
   constructor(view: View) {
@@ -42,7 +42,7 @@ export class World {
       return first.z > second.z ? -1 : 1
     })
     for (const objectShape of shapes) {
-      objectShape.render(context);
+      objectShape.render(context)
     }
   }
 
@@ -55,7 +55,7 @@ export class World {
   }
 
   switchObjectStyle() {
-    this.objectStyle = (this.objectStyle + 1) % 4;
+    this.objectStyle = (this.objectStyle + 1) % 4
     console.log("switchObjectStyle: " + ObjectStyle[this.objectStyle])
     this.setObjectStyle()
   }
@@ -71,7 +71,7 @@ export class World {
 
   private shapes(): ObjectRender[] {
     const result: ObjectRender[] = []
-    const space2D = this.view.space2D();
+    const space2D = this.view.space2D()
 
     for (const object of this.scene.objects) {
       if (object.is3D) {
@@ -94,7 +94,7 @@ export class World {
 
     const boundaries = shape.boundaries(space)
     const z = this.view.toViewCoordinateZ(boundaries.maxZPoint)
-    const view = this.view;
+    const view = this.view
 
     this.logZ(shape, z, boundaries)
 
@@ -108,7 +108,7 @@ export class World {
 
   private objectSpace(object: SpaceObject): Space {
     function translate(point: Point) {
-      return translateSpace(point, object);
+      return translateSpace(point, object)
     }
     return {translate: translate}
   }
@@ -120,7 +120,7 @@ export class World {
   }
 
   private renderShape2D(shape: Shape2D, space: Space2D, result: ObjectRender[]) {
-    const view = this.view;
+    const view = this.view
     result.push({
       z: 0,
       render(context: CanvasRenderingContext2D) {
@@ -130,7 +130,7 @@ export class World {
   }
 
   private logZ(shape: Shape, z: number, boundaries: Boundaries) {
-    if (!this.logEnabled) return;
+    if (!this.logEnabled) return
     if (!this.lastZ.has(shape.id) || this.lastZ.get(shape.id) != z) {
       console.log(`shape: ${shape.id}z: ${z} (${boundaries})`)
       this.lastZ.set(shape.id, z)

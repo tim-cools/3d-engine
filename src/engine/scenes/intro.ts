@@ -23,7 +23,7 @@ export function intro(scenes: readonly Scene[]): Scene {
     text("0: intro"),
   ]
 
-  for (let i = 0; i < scenes.length; i++) {
+  for (let i = 0 i < scenes.length i++) {
     const scene = scenes[i]
     texts.push(text(`${(i + 1).toString()}: ${scene.title}`))
   }

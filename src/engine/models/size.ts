@@ -35,7 +35,7 @@ export class Size {
       || (equalsTolerance(coordinate.y, 0) && betweenTolerance(coordinate.x, 0, this.x) && betweenTolerance(coordinate.z, 0, this.z))
       || (equalsTolerance(coordinate.y, this.y) && betweenTolerance(coordinate.x, 0, this.x) && betweenTolerance(coordinate.z, 0, this.z))
       || (equalsTolerance(coordinate.z, 0) && betweenTolerance(coordinate.y, 0, this.y) && betweenTolerance(coordinate.x, 0, this.x))
-      || (equalsTolerance(coordinate.z, this.z) && betweenTolerance(coordinate.y, 0, this.y) && betweenTolerance(coordinate.x, 0, this.x));
+      || (equalsTolerance(coordinate.z, this.z) && betweenTolerance(coordinate.y, 0, this.y) && betweenTolerance(coordinate.x, 0, this.x))
   }
 
   half() {

@@ -27,7 +27,7 @@ export class Boundaries {
     return this.fromIterator(points, (value, handler) => handler(value))
   }
 
-  static fromIterator<TItem>(iterator: readonly TItem[], handler: (item: TItem, pointHandler: (point: Point) => void) => void){
+  static fromIterator<TItem>(iterator: readonly TItem[], handler: (item: TItem, pointHandler: (point: Point) => void) => void) {
 
     let state: HandlerState | Nothing = nothing
 
