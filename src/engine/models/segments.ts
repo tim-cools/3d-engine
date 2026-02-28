@@ -12,7 +12,7 @@ export function segments(segments: number, begin: Point, end: Point, size: Size 
   let start = beginWorld
 
   const result = []
-  for (let index = 1 index <= segments index++) {
+  for (let index = 1; index <= segments; index++) {
 
     const target = new Point(
       xSize * ratio * index + beginWorld.x,

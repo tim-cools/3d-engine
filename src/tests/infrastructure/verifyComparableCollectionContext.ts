@@ -8,7 +8,7 @@ export class VerifyComparableCollectionContext<TItem> extends VerifyModelContext
     super(model, logging)
   }
 
-  public valueAtEquals(index: number, expected: TItem): VerifyComparableCollectionContext<TItem> {
+  valueAtEquals(index: number, expected: TItem): VerifyComparableCollectionContext<TItem> {
     let value = index >= 0 && index < this.model.length ? this.model[index] : null
     if (value != null) {
       this.logging.logAssert(expected == value, "collection", `- valueAtEquals[${index}] '${expected}' != '${value}': `)
@@ -20,7 +20,7 @@ export class VerifyComparableCollectionContext<TItem> extends VerifyModelContext
     return this
   }
 
-  public length(length: number, extraMessage: string): VerifyComparableCollectionContext<TItem> {
+  length(length: number, extraMessage: string): VerifyComparableCollectionContext<TItem> {
 
     let suffix = extraMessage != null ? ` (${extraMessage})` : ""
     this.logging.logAssert(this.model.length == length, "Length", `- Length Failed '${this.model}' != '${length}'${suffix}: `)
@@ -28,7 +28,7 @@ export class VerifyComparableCollectionContext<TItem> extends VerifyModelContext
     return this
   }
 
-  public contains(expected: TItem): VerifyComparableCollectionContext<TItem> {
+  contains(expected: TItem): VerifyComparableCollectionContext<TItem> {
 
     let value = this.model.indexOf(expected) >= 0
     this.logging.logAssert(value, "collection", `- Contains[${expected}] invalid: `)
@@ -36,7 +36,7 @@ export class VerifyComparableCollectionContext<TItem> extends VerifyModelContext
     return this
   }
 
-  public any(criteria: (item: TItem) => boolean): VerifyComparableCollectionContext<TItem> {
+  any(criteria: (item: TItem) => boolean): VerifyComparableCollectionContext<TItem> {
 
     let value = any(this.model, criteria)
     this.logging.logAssert(value, "collection", `- Any[${criteria}] invalid: `)

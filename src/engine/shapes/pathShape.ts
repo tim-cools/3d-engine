@@ -19,12 +19,12 @@ export class PathShape implements Shape {
     this.points = points.map(point => new TransformablePoint(point))
   }
 
-  public boundaries(space: Space): Boundaries {
+  boundaries(space: Space): Boundaries {
     const points = this.transform(space)
     return Boundaries.fromArray(points)
   }
 
-  public render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
+  render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
     //console.log(`drawLine: (${this.point1.x}, ${this.point1.y}, ${this.point1.z}) (${this.end.x}, ${this.end.y}, ${this.end.z})`)
     const points = this.transform(space)
     const pointsView = view.translateMany(points)
@@ -33,13 +33,13 @@ export class PathShape implements Shape {
     context.lineWidth = 3
     context.beginPath()
     context.moveTo(pointsView[pointsView.length - 1].x, pointsView[pointsView.length - 1].y)
-    for (let index = 0  index < pointsView.length  index ++) {
+    for (let index = 0; index < pointsView.length; index ++) {
       context.lineTo(pointsView[index].x, pointsView[index].y)
     }
     context.fill()
   }
 
-  public update(transformers: readonly Transformer[]) {
+  update(transformers: readonly Transformer[]) {
     for (const point of this.points) {
       point.transform(transformers)
     }

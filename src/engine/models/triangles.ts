@@ -14,8 +14,8 @@ export function rectangleTriangles(segments: number, position: Point, sizeHorizo
     add(position),
   ]
 
-  for (let horizontal = 0 horizontal < segments horizontal++) {
-    for (let vertical = 0 vertical < segments vertical++) {
+  for (let horizontal = 0; horizontal < segments; horizontal++) {
+    for (let vertical = 0; vertical < segments; vertical++) {
 
       const start = new Point(horizontal * ratio, vertical * ratio, 0)
       const right = new Point((horizontal + 1) * ratio, vertical * ratio, 0)

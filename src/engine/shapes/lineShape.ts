@@ -27,12 +27,12 @@ export class LineShape implements Shape {
     return new LineShape(id,  color, begin, end)
   }
 
-  public boundaries(space: Space) {
+  boundaries(space: Space) {
     const {begin, end} = this.transform(space)
     return Boundaries.fromItems(begin, end)
   }
 
-  public render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
+  render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
     //console.log(`drawLine: (${this.point1.x}, ${this.point1.y}, ${this.point1.z}) (${this.end.x}, ${this.end.y}, ${this.end.z})`)
     const {begin, end} = this.transform(space)
     const beginView = view.translate(begin)
@@ -46,7 +46,7 @@ export class LineShape implements Shape {
     context.stroke()
   }
 
-  public update(transformers: readonly Transformer[]) {
+  update(transformers: readonly Transformer[]) {
     this.begin.transform(transformers)
     this.end.transform(transformers)
   }

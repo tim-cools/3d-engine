@@ -23,11 +23,11 @@ export class Rectangle extends BaseObject3D {
     this.shapesValue = this.createShapes()
   }
 
-  public shapes(): readonly Shape[] {
+  shapes(): readonly Shape[] {
     return this.shapesValue
   }
 
-  public update(timeMilliseconds: number): void {
+  update(timeMilliseconds: number): void {
     const offset = timeMilliseconds / 3600
     for (const shape of this.shapesValue) {
       shape.update([
@@ -72,7 +72,7 @@ export class Rectangle extends BaseObject3D {
     let start = begin
 
     const result = []
-    for (let index = 1 index <= segmentsNumber index++) {
+    for (let index = 1; index <= segmentsNumber; index++) {
 
       const target = new Point(
         animateX ? xSize * ratio * index + begin.x : begin.x,

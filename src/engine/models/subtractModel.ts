@@ -87,19 +87,19 @@ export class SubtractModel extends Model{
   private static partial(subtract: SpaceModel, segment: Segment, intersections: Point[]): Segment | Nothing {
     console.log("partial: " + segment)
 
-    for (let i = 0 i < subtract.model.triangles.length i++){
-      const triangle = subtract.model.triangles[i]
+    for (let index = 0; index < subtract.model.triangles.length; index++){
+      const triangle = subtract.model.triangles[index]
       const translated = translateSpaceTriangle(triangle, subtract)
-      // console.log(" >" + i + "> " + translated)
+      // console.log(" >" + index + "> " + translated)
 
-/*      if (i == 147) {
+/*      if (index == 147) {
         debugger
       }*/
 
       if (equalsTolerancePoint(translated.point1, segment.begin) || equalsTolerancePoint(translated.point1, segment.end)
        || equalsTolerancePoint(translated.point2, segment.begin) || equalsTolerancePoint(translated.point2, segment.end)
        || equalsTolerancePoint(translated.point3, segment.begin) || equalsTolerancePoint(translated.point3, segment.end)) {
-        console.log("> equalsTolerancePoint: " + i)
+        console.log("> equalsTolerancePoint: " + index)
       }
 
       const intersection = intersectionTriangleLineSegment(translated, segment)
@@ -123,17 +123,19 @@ export class SubtractModel extends Model{
   }
 
   private static closestPoint(intersections: Point[], point: Point) {
+
     let closest = intersections[0]
     let closestDistance = point.distanceToPoint(intersections[0])
     let closestIndex = 0
-    for (let i = 1 i < intersections.length i++){
-      const intersection = intersections[i]
+
+    for (let index = 1; index < intersections.length; index++) {
+      const intersection = intersections[index]
       const distance = point.distanceToPoint(intersection)
 
       if (distance < closestDistance) {
         closest = intersection
         closestDistance = distance
-        closestIndex = i
+        closestIndex = index
       }
     }
     intersections.splice(closestIndex, 1)

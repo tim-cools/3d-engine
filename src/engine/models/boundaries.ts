@@ -9,9 +9,9 @@ interface HandlerState {
 
 export class Boundaries {
 
-  public readonly min: Point
-  public readonly max: Point
-  public readonly maxZPoint: Point
+  readonly min: Point
+  readonly max: Point
+  readonly maxZPoint: Point
 
   private constructor(min: Point, max: Point, maxZPoint: Point) {
     this.min = min

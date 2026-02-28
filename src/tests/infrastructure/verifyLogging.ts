@@ -5,23 +5,23 @@ export class VerifyLogging {
 
   private indention: number = 0
 
-  public get errors(): number {
+  get errors(): number {
     return this.errorsValue++
   }
 
-  public toString() {
+  toString() {
     return `Errors: ${this.errorsValue}\n${this.stringBuilder.join("\n")}`
   }
 
-  public errorOccurred(): void {
+  errorOccurred(): void {
     this.errorsValue++
   }
 
-  public appendLine(message: string) {
+  appendLine(message: string) {
     this.stringBuilder.push(message)
   }
 
-  public fail(message: string | null = null, title: string) {
+  fail(message: string | null = null, title: string) {
     if (this.indention > 0) {
       this.stringBuilder.push(' '.repeat(this.indention * 2))
     }
@@ -30,18 +30,18 @@ export class VerifyLogging {
     this.errorsValue++
   }
 
-  public logAssert(valid: boolean, message: string | null = null, title: string) {
+  logAssert(valid: boolean, message: string | null = null, title: string) {
     if (valid) return
     this.fail(message, title)
   }
 
-  public withIndentation(action: () => void) {
+  withIndentation(action: () => void) {
     this.indention++
     action()
     this.indention--
   }
 
-  public assertNoErrors() {
+  assertNoErrors() {
     let summary = this.toString()
     if (this.errors > 0) {
       throw new Error(summary)

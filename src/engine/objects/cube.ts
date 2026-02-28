@@ -9,7 +9,7 @@ export class Cube extends ModelObject {
     super(id, Colors.primary.darker, Cube.createModel(position, size, style))
   }
 
-  public update(timeMilliseconds: number): void {
+  update(timeMilliseconds: number): void {
     const offset = timeMilliseconds / 3600
     for (const shape of this.shapesValue) {
       shape.update([

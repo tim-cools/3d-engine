@@ -18,7 +18,7 @@ export class Text2DShape implements Shape2D {
     this.text = text
   }
 
-  public render(space: Space2D, view: View2D, context: CanvasRenderingContext2D) {
+  render(space: Space2D, view: View2D, context: CanvasRenderingContext2D) {
     context.fillStyle = this.color
     context.font = this.fontSize + "px sans-serif"
 

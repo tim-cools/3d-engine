@@ -22,7 +22,7 @@ export class Line2DShape implements Shape2D {
     return new Line2DShape(id, color, begin, end)
   }
 
-  public render(space: Space2D, view: View2D, context: CanvasRenderingContext2D) {
+  render(space: Space2D, view: View2D, context: CanvasRenderingContext2D) {
     //console.log(`drawLine: ${this.point1.x}, ${this.point1.y}, ${this.end.x}, ${this.end.y}`)
 
     const begin = space.translate(this.begin)

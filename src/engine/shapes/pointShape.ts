@@ -16,11 +16,11 @@ export class PointShape implements Shape {
     this.position = TransformablePoint.new(x, y, z)
   }
 
-  public boundaries(space: Space): Boundaries {
+  boundaries(space: Space): Boundaries {
     return Boundaries.fromItems(space.translate(this.position))
   }
 
-  public render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
+  render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
     //console.log(`point: 3D (${this.position.x}, ${this.position.y}, ${this.position.z})`)
     const coordinate = space.translate(this.position)
     const coordinate2D = view.translate(coordinate)

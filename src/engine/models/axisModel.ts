@@ -12,7 +12,7 @@ export class AxisModel extends Model {
     super(vertices, triangles, AxisModel.contains(), AxisModel.onBoundary())
   }
 
-  public static create(position: Point, size: Size) {
+  static create(position: Point, size: Size) {
     const segments = [
       new Segment(new Point(-1, 0, 0), new Point(1, 0,0)),
       new Segment(new Point(0, -1, 0), new Point(0, 1,0)),

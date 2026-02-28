@@ -7,7 +7,7 @@ import {VerifyCollectionContext} from "./verifyCollectionContext"
 
 export class Verify<TModel> {
 
-  public static all(testHandler: (contexy: VerifyContext) => void): void {
+  static all(testHandler: (contexy: VerifyContext) => void): void {
 
     Assert.notNull(testHandler, "testHandler")
 
@@ -17,7 +17,7 @@ export class Verify<TModel> {
     logging.assertNoErrors()
   }
 
-  public static async allAsync(testHandler: (context: VerifyContext) => Promise<void>): Promise<void> {
+  static async allAsync(testHandler: (context: VerifyContext) => Promise<void>): Promise<void> {
 
     Assert.notNull(testHandler, "testHandler")
 
@@ -27,7 +27,7 @@ export class Verify<TModel> {
     logging.assertNoErrors()
   }
 
-  public static model<TModel>(value: TModel, testHandler: (context: VerifyModelContext<TModel>) => void) {
+  static model<TModel>(value: TModel, testHandler: (context: VerifyModelContext<TModel>) => void) {
 
     Assert.notNull(value, "value")
     Assert.notNull(testHandler, "testHandler")
@@ -38,7 +38,7 @@ export class Verify<TModel> {
     logging.assertNoErrors()
   }
 
-  public static collection<TItem>(list: readonly TItem[], testHandler: (context: VerifyCollectionContext<TItem>) => void) {
+  static collection<TItem>(list: readonly TItem[], testHandler: (context: VerifyCollectionContext<TItem>) => void) {
 
     Assert.notNull(testHandler, "testHandler")
 
@@ -48,7 +48,7 @@ export class Verify<TModel> {
     logging.assertNoErrors()
   }
 
-  public static comparableCollection<TItem>(list: readonly TItem[], testHandler: (context: VerifyComparableCollectionContext<TItem>) => void) {
+  static comparableCollection<TItem>(list: readonly TItem[], testHandler: (context: VerifyComparableCollectionContext<TItem>) => void) {
 
     Assert.notNull(testHandler, "testHandler")
 

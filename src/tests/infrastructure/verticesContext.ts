@@ -18,7 +18,7 @@ export class VerticesContext {
     this.logging = context.logging
   }
 
-  public contains(segmentsNumber: number, beginX: number, beginY: number, beginZ: number, endX: number, endY: number, endZ: number, message: string | null): VerticesContext {
+  contains(segmentsNumber: number, beginX: number, beginY: number, beginZ: number, endX: number, endY: number, endZ: number, message: string | null): VerticesContext {
     const begin = new Point(beginX, beginY, beginZ)
     const end = new Point(endX, endY, endZ)
     const vertices = segments(segmentsNumber, begin, end)
@@ -32,7 +32,7 @@ export class VerticesContext {
     return this
   }
 
-  public logRemaining() {
+  logRemaining() {
     for (const vertex of this.remaining) {
       this.logging.appendLine(`- remaining: '${vertex}'`)
     }

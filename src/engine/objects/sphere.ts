@@ -12,11 +12,11 @@ export class Sphere extends BaseObject3D {
     this.shapesValue = this.createShapes()
   }
 
-  public shapes(): readonly Shape[] {
+  shapes(): readonly Shape[] {
     return this.shapesValue
   }
 
-  public update(timeMilliseconds: number): void {
+  update(timeMilliseconds: number): void {
     const offset = timeMilliseconds / 3600
     for (const shape of this.shapesValue) {
       shape.update([
@@ -39,11 +39,11 @@ export class Sphere extends BaseObject3D {
     const result = []
     const rotateNext = rotateY(pi / segmentsNumber)
 
-    for (let indexHorizontal = 0 indexHorizontal < segmentsNumber * 2 indexHorizontal++) {
+    for (let indexHorizontal = 0; indexHorizontal < segmentsNumber * 2; indexHorizontal++) {
 
       const rotateHorizontal = rotateY(pi / segmentsNumber * indexHorizontal)
       let valueVertical = startTop
-      for (let indexVertical = 0 indexVertical <= segmentsNumber indexVertical++) {
+      for (let indexVertical = 0; indexVertical <= segmentsNumber; indexVertical++) {
 
         const rotateVertical = rotateZ(pi / segmentsNumber * indexVertical)
         const nextVertical = rotateHorizontal(rotateVertical(startTop))

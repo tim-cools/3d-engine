@@ -16,12 +16,12 @@ export class Raster extends BaseObject3D {
     this.shapesValue = this.createShapes()
   }
 
-  public createShapes(): readonly Shape[] {
+  createShapes(): readonly Shape[] {
     const half = this.size / 2
     const result: Shape[] = []
-    for (let x = -half x <= half x += this.step) {
-      for (let y = -half y <= half y += this.step) {
-        for (let z = -half z <= half z += this.step) {
+    for (let x = -half; x <= half; x += this.step) {
+      for (let y = -half; y <= half; y += this.step) {
+        for (let z = -half; z <= half; z += this.step) {
           const pointShape = new PointShape(`${this.id}.point.${x}.${y}.${z}`, Colors.darkGray, x, y, z, 2)
           result.push(pointShape)
         }
@@ -30,10 +30,10 @@ export class Raster extends BaseObject3D {
     return result
   }
 
-  public shapes(): readonly Shape[] {
+  shapes(): readonly Shape[] {
     return this.shapesValue
   }
 
-  public update(timeMilliseconds: number): void {
+  update(timeMilliseconds: number): void {
   }
 }

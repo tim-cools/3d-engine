@@ -11,7 +11,7 @@ export class Overlay extends BaseObject2D {
     this.id = id
   }
 
-  public shapes(): readonly Shape2D[] {
+  shapes(): readonly Shape2D[] {
 
     const width = 1
     const height = 1
@@ -24,6 +24,6 @@ export class Overlay extends BaseObject2D {
     return [horizontal, vertical]
   }
 
-  public update(timeMilliseconds: number): void {
+  update(timeMilliseconds: number): void {
   }
 }

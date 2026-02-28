@@ -7,15 +7,15 @@ export type ModelPropertyHandler<TModel, TProperty> = (value: TModel) => TProper
 
 export class VerifyModelContext<TModel> {
 
-  public readonly model: TModel
-  public readonly logging: VerifyLogging
+  readonly model: TModel
+  readonly logging: VerifyLogging
 
   constructor(model: TModel, logging: VerifyLogging) {
     this.model = Assert.notNull(model, "model")
     this.logging = Assert.notNull(logging, "logging")
   }
 
-  public collection<TItem>(expression: ModelPropertyHandler<TModel, readonly TItem[]>,
+  collection<TItem>(expression: ModelPropertyHandler<TModel, readonly TItem[]>,
                            handler: (context: VerifyCollectionContext<TItem>) => void): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     if (value == null) {
@@ -27,38 +27,38 @@ export class VerifyModelContext<TModel> {
     return this
   }
 
-  public fail(message: string): VerifyModelContext<TModel> {
+  fail(message: string): VerifyModelContext<TModel> {
     this.logging.appendLine(">> " + message)
     this.logging.errorOccurred()
     return this
   }
 
-  public areEqual<TValue>(expression: ModelPropertyHandler<TModel, TValue>, actual: TValue, extraMessage: string | null = null): VerifyModelContext<TModel> {
+  areEqual<TValue>(expression: ModelPropertyHandler<TModel, TValue>, actual: TValue, extraMessage: string | null = null): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     const suffix = extraMessage != null ? ` (${extraMessage})` : ""
     this.logging.logAssert(value == actual, message, `- areEqual Failed '${value}' != '${actual}' ${suffix}: `)
     return this
   }
 
-  public areNotEqual<TValue>(expression: ModelPropertyHandler<TModel, TValue>, actual: TValue): VerifyModelContext<TModel> {
+  areNotEqual<TValue>(expression: ModelPropertyHandler<TModel, TValue>, actual: TValue): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     this.logging.logAssert(value != actual, message, `- areNotEqual Failed '${value}' == '${actual}': `)
     return this
   }
 
-  public areSame<TValue>(expression: ModelPropertyHandler<TModel, TValue>, actual: TValue): VerifyModelContext<TModel> {
+  areSame<TValue>(expression: ModelPropertyHandler<TModel, TValue>, actual: TValue): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     this.logging.logAssert(value === actual, message, `- areSame Failed '${value}' !== '${actual}': `)
     return this
   }
 
-  public isEmpty<TValue>(expression: ModelPropertyHandler<TModel, TValue>): VerifyModelContext<TModel> {
+  isEmpty<TValue>(expression: ModelPropertyHandler<TModel, TValue>): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     this.logging.logAssert(value == "", message, `- isEmpty Failed '${value}': `)
     return this
   }
 
-  public isNotNull<TSubModel>(expression: ModelPropertyHandler<TModel, TSubModel>,
+  isNotNull<TSubModel>(expression: ModelPropertyHandler<TModel, TSubModel>,
                               subContext: (context: VerifyModelContext<TSubModel>) => void,
                               extraMessage: string | null = null): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
@@ -70,26 +70,26 @@ export class VerifyModelContext<TModel> {
     return this
   }
 
-  public isNull<TValue>(expression: ModelPropertyHandler<TModel, TValue>, extraMessage: string | null = null): VerifyModelContext<TModel> {
+  isNull<TValue>(expression: ModelPropertyHandler<TModel, TValue>, extraMessage: string | null = null): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     const suffix = extraMessage != null ? ` (${extraMessage})` : ""
     this.logging.logAssert(value == null, message, `- isNull Failed '${value}${suffix}': `)
     return this
   }
 
-  public isTrue(expression: ModelPropertyHandler<TModel, boolean | null>): VerifyModelContext<TModel> {
+  isTrue(expression: ModelPropertyHandler<TModel, boolean | null>): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     this.logging.logAssert(value === true, message, `- isTrue Failed '${value}': `)
     return this
   }
 
-  public isFalse(expression: ModelPropertyHandler<TModel, boolean | null>): VerifyModelContext<TModel> {
+  isFalse(expression: ModelPropertyHandler<TModel, boolean | null>): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     this.logging.logAssert(value === true, message, `- isFalse Failed '${value}': `)
     return this
   }
 
-  public isOfType<TExpected>(expression: ModelPropertyHandler<TModel, object>, typeName: string, cast: (value: object) => TExpected, subContext: ((context: VerifyModelContext<TExpected>) => void) | null = null): VerifyModelContext<TModel> {
+  isOfType<TExpected>(expression: ModelPropertyHandler<TModel, object>, typeName: string, cast: (value: object) => TExpected, subContext: ((context: VerifyModelContext<TExpected>) => void) | null = null): VerifyModelContext<TModel> {
     const [value, message] = compileExpression(expression, this.model)
     if (value == null) {
       this.logging.fail(message, " - isOfType is null")
@@ -105,7 +105,7 @@ export class VerifyModelContext<TModel> {
     return this
   }
 
-  public countIs<T>(expression: ModelPropertyHandler<TModel, ReadonlyArray<T>>, expected: number): VerifyModelContext<TModel> {
+  countIs<T>(expression: ModelPropertyHandler<TModel, ReadonlyArray<T>>, expected: number): VerifyModelContext<TModel> {
     const [collection, message] = compileExpression(expression, this.model)
     if (collection == null) {
       this.logging.fail(message, " - countIs is null")
@@ -116,7 +116,7 @@ export class VerifyModelContext<TModel> {
     return this
   }
 
-  public countMapIs<TKey, TValue>(expression: ModelPropertyHandler<TModel, Map<TKey, TValue>>, expected: number): VerifyModelContext<TModel> {
+  countMapIs<TKey, TValue>(expression: ModelPropertyHandler<TModel, Map<TKey, TValue>>, expected: number): VerifyModelContext<TModel> {
     const [collection, message] = compileExpression(expression, this.model)
     if (collection == null) {
       this.logging.fail(message, " - countMapIs is null")
@@ -127,7 +127,7 @@ export class VerifyModelContext<TModel> {
     return this
   }
 
-  public containsKey<TKey, TValue>(expression: ModelPropertyHandler<TModel, Map<TKey, TValue>>, key: TKey, subContext: ((context: VerifyModelContext<TModel>) => void) | null = null) {
+  containsKey<TKey, TValue>(expression: ModelPropertyHandler<TModel, Map<TKey, TValue>>, key: TKey, subContext: ((context: VerifyModelContext<TModel>) => void) | null = null) {
     const [collection, message] = compileExpression(expression, this.model)
     if (collection == null) {
       this.logging.fail(message, " - containsKey collection is null")
@@ -144,7 +144,7 @@ export class VerifyModelContext<TModel> {
     return this
   }
 
-  public valuePropertyAtEquals<TItem, TValue>(expression: ModelPropertyHandler<TModel, ReadonlyArray<TItem>>, index: number, property: (item: TItem) => TValue, expected: TValue) {
+  valuePropertyAtEquals<TItem, TValue>(expression: ModelPropertyHandler<TModel, ReadonlyArray<TItem>>, index: number, property: (item: TItem) => TValue, expected: TValue) {
     const [listValue, itemMessage] = compileExpression(expression, this.model)
     if (listValue == null) {
       this.logging.fail(itemMessage, " - valuePropertyAtEquals listValue is null")
@@ -162,14 +162,14 @@ export class VerifyModelContext<TModel> {
     return this
   }
 
-  public ifNotNull<T>(value: T, subContext: (context: VerifyModelContext<TModel>) => void): VerifyModelContext<TModel> {
+  ifNotNull<T>(value: T, subContext: (context: VerifyModelContext<TModel>) => void): VerifyModelContext<TModel> {
     if (value != null) {
       subContext(this)
     }
     return this
   }
 
-  public forEach<TItem>(items: readonly TItem[], handler: (item: TItem) => void): void {
+  forEach<TItem>(items: readonly TItem[], handler: (item: TItem) => void): void {
     for (const item of items) {
       handler(item)
     }

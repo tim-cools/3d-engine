@@ -7,19 +7,19 @@ export class VerifyCollectionContext<TItem> {
 
   readonly logging: VerifyLogging
 
-  public readonly model: readonly TItem[]
+  readonly model: readonly TItem[]
 
   constructor(collection: readonly TItem[], logging: VerifyLogging) {
     this.model = Assert.notNull(collection, "collection")
     this.logging = Assert.notNull(logging, "logging")
   }
 
-  public length(length: number, extraMessage: string): VerifyCollectionContext<TItem> {
+  length(length: number, extraMessage: string): VerifyCollectionContext<TItem> {
     this.logging.logAssert(this.model.length == length, extraMessage, `- Length Failed '${this.model.length}' != '${length}': `)
     return this
   }
 
-  public valueAt(index: number , verify: (item: TItem) => boolean): VerifyCollectionContext<TItem> {
+  valueAt(index: number , verify: (item: TItem) => boolean): VerifyCollectionContext<TItem> {
 
     const value = index >= 0 && index < this.model.length ? this.model[index] : null
     if (value != null) {
@@ -33,7 +33,7 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
-  public valueModelProperty<TValue>(index: number, expression: ModelPropertyHandler<TItem, TValue>, verify: (item: VerifyModelContext<TValue>) => void): VerifyCollectionContext<TItem> {
+  valueModelProperty<TValue>(index: number, expression: ModelPropertyHandler<TItem, TValue>, verify: (item: VerifyModelContext<TValue>) => void): VerifyCollectionContext<TItem> {
 
     const item = index >= 0 && index < this.model.length ? this.model[index] : null
     const [value, message] = compileExpression(expression, item)
@@ -48,7 +48,7 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
-  public valueModel<TValue>(index: number, verify: (item: VerifyModelContext<TItem>) => void): VerifyCollectionContext<TItem> {
+  valueModel<TValue>(index: number, verify: (item: VerifyModelContext<TItem>) => void): VerifyCollectionContext<TItem> {
 
     const item = index >= 0 && index < this.model.length ? this.model[index] : null
     if (item != null) {
@@ -62,7 +62,7 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
-  public valueModelOfType<TValue>(index: number, typeName: string, cast: (item: TItem) => TValue | null, verify: (item: VerifyModelContext<TValue>) => void): VerifyCollectionContext<TItem> {
+  valueModelOfType<TValue>(index: number, typeName: string, cast: (item: TItem) => TValue | null, verify: (item: VerifyModelContext<TValue>) => void): VerifyCollectionContext<TItem> {
 
     const item = index >= 0 && index < this.model.length ? this.model[index] : null
     if (item == null) {
@@ -81,7 +81,7 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
-  public contains(expected: TItem): VerifyCollectionContext<TItem> {
+  contains(expected: TItem): VerifyCollectionContext<TItem> {
 
     let value = this.model.indexOf(expected) >= 0
     this.logging.logAssert(value, "collection", `- Contains[${expected}] invalid: `, )
@@ -89,7 +89,7 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
-  public any(criteria: (value: TItem) => boolean, extraMessage: string): VerifyCollectionContext<TItem> {
+  any(criteria: (value: TItem) => boolean, extraMessage: string): VerifyCollectionContext<TItem> {
 
     let value = any(this.model, criteria)
 
@@ -98,7 +98,7 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
-  public none(criteria: (value: TItem) => boolean, extraMessage: string): VerifyCollectionContext<TItem> {
+  none(criteria: (value: TItem) => boolean, extraMessage: string): VerifyCollectionContext<TItem> {
 
     let value = !any(this.model, criteria)
     this.logging.logAssert(value, criteria.toString(), `- None invalid$ - (${extraMessage}): `)

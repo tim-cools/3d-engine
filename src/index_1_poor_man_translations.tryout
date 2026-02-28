@@ -8,9 +8,9 @@ canvas.height = window.innerHeight
 
 class Coordinate {
 
-  public readonly x: number
-  public readonly y: number
-  public readonly z: number
+  readonly x: number
+  readonly y: number
+  readonly z: number
 
   constructor(x: number, y: number, z: number) {
     this.x = x
@@ -21,9 +21,9 @@ class Coordinate {
 
 class Orientation {
 
-  public readonly x: number
-  public readonly y: number
-  public readonly z: number
+  readonly x: number
+  readonly y: number
+  readonly z: number
 
   constructor(x: number, y: number, z: number) {
     this.x = x
@@ -34,9 +34,9 @@ class Orientation {
 
 class Size {
 
-  public readonly x: number
-  public readonly y: number
-  public readonly z: number
+  readonly x: number
+  readonly y: number
+  readonly z: number
 
   constructor(x: number, y: number, z: number) {
     this.x = x
@@ -44,7 +44,7 @@ class Size {
     this.z = z
   }
 
-  public transformAdd(coordinate: Coordinate, transformX: boolean, transformY: boolean, transformZ: boolean) {
+  transformAdd(coordinate: Coordinate, transformX: boolean, transformY: boolean, transformZ: boolean) {
     return new Coordinate(
       transformX ? coordinate.x + this.x : coordinate.x,
       transformY ? coordinate.y + this.y : coordinate.y,
@@ -55,8 +55,8 @@ class Size {
 
 class Coordinate2D {
 
-  public readonly x: number
-  public readonly y: number
+  readonly x: number
+  readonly y: number
 
   constructor(x: number, y: number) {
     this.x = x
@@ -66,8 +66,8 @@ class Coordinate2D {
 
 class Line {
 
-  public readonly begin: Coordinate
-  public readonly end: Coordinate
+  readonly begin: Coordinate
+  readonly end: Coordinate
 
   constructor(begin: Coordinate, end: Coordinate) {
     this.begin = begin
@@ -83,8 +83,8 @@ class Line {
 
 class Line2D {
 
-  public readonly begin: Coordinate2D
-  public readonly end: Coordinate2D
+  readonly begin: Coordinate2D
+  readonly end: Coordinate2D
 
   constructor(begin: Coordinate2D, end: Coordinate2D) {
     this.begin = begin
@@ -112,7 +112,7 @@ class Cube implements Shape {
     this.size = size
   }
 
-  public lines(): readonly Line[] {
+  lines(): readonly Line[] {
     return [
       //front
       new Line(
@@ -163,11 +163,11 @@ class World {
 
   private shapes: Shape[] = []
 
-  public update() {
+  update() {
     this.shapes.push(new Cube(new Coordinate(-250, -250, -250), new Size(500, 500, 500)))
   }
 
-  public lines(): readonly Line[] {
+  lines(): readonly Line[] {
     const result: Line[] = []
     for (const shape of this.shapes) {
       for (const line of shape.lines()) {
@@ -180,8 +180,8 @@ class World {
 
 class Axis {
 
-  public readonly horizontal: Line2D
-  public readonly vertical: Line2D
+  readonly horizontal: Line2D
+  readonly vertical: Line2D
 
   constructor(horizontal: Line2D, veritical: Line2D) {
     this.horizontal = horizontal
@@ -191,7 +191,7 @@ class Axis {
 
 class View {
 
-  public translate(coordinate: Coordinate): Coordinate2D {
+  translate(coordinate: Coordinate): Coordinate2D {
 
     const width = canvas.width
     const height = canvas.height
@@ -205,7 +205,7 @@ class View {
     return new Coordinate2D(widthMiddle + u, heightMiddle + v)
   }
 
-  public axis(): Axis {
+  axis(): Axis {
     const width = canvas.width
     const height = canvas.height
     const widthMiddle = width / 2

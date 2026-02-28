@@ -19,23 +19,23 @@ export interface Coordinate
 
 export class Point implements Coordinate {
 
-  public static null: Point = new Point(0, 0, 0)
-  public static middle: Point = new Point(.5, .5, .5)
-  public static one: Point = new Point(1, 1, 1)
+  static null: Point = new Point(0, 0, 0)
+  static middle: Point = new Point(.5, .5, .5)
+  static one: Point = new Point(1, 1, 1)
 
   private xValue: number
   private yValue: number
   private zValue: number
 
-  public get x(): number {
+  get x(): number {
     return this.xValue
   }
 
-  public get y(): number {
+  get y(): number {
     return this.yValue
   }
 
-  public get z(): number {
+  get z(): number {
     return this.zValue
   }
 
@@ -153,7 +153,7 @@ export class TransformablePoint extends Point {
     this.original = point
   }
 
-  public static new(x: number, y: number, z: number) {
+  static new(x: number, y: number, z: number) {
     const coordinate = new Point(x, y, z)
     return new TransformablePoint(coordinate)
   }
@@ -165,8 +165,8 @@ export class TransformablePoint extends Point {
 
 export class Point2D {
 
-  public readonly x: number
-  public readonly y: number
+  readonly x: number
+  readonly y: number
 
   constructor(x: number, y: number) {
     this.x = x
@@ -323,7 +323,7 @@ export class Line {
     this.direction = Vector.fromPoints(point1, point2).normalize()
   }
 
-  public toString() {
+  toString() {
     return `point (${this.point}) direction (${this.direction})`
   }
 
@@ -355,23 +355,23 @@ export class Line {
 
 export class Segment implements FiniteObject {
 
-  public readonly begin: Point
-  public readonly end: Point
+  readonly begin: Point
+  readonly end: Point
 
   constructor(begin: Point, end: Point) {
     this.begin = begin
     this.end = end
   }
 
-  public toString() {
+  toString() {
     return `begin (${this.begin}) end (${this.end})`
   }
 
-  public line() {
+  line() {
     return new Line(this.begin, this.end)
   }
 
-  public vector() {
+  vector() {
     return Vector.fromPoints(this.begin, this.end)
   }
 
@@ -408,7 +408,7 @@ export class Segment implements FiniteObject {
     }
   }
 
-  public length(): number {
+  length(): number {
     return this.begin.distanceToPoint(this.end)
   }
 

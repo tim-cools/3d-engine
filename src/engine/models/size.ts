@@ -4,13 +4,13 @@ import {betweenTolerance, equalsTolerance} from "./equals"
 
 export class Size {
 
-  public static null: Size = new Size(0, 0, 0)
-  public static default: Size = new Size(1, 1, 1)
-  public static half: Size = new Size(.5, .5, .5)
+  static null: Size = new Size(0, 0, 0)
+  static default: Size = new Size(1, 1, 1)
+  static half: Size = new Size(.5, .5, .5)
 
-  public readonly x: number
-  public readonly y: number
-  public readonly z: number
+  readonly x: number
+  readonly y: number
+  readonly z: number
 
   constructor(x: number, y: number, z: number) {
     this.x = x

@@ -17,7 +17,7 @@ export class SphereModel extends Model {
     return new SphereModel(segments, triangles)
   }
 
-  public static createSphere(segmentsNumber: number): {segments: Segment[], triangles: Triangle[]} {
+  static createSphere(segmentsNumber: number): {segments: Segment[], triangles: Triangle[]} {
 
     const pi = Math.PI
     const startTop = new Point(0, -half, 0)
@@ -26,11 +26,11 @@ export class SphereModel extends Model {
     const triangles: Triangle[] = []
     const rotateNext = rotateY(pi / segmentsNumber)
 
-    for (let indexHorizontal = 0 indexHorizontal <= segmentsNumber * 2 indexHorizontal++) {
+    for (let indexHorizontal = 0; indexHorizontal <= segmentsNumber * 2; indexHorizontal++) {
 
       const rotateHorizontal = rotateY(pi / segmentsNumber * indexHorizontal)
       let valueVertical = startTop
-      for (let indexVertical = 0 indexVertical <= segmentsNumber indexVertical++) {
+      for (let indexVertical = 0; indexVertical <= segmentsNumber; indexVertical++) {
 
         const rotateVertical = rotateZ(pi / segmentsNumber * indexVertical)
         const nextVertical = rotateHorizontal(rotateVertical(startTop))

@@ -5,9 +5,9 @@ import {Model} from "./model"
 
 export class SpaceModel implements SpaceObject {
 
-  public readonly model: Model
-  public readonly position: Point
-  public readonly scale: Size
+  readonly model: Model
+  readonly position: Point
+  readonly scale: Size
 
   constructor(model: Model, position: Point, scale: Size) {
     this.model = model

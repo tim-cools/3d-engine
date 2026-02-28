@@ -39,8 +39,8 @@ export function lastOrDefault<TItem>(array: ReadonlyArray<TItem>, where: ((value
 
   if (where == null) return array.length > 0 ? array[array.length - 1] : null
 
-  for (let i = array.length - 1 i >= 0 i--) {
-    const item = array[i]
+  for (let index = array.length - 1; index >= 0; index--) {
+    const item = array[index]
     if (where(item)) return item
   }
   return null
