@@ -1,13 +1,21 @@
-import {Size, Point, rotateY, rotateZ, Model, Segment, Triangle} from "../models"
+import {Point, rotateY, rotateZ, Model, Segment, Triangle, Face} from "../models"
 import {betweenTolerance, equalsTolerance} from "./equals"
 
 const size = 1
 const half = size / 2
 
+function logSegmentes(segments: Segment[]) {
+  const log: string[] = ["---begin>>>"]
+  for (const segment of segments) {
+    log.push(segment.toString())
+  }
+  return log.join("\n") + "<<<end---"
+}
+
 export class SphereModel extends Model {
 
-  private constructor(vertices: readonly Segment[], triangles: readonly Triangle[]) {
-    super(vertices, triangles, SphereModel.contains(), SphereModel.onBoundary())
+  private constructor(segments: readonly Segment[], faces: readonly Face[]) {
+    super(segments, faces, SphereModel.contains(), SphereModel.onBoundary())
   }
 
   static create(segmentsNumber: number): SphereModel {
@@ -26,7 +34,7 @@ export class SphereModel extends Model {
     const triangles: Triangle[] = []
     const rotateNext = rotateY(pi / segmentsNumber)
 
-    for (let indexHorizontal = 0; indexHorizontal <= segmentsNumber * 2; indexHorizontal++) {
+    for (let indexHorizontal = 1; indexHorizontal <= segmentsNumber * 2; indexHorizontal++) {
 
       const rotateHorizontal = rotateY(pi / segmentsNumber * indexHorizontal)
       let valueVertical = startTop
@@ -45,7 +53,6 @@ export class SphereModel extends Model {
           triangles.push(new Triangle(valueVertical, nextVertical, nextHorizontal))
           triangles.push(new Triangle(nextVertical, nextHorizontal, nextVerticalHorizontal))
         }
-
         valueVertical = nextVertical
       }
     }

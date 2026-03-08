@@ -3,9 +3,12 @@ import {
   TransformablePoint,
   Transformer,
   Boundaries,
-  Space, Point
+  Space,
+  Point,
+  Triangle,
+  modelColor, Polygon
 } from "../models"
-import {View2D} from ".."
+import {colorLuminance, View2D} from ".."
 
 export class PathShape implements Shape {
 
@@ -29,7 +32,9 @@ export class PathShape implements Shape {
     const points = this.transform(space)
     const pointsView = view.translateMany(points)
     //console.log(`drawLine: ${point1.x}, ${point1.y}, ${end.x}, ${end.y}`)
-    context.fillStyle = this.color
+    const z = this.zAverage(points)
+    const colorFactor = .4 * z
+    context.fillStyle = colorLuminance(this.color, colorFactor)
     context.lineWidth = 3
     context.beginPath()
     context.moveTo(pointsView[pointsView.length - 1].x, pointsView[pointsView.length - 1].y)
@@ -47,5 +52,21 @@ export class PathShape implements Shape {
 
   private transform(space: Space) {
     return this.points.map(value => space.translate(value))
+  }
+
+  private zAverage(points: Point[]) {
+    let sum = 0;
+    for (const point of points) {
+      sum += point.z
+    }
+    return sum / points.length
+  }
+
+  static fromTriangle(id: string, triangle: Triangle) {
+    return new PathShape(id, modelColor(triangle.type), [triangle.point1, triangle.point2, triangle.point3])
+  }
+
+  static fromPolygon(id: string, polygon: Polygon) {
+    return new PathShape(id, modelColor(polygon.type), polygon.points)
   }
 }

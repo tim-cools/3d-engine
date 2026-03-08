@@ -30,3 +30,4 @@ export class Title extends BaseObject2D {
   update(timeMilliseconds: number): void {
   }
 }
+

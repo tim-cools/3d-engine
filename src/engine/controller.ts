@@ -47,6 +47,12 @@ export class Controller {
       this.view.moveCamera(null, null, 100)
     } else if (event.key == "s") {
       this.world.switchObjectStyle()
+    } else if (event.key == "a") {
+      this.world.toggleAxis()
+    } else if (event.key == "l") {
+      this.world.logShapes()
+    } else if (event.key == "b") {
+      this.world.toggleShowBoundaries()
     }
   }
 

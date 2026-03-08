@@ -1,9 +1,9 @@
-import {Point} from "./basics"
-import {Triangle} from "./triangle"
+import {ModelType, Point} from "./primitives"
 import {add, multiply, transform, Transformer} from "./transformations"
 import {Size} from "./size"
+import {Triangle} from "./face"
 
-export function rectangleTriangles(segments: number, position: Point, sizeHorizontal: number, sizeVertical: number, rotation: Transformer) {
+export function rectangleTriangles(segments: number, position: Point, sizeHorizontal: number, sizeVertical: number, rotation: Transformer, type: ModelType = ModelType.Primary) {
 
   const ratio = 1 / segments
   const result: Triangle[] = []
@@ -27,8 +27,8 @@ export function rectangleTriangles(segments: number, position: Point, sizeHorizo
       const topTransformed = transform(top, transformations)
       const topRightTransformed = transform(topRight, transformations)
 
-      result.push(new Triangle(startTransformed, topTransformed, rightTransformed))
-      result.push(new Triangle(topTransformed, topRightTransformed, rightTransformed))
+      result.push(new Triangle(startTransformed, topTransformed, rightTransformed, type))
+      result.push(new Triangle(topTransformed, topRightTransformed, rightTransformed, type))
     }
   }
   return result

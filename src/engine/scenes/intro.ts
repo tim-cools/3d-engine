@@ -18,6 +18,8 @@ export function intro(scenes: readonly Scene[]): Scene {
     text("Mouse: rotate world (+shift: move camera)"),
     text("Keys 0-9: change scene"),
     text("Keys arrows: move world (+shift: move camera))"),
+    text("a: toggle axis"),
+    text("b: toggle boundaries"),
     text("s: change object style"),
     text(""),
     text("0: intro"),

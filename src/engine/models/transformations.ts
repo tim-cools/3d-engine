@@ -1,6 +1,6 @@
-import {Point, Point2D, Segment} from "./basics"
+import {Point, Point2D, Segment} from "./primitives"
 import {Size} from "./size"
-import {Triangle} from "./triangle"
+import {Triangle} from "./face"
 
 export function dontTransform(value: Point): Point {
   return value
@@ -29,6 +29,7 @@ export interface Space2D {
 
 export interface Space {
   translate(point: Point): Point
+  translateTriangle(subtractTriangle: Triangle): Triangle
 }
 
 export function translateSpaceSegment(value: Segment, space: SpaceObject): Segment {

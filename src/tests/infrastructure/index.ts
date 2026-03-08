@@ -4,4 +4,4 @@ export * from './verifyComparableCollectionContext'
 export * from './verifyContext'
 export * from './verifyLogging'
 export * from './verifyModelContext'
-export * from "./verticesContext"
+export * from "./segmentsContext"

@@ -1,7 +1,8 @@
-import {Point, Segment} from "./basics"
+import {ModelType, Point, Segment} from "./primitives"
 import {Size} from "./size"
+import {nothing, Nothing} from "../nothing"
 
-export function segments(segments: number, begin: Point, end: Point, size: Size | null = null) {
+export function segments(segments: number, begin: Point, end: Point, size: Size | null = null, type: ModelType | Nothing = nothing) {
 
   const xSize = (end.x - begin.x) * (size != null ? size.x : 1)
   const ySize = (end.y - begin.y) * (size != null ? size.y : 1)
@@ -19,7 +20,7 @@ export function segments(segments: number, begin: Point, end: Point, size: Size 
       ySize * ratio * index + beginWorld.y,
       zSize * ratio * index + beginWorld.z)
 
-    result.push(new Segment(start, target))
+    result.push(new Segment(start, target, type))
 
     start = target
   }

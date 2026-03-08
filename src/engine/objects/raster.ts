@@ -22,7 +22,8 @@ export class Raster extends BaseObject3D {
     for (let x = -half; x <= half; x += this.step) {
       for (let y = -half; y <= half; y += this.step) {
         for (let z = -half; z <= half; z += this.step) {
-          const pointShape = new PointShape(`${this.id}.point.${x}.${y}.${z}`, Colors.darkGray, x, y, z, 2)
+          const position = new Point(x, y, z)
+          const pointShape = new PointShape(`${this.id}.point.${x}.${y}.${z}`, Colors.darkGray, position, 2)
           result.push(pointShape)
         }
       }

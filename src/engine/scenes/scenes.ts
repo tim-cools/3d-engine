@@ -1,16 +1,10 @@
-import {Point, Size, SpaceModel} from "../models"
 import {Object} from "../objects"
-import {Colors} from "../colors"
-import {ModelObject} from "../objects/modelObject"
-import {AxisModel} from "../models/axisModel"
 import {Text} from "../nothing"
 import {intro} from "./intro"
-import {layers} from "./layers"
-import {cubesAndSphere} from "./cubesAndSphere"
-import {cube} from "./cube"
-import {sphere} from "./sphere"
-import {subtractSphere} from "./subtractSphere"
+import {subtractTriangle1} from "./subtractTriangle1"
+import {subtractTriangle2} from "./subtractTriangle2"
 import {subtractCube} from "./subtractCube"
+import {subtractSphere} from "./subtractSphere"
 
 export class Scene {
 
@@ -23,21 +17,20 @@ export class Scene {
   }
 }
 
-export function axis() {
-  const model = AxisModel.create(Point.null, Size.default)
-  const spaceModel = new SpaceModel(model, Point.null, Size.default)
-  return new ModelObject("axis", Colors.gray.dark, spaceModel)
-}
-
 export function scenes(): readonly Scene[] {
 
   const scenes = [
-    layers(),
+    /*layers(),
     cube(),
     sphere(),
     cubesAndSphere(),
-    //subtractCube(),
+    subtractCube(),
     subtractSphere(),
+    subtractCubeTest(), */
+    subtractCube(),
+    subtractSphere(),
+    //subtractTriangle1(),
+    subtractTriangle2(),
   ]
 
   return [intro(scenes), ...scenes]

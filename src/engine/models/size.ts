@@ -1,4 +1,4 @@
-import {Point, TransformablePoint} from "./basics"
+import {Point, TransformablePoint} from "./primitives"
 import {multiply, transform} from "./transformations"
 import {betweenTolerance, equalsTolerance} from "./equals"
 
@@ -7,6 +7,7 @@ export class Size {
   static null: Size = new Size(0, 0, 0)
   static default: Size = new Size(1, 1, 1)
   static half: Size = new Size(.5, .5, .5)
+  static quarter: Size = new Size(.25, .25, .25)
 
   readonly x: number
   readonly y: number
@@ -24,9 +25,9 @@ export class Size {
   }
 
   contains(coordinate: Point) {
-    return coordinate.x >= 0 && coordinate.x <= this.x
-        && coordinate.y >= 0 && coordinate.y <= this.y
-        && coordinate.z >= 0 && coordinate.z <= this.z
+    return betweenTolerance(coordinate.x, 0, this.x)
+        && betweenTolerance(coordinate.y, 0, this.y)
+        && betweenTolerance(coordinate.z, 0, this.z)
   }
 
   onBoundary(coordinate: Point) {
@@ -46,8 +47,11 @@ export class Size {
     return new Point(-this.x, -this.y, -this.z)
   }
 
-
   multiply(size: Size): Size {
     return new Size(this.x * size.x, this.y * size.y, this.z * size.z)
+  }
+
+  static single(number: number) {
+    return new Size(number, number, number)
   }
 }

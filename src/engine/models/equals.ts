@@ -1,6 +1,6 @@
-import {Point} from "./basics"
+import {Point} from "./primitives"
 
-export const tolerance = 1E-6
+export const tolerance = 1E-3
 
 export function equalsTolerance(value1: number, value2: number) {
   let difference = Math.abs(value1 - value2)

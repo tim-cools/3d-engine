@@ -2,8 +2,8 @@ export * from './model'
 export * from './cubeModel'
 export * from './subtractModel'
 export * from "./spaceModel"
-export * from "./triangle"
-export * from "./basics"
+export * from "./face"
+export * from "./primitives"
 export * from "./size"
 export * from "./rotation"
 export * from "./transformations"

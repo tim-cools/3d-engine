@@ -1,5 +1,5 @@
 import {Transformer, rotateX, rotateY, rotateZ, transform} from "./transformations"
-import {Point} from "./basics"
+import {Point} from "./primitives"
 import {pi} from "../nothing"
 
 export class Rotation {
@@ -19,7 +19,7 @@ export class Rotation {
   }
 
   constructor() {
-    this.updateTransformation(new Point(1, 0, 0))
+    this.updateTransformation(new Point(0, 1, 0))
   }
 
   rotate(x: number, y: number) {

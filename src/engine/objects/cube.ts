@@ -6,7 +6,7 @@ import {Colors} from "../colors"
 export class Cube extends ModelObject {
 
   constructor(id: string, position: Point, size: Size, style: ObjectStyle = ObjectStyle.Wireframe) {
-    super(id, Colors.primary.darker, Cube.createModel(position, size, style))
+    super(id, Cube.createModel(position, size, style))
   }
 
   update(timeMilliseconds: number): void {

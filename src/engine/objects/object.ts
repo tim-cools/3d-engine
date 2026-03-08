@@ -2,13 +2,14 @@ import {Point, Size, SpaceObject, TransformablePoint} from "../models"
 import {Shape, Shape2D} from "../shapes"
 
 export interface HasObjectStyle {
+  setShowBoundaries(showBoundaries: boolean): void
   setStyle(style: ObjectStyle): void
 }
 
 export enum ObjectStyle {
   Wireframe,
-  WireframeBoundaries,
   Solid,
+  WireframeDebug,
   FacesWireframe
 }
 

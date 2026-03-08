@@ -7,8 +7,8 @@ export class Engine {
   private readonly view: View
   private readonly controller: Controller
   private readonly world: World
+  private readonly canvas: HTMLCanvasElement
   private context: CanvasRenderingContext2D
-  private canvas: HTMLCanvasElement
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas

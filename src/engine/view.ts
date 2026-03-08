@@ -3,8 +3,7 @@ import {Point2D, Point, TransformablePoint} from "./models"
 import {
   subtract,
   moveBy,
-  transform,
-  Transformer
+  transform
 } from "./models"
 
 export interface View2D {
@@ -14,13 +13,12 @@ export interface View2D {
 
 export class View implements View2D {
 
-//  private static defaultRotation: Rotation = new Rotation(Rotation.eight, Rotation.eight,Rotation.eight)
   private static defaultRotation: Rotation = Rotation.default
 
   private rotation: Rotation = View.defaultRotation
 
-  private viewPort: Point = new Point(0, 0, -.75)
-  private camera: Point = TransformablePoint.new(0, 0, -1.5)
+  private viewPort: Point = Point.null
+  private camera: Point = Point.null
 
   get width(): number {
     return this.canvas.width
@@ -34,24 +32,24 @@ export class View implements View2D {
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
+    this.reset()
   }
 
   translate(coordinate: Point): Point2D {
 
-    const widthMiddle = this.width / 2
-    const heightMiddle = this.height / 2
-
     const transformers = [
-      ...this.rotation.transformers,
+      ...this.rotation.transformers,   // is currently [rotateX(-phi), rotateY(-theta)]
       subtract(this.camera)
     ]
 
     const transformed = transform(coordinate, transformers)
-    const u = this.viewPort.z / transformed.z * transformed.x // + e.x
-    const v = this.viewPort.z / transformed.z * transformed.y // + e.y
+    const u = this.viewPort.z / transformed.z * transformed.x
+    const v = this.viewPort.z / transformed.z * transformed.y
 
-    let x = widthMiddle - u * this.height
-    let y = heightMiddle + v * this.height
+    const widthMiddle = this.width / 2
+    const heightMiddle = this.height / 2
+    const x = widthMiddle - u * this.height
+    const y = heightMiddle + v * this.height
 
     return new Point2D(x, y)
   }

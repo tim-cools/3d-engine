@@ -1,11 +1,7 @@
 import {Shape} from "."
-import {
-  TransformablePoint,
-  Transformer,
-  Boundaries,
-  Space, Point
-} from "../models"
+import {Boundaries, modelColor, ModelType, Point, Segment, Space, TransformablePoint, Transformer} from "../models"
 import {View2D} from "../view"
+import {Colors} from "../colors"
 
 export class LineShape implements Shape {
 
@@ -38,6 +34,7 @@ export class LineShape implements Shape {
     const beginView = view.translate(begin)
     const endView = view.translate(end)
     //console.log(`drawLine: ${point1.x}, ${point1.y}, ${end.x}, ${end.y}`)
+    context.fillStyle = "#000"
     context.strokeStyle = this.color
     context.lineWidth = 3
     context.beginPath()
@@ -51,9 +48,27 @@ export class LineShape implements Shape {
     this.end.transform(transformers)
   }
 
+  toString() {
+    return `line '${this.id}' - begin: '${this.begin}' end: '${this.end}' color: '${this.color}'`
+  }
+
   private transform(space: Space) {
     const begin = space.translate(this.begin)
     const end = space.translate(this.end)
     return {begin, end}
+  }
+
+  static fromSegment(id: string, segment: Segment, debugColors: boolean) {
+    const color = this.segmentColor(debugColors, segment)
+    return new LineShape(id, color, new TransformablePoint(segment.begin), new TransformablePoint(segment.end))
+  }
+
+  static fromPoints(id: string, type: ModelType, point1: Point, point2: Point) {
+    const color = modelColor(type)
+    return new LineShape(id, color, new TransformablePoint(point1), new TransformablePoint(point2))
+  }
+
+  private static segmentColor(debugColors: boolean, segment: Segment) {
+    return debugColors ? modelColor(segment.type) : segment.type == ModelType.Utility ? Colors.gray.darker : Colors.primary.middle
   }
 }

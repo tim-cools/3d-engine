@@ -1,20 +1,70 @@
-import {transform, Transformer} from "./transformations"
+import {Space, transform, Transformer} from "./transformations"
 import {equalsTolerance, tolerance} from "./equals"
 import {Size} from "./size"
+import {Colors} from "../colors"
+import {Nothing} from "../nothing"
+import {Lazy} from "../../infrastructure/lazy"
 
-export interface FiniteObject {
+export enum ModelType {
+  Primary,
+  Secondary,
+  Third,
+  Utility,
+  UtilityLight,
+  Disabled,
+}
+
+export function modelColor(modelType: ModelType) {
+  if (modelType == ModelType.Primary) {
+    return Colors.primary.middle
+  } else if (modelType == ModelType.Secondary) {
+    return Colors.secondary.middle
+  } else if (modelType == ModelType.Third) {
+    return Colors.third.middle
+  } else if (modelType == ModelType.Utility) {
+    return Colors.gray.darker
+  } else if (modelType == ModelType.UtilityLight) {
+    return Colors.gray.lighter
+  } else if (modelType == ModelType.Disabled){
+    return Colors.primary.light
+  }
+  throw new Error("Unknown model type: " + ModelType[modelType])
+}
+
+export interface Finite {
   pointLocation(point: Point): number
 }
 
-export interface LinearObject {
-  direction(): Vector
+export interface Linear {
+  direction: Vector
+  isOriented: boolean
 }
 
-export interface Coordinate
-{
+export interface Coordinate {
   readonly x: number
   readonly y: number
   readonly z: number
+}
+
+function angleTo(obj1: Linear, obj2: Linear): number {
+
+  if (obj1.isOriented && obj2.isOriented) {
+    const product = obj1.direction.dot(obj2.direction)
+    if (product > 1) {
+      Math.acos(1)
+    } else if (product < -1) {
+      Math.acos(-1)
+    }
+    return Math.acos(product)
+  }
+
+  // return smallest angle
+  const angle = angleTo(obj1.direction, obj2.direction)
+  if (angle <= Math.PI / 2) {
+    return angle
+  } else {
+    return Math.PI - angle
+  }
 }
 
 export class Point implements Coordinate {
@@ -51,7 +101,7 @@ export class Point implements Coordinate {
   }
 
   toString(): string {
-    return `x: ${this.x}, y: ${this.y}, z: ${this.z}`
+    return `x: ${this.x.toFixed(5)}, y: ${this.y.toFixed(5)}, z: ${this.z.toFixed(5)}`
   }
 
   vector() {
@@ -67,10 +117,10 @@ export class Point implements Coordinate {
 
   distanceToLine(line: Line) {
     const vector = Vector.fromPoints(this, line.point)
-    return vector.cross(line.direction).norm()
+    return vector.cross(line.direction).norm
   }
 
-  belongsTo(object: FiniteObject): boolean {
+  belongsTo(object: Finite): boolean {
     return object.pointLocation(this) >= 0
   }
 
@@ -88,19 +138,23 @@ export class Point implements Coordinate {
 
   projectionToPlane(plane: Plane): Point {
     const delta = Vector.fromPoints(plane.point, this)
-    return this.subtract(plane.normal.multiplyNumber(plane.normal.dot(delta)))
+    return this.subtract(plane.direction.multiplyNumber(plane.direction.dot(delta)))
   }
 
   subtract(value: Coordinate) {
     return new Point(this.x - value.x, this.y - value.y, this.z - value.z)
   }
 
-  add(value: Point) {
+  add(value: Coordinate) {
     return new Point(this.x + value.x, this.y + value.y, this.z + value.z)
   }
 
   multiplySize(size: Size) {
     return new Point(this.x * size.x, this.y * size.y, this.z * size.z)
+  }
+
+  divide(number: number) {
+    return new Point(this.x / number, this.y / number, this.z / number)
   }
 
   belongsToPlane(plane: Plane) {
@@ -109,9 +163,29 @@ export class Point implements Coordinate {
       < tolerance
   }
 
+  belongsToRay(ray: Ray) {
+
+    if (this.equals(ray.point)) {
+      return true;
+    }
+
+    let line = ray.line()
+
+    if (this.distanceToLine(line) > tolerance) {
+      return false
+    }
+
+    const projection = this.projectionToLine(line)
+    const vector = Vector.fromPoints(ray.point, projection)
+
+    return angleTo(vector, ray.direction) < Math.PI / 4;
+
+  }
+
   dot(vector: Vector): number {
     return this.x * vector.x + this.y * vector.y + this.z * vector.z
   }
+
 
   translate(vector: Vector): Point {
     return this.add(vector.point())
@@ -142,6 +216,9 @@ export class Point implements Coordinate {
     return new Point(Math.max(value1.x, value2.x), Math.max(value1.y, value2.y), Math.max(value1.z, value2.z))
   }
 
+  static single(number: number) {
+    return new Point(number, number, number)
+  }
 }
 
 export class TransformablePoint extends Point {
@@ -180,29 +257,93 @@ export class Point2D {
 
 export class Plane {
 
+  private static xyLazy: Lazy<Plane> = new Lazy<Plane>(() => Plane.fromAbcd(0, 0, 1, 0))
+  private static xzLazy: Lazy<Plane> = new Lazy<Plane>(() => Plane.fromAbcd(0, 1, 0, 0))
+  private static yzLazy: Lazy<Plane> = new Lazy<Plane>(() => Plane.fromAbcd(1, 0, 0, 0))
+
+  static get xy(): Plane {
+    return Plane.xyLazy.value
+  }
+
+  static get xz(): Plane {
+    return Plane.xzLazy.value
+  }
+
+  static get yz(): Plane {
+    return Plane.yzLazy.value
+  }
+
   readonly point: Point
-  readonly normal: Vector
+  readonly direction: Vector
 
   readonly a: number
   readonly b: number
   readonly c: number
   readonly d: number
 
-  constructor(point: Point, normal: Vector) {
+  constructor(point: Point, direction: Vector) {
     this.point = point
-    this.normal = normal
-    this.a = normal.x
-    this.b = normal.y
-    this.c = normal.z
-    this.d = -normal.x * point.x - normal.y * point.y - normal.z * point.z
+    this.direction = direction
+    this.a = direction.x
+    this.b = direction.y
+    this.c = direction.z
+    this.d = -direction.x * point.x - direction.y * point.y - direction.z * point.z
+  }
+
+  isParallelTo(plane: Plane) {
+    return this.direction.isParallelTo(plane.direction);
+  }
+
+  asVector() {
+    return new Vector(this.a, this.b, this.c)
+  }
+
+  static fromAbcd(a: number, b: number, c: number, d: number) {
+    let point: Point
+    if (Math.abs(a) > Math.abs(b) && Math.abs(a) > Math.abs(c)) {
+      point = new Point(-d / a, 0, 0);
+    } else if (Math.abs(b) > Math.abs(a) && Math.abs(b) > Math.abs(c)) {
+      point = new Point(0, -d / b, 0);
+    } else {
+      point = new Point(0, 0, -d / c);
+    }
+    const direction = new Vector(a, b, c).direction;
+    return new Plane(point, direction)
+  }
+
+  equals(plane: Plane) {
+
+    if (!this.direction.isParallelTo(plane.direction)) {
+      return false
+    }
+
+    if (this.point.equals(plane.point)) {
+      return true
+    }
+
+    const v = Vector.fromPoints(this.point, plane.point).direction
+    const a = v.dot(plane.direction.direction)
+    return Math.abs(a) <= tolerance
   }
 }
 
-export class Vector implements Coordinate, LinearObject {
+export class Vector implements Coordinate, Linear {
+
+  private normLazy = new Lazy(() => this.getNorm())
+  private directionLazy = new Lazy(() => this.getNormal())
 
   readonly x: number
   readonly y: number
   readonly z: number
+  readonly isOriented = true
+
+  get norm(): number {
+    return this.normLazy.value
+  }
+
+  get direction(): Vector {
+    return this.directionLazy.value
+  }
 
   constructor(x: number, y: number, z: number) {
     this.x = x
@@ -210,31 +351,11 @@ export class Vector implements Coordinate, LinearObject {
     this.z = z
   }
 
-  normalize() {
-    const norm = this.norm()
-    const factor = 1.0 / norm
-    return new Vector(
-      this.x * factor,
-      this.y * factor,
-      this.z * factor)
-  }
-
-  direction() {
-    return this.normalize()
-  }
-
   cross(vector: Vector): Vector {
     const x = this.y * vector.z - this.z * vector.y
     const y = this.z * vector.x - this.x * vector.z
     const z = this.x * vector.y - this.y * vector.x
     return new Vector(x, y, z)
-  }
-
-  norm() {
-    return Math.sqrt(
-      this.x * this.x
-      + this.y * this.y
-      + this.z * this.z)
   }
 
   add(vector: Vector): Vector {
@@ -294,15 +415,30 @@ export class Vector implements Coordinate, LinearObject {
   }
 
   isParallelTo(vector: Vector) {
-    const dotOfDirections = this.normalize().dot(vector.normalize())
+    const dotOfDirections = this.direction.dot(vector.direction)
     return equalsTolerance(dotOfDirections, 1.0)
   }
 
-  isOrthogonalTo(object: LinearObject) {
-    const v = object.direction()
-    const this_norm = this.norm()
-    const v_norm = v.norm()
-    return equalsTolerance(Math.abs(this.dot(v)) / (this_norm * v_norm), 0.0)
+  isOrthogonalTo(object: Linear) {
+    const direction1 = object.direction
+    const this_norm = this.norm
+    const directionNorm = direction1.norm
+    return equalsTolerance(Math.abs(this.dot(direction1)) / (this_norm * directionNorm), 0.0)
+  }
+
+  private getNormal() {
+    const factor = 1.0 / this.norm
+    return new Vector(
+      this.x * factor,
+      this.y * factor,
+      this.z * factor)
+  }
+
+  getNorm() {
+    return Math.sqrt(
+      this.x * this.x
+      + this.y * this.y
+      + this.z * this.z)
   }
 
   static fromPoints(point1: Point, point2: Point) {
@@ -318,9 +454,14 @@ export class Line {
   readonly point: Point
   readonly direction: Vector
 
-  constructor(point1: Point, point2: Point) {
+  constructor(point1: Point, direction: Vector) {
     this.point = point1
-    this.direction = Vector.fromPoints(point1, point2).normalize()
+    this.direction = direction
+  }
+
+  static fromPoints(point1: Point, point2: Point) {
+    const direction = Vector.fromPoints(point1, point2).direction
+    return new Line(point1, direction)
   }
 
   toString() {
@@ -335,7 +476,7 @@ export class Line {
     const s2 = line.direction
 
     const s1CrossS2 = s1.cross(s2)
-    const parallel = s1CrossS2.norm() <= tolerance
+    const parallel = s1CrossS2.norm <= tolerance
 
     if (parallel) {
       return null
@@ -352,23 +493,50 @@ export class Line {
   }
 }
 
+export class Ray implements Linear {
 
-export class Segment implements FiniteObject {
+  readonly point: Point
+  readonly direction: Vector
+  readonly isOriented = false
 
-  readonly begin: Point
-  readonly end: Point
-
-  constructor(begin: Point, end: Point) {
-    this.begin = begin
-    this.end = end
-  }
-
-  toString() {
-    return `begin (${this.begin}) end (${this.end})`
+  constructor(point: Point, direction: Vector) {
+    this.point = point
+    this.direction = direction
   }
 
   line() {
-    return new Line(this.begin, this.end)
+    return new Line(this.point, this.direction)
+  }
+
+  static fromPoints(point: Point, point2: Point) {
+    const direction = Vector.fromPoints(point, point2).direction
+    return new Ray(point, direction)
+  }
+}
+
+export class Segment implements Finite {
+
+  readonly begin: Point
+  readonly end: Point
+  readonly type: ModelType
+  readonly debug: boolean
+
+  constructor(begin: Point, end: Point, type: ModelType | Nothing = ModelType.Primary, debug: boolean = false) {
+    if (begin.equals(end)) {
+      //throw new Error(`Segments with equal begin and end are not supported: begin: ${begin} end: ${end}`)
+    }
+    this.begin = begin
+    this.end = end
+    this.type = type ?? ModelType.Primary
+    this.debug = debug
+  }
+
+  toString() {
+    return `begin (${this.begin}) end (${this.end}) [${ModelType[this.type]}${this.debug ? " debug" : ""}]`
+  }
+
+  line() {
+    return Line.fromPoints(this.begin, this.end)
   }
 
   vector() {
@@ -382,6 +550,37 @@ export class Segment implements FiniteObject {
     } else {
       return -1 // Point is outside
     }
+  }
+
+  length(): number {
+    return this.begin.distanceToPoint(this.end)
+  }
+
+  equals(segment: Segment) {
+    return (this.begin.equals(segment.begin) && this.end.equals(segment.end))
+        || (this.begin.equals(segment.end) && this.end.equals(segment.begin))
+  }
+
+  belongsToLine(line: Line) {
+    return this.begin.belongsToLine(line) && this.end.belongsToLine(line)
+  }
+
+  disabled(debug: boolean = false) {
+    return new Segment(this.begin, this.end, ModelType.Disabled, debug)
+  }
+
+  secondary(debug: boolean = false) {
+    return new Segment(this.begin, this.end, ModelType.Secondary, debug)
+  }
+
+  third(debug: boolean = false) {
+    return new Segment(this.begin, this.end, ModelType.Third, debug)
+  }
+
+  toSpace(space: Space) {
+    let spaceBegin = space.translate(this.begin)
+    let spaceEnd = space.translate(this.end)
+    return new Segment(spaceBegin, spaceEnd, this.type, this.debug)
   }
 
   private axialPointLocation(point: Point) {
@@ -406,18 +605,5 @@ export class Segment implements FiniteObject {
     } else {
       return -2 // Point is outside of the P2
     }
-  }
-
-  length(): number {
-    return this.begin.distanceToPoint(this.end)
-  }
-
-  equals(lineSegment: Segment) {
-    return (this.begin.equals(lineSegment.begin) && this.end.equals(lineSegment.end))
-      || (this.begin.equals(lineSegment.end) && this.end.equals(lineSegment.begin))
-  }
-
-  belongsToLine(line: Line) {
-    return this.begin.belongsToLine(line) && this.end.belongsToLine(line)
   }
 }
