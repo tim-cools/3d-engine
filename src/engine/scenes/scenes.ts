@@ -26,12 +26,12 @@ export class Scene {
 export function scenes(): readonly Scene[] {
 
   const scenes = [
-    sphere(),
-    /*layers(),
+    layers(),
     cube(),
+    sphere(),
     cubesAndSphere(),
     subtractCube(),
-    subtractSphere(), */
+    subtractSphere(),
     subtractTriangle1(),
     subtractTriangle2(),
     subtractTriangle3(),
