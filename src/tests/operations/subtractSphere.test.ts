@@ -6,7 +6,7 @@ import {subtractSphereTestModelAkaDeathStar} from "./subtractSphereTestModelAkaD
 test('subtract sphere from sphere', async () => {
 
   const logger = createSegmentsLogger()
-  const model = subtractSphereTestModelAkaDeathStar(logger)
+  const model = subtractSphereTestModelAkaDeathStar(10, 7, logger)
 
   Verify.model(model, context => context
     .areEqual(model => model.scale, Size.default)

@@ -9,6 +9,7 @@ import {
   SegmentIntersection
 } from "./intersectionResult"
 import {nothing} from "../nothing"
+import {Logger} from "../models/logger"
 
 type TriangleSegmentEntry = {intersection: PointIntersection | SegmentIntersection, segment: Segment}
 
@@ -80,26 +81,28 @@ function middleOfModelToTriangleTetrahedron(middle: Point, subtractTriangle: Tri
   return faceToMiddle
 }
 
-export function intersectsTriangleModel(triangleInMaster: Triangle, model: SpaceModel): SpaceModelIntersectionResult {
+export function intersectsTriangleModel(triangleInMaster: Triangle, model: SpaceModel, log: Logger): SpaceModelIntersectionResult {
 
   const middle = model.middle
   let outsideModel = true
   let intersections: TriangleSegmentIntersection[] = []
 
-  for (const subtractFace of model.faces) {
+  for (let faceIndex = 0; faceIndex < model.faces.length; faceIndex++){
+    const subtractFace = model.faces[faceIndex]
     for (const subtractTriangle of subtractFace.triangles) {
       const faceToMiddle = middleOfModelToTriangleTetrahedron(middle, subtractTriangle)
 
       if (outsideModel) {
         for (const faceTriangle of faceToMiddle) {
-          const intersectionBetweenMiddleOfMiddleAndFace = intersectsTriangles(triangleInMaster, faceTriangle)
-          if (intersectionBetweenMiddleOfMiddleAndFace) {
-            outsideModel = false
-          }
+           const intersectionBetweenMiddleOfMiddleAndFace = intersectsTriangles(triangleInMaster, faceTriangle)
+            if (intersectionBetweenMiddleOfMiddleAndFace) {
+              outsideModel = false
+            }
         }
       }
 
       addSegmentIntersections(subtractTriangle, triangleInMaster, intersections)
+      log.logLine("addSegmentIntersections: " + faceIndex)
     }
   }
 

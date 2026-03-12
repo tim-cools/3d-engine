@@ -6,18 +6,18 @@ import {
   PathBuilder,
   Segment,
   SpaceModel,
-  SubtractLogger,
   translateSpaceTriangle,
   Triangle
 } from "../models"
 import {Nothing, nothing} from "../nothing"
 import {IntersectionType, SegmentIntersection} from "./intersectionResult"
 import {equalsTolerancePoint} from "../models/equals"
-import {containsPointModel, intersectsTriangleModel, SpaceModelIntersectionResult} from "./intersectsTriangleModel"
+import {intersectsTriangleModel, SpaceModelIntersectionResult} from "./intersectsTriangleModel"
+import {Logger} from "../models/logger"
 
 export type SubtractFacesResult = {points: Point[], segments: Segment[], faces: Face[]}
 
-export function subtractFaces(master: Model, subtract: SpaceModel, logging: SubtractLogger): SubtractFacesResult {
+export function subtractFaces(master: Model, subtract: SpaceModel, logging: Logger): SubtractFacesResult {
   const points: Point[] = [master.middle.third(true), subtract.middle.third(true)]
   const faces: Face[] = []
   const segments: Segment[] = []
@@ -26,21 +26,25 @@ export function subtractFaces(master: Model, subtract: SpaceModel, logging: Subt
   return {points: points, segments: segments, faces: faces}
 }
 
-function addMasterFaces(master: Model, subtract: SpaceModel, log: SubtractLogger, faces: Face[], points: Point[], segments: Segment[]) {
+function addMasterFaces(master: Model, subtract: SpaceModel, log: Logger, faces: Face[], points: Point[], segments: Segment[]) {
   log.logLine(`- master.faces: ${master.faces}`)
-  for (const face of master.faces) {
+  for (let index = 0; index < master.faces.length; index++){
+    const face = master.faces[index]
     if (face.faceType != FaceType.Triangle) {
       throw new Error("Face type not yet implemented: " + FaceType[face.faceType])
     }
+    log.logLine("master: " + index)
     addMasterTriangle(subtract, face, log, faces, points, segments)
   }
 }
 
-function addMasterTriangle(subtract: SpaceModel, triangle: Triangle, log: SubtractLogger, faces: Face[], points: Point[], segments: Segment[]) {
+function addMasterTriangle(subtract: SpaceModel, triangle: Triangle, log: Logger, faces: Face[], points: Point[], segments: Segment[]) {
 
-  const intersection = intersectsTriangleModel(triangle, subtract)
+  const intersection = intersectsTriangleModel(triangle, subtract, log)
+  log.logLine("intersectsTriangleModel")
 
   addIntersections(intersection, points, segments)
+  log.logLine("addIntersections")
 
   //console.log(`----- addMasterTriangle - outside model: ${intersection.outsideModel} - hasIntersections: ${intersection.hasIntersections}`)
 
@@ -85,7 +89,7 @@ function addIntersections(intersection: SpaceModelIntersectionResult, points: Po
   }
 }
 
-function addSubtractFaces(subtract: SpaceModel, master: Model, log: SubtractLogger, faces: Face[]) {
+function addSubtractFaces(subtract: SpaceModel, master: Model, log: Logger, faces: Face[]) {
   /*
   log.logLine(`- subtract.faces: ${subtract.model.faces.length}`)
   for (const face of subtract.model.faces) {
@@ -93,7 +97,7 @@ function addSubtractFaces(subtract: SpaceModel, master: Model, log: SubtractLogg
   }
 }
 
-function addSubtractFace(face: Face, subtract: SpaceModel, master: Model, log: SubtractLogger, faces: Face[]) {
+function addSubtractFace(face: Face, subtract: SpaceModel, master: Model, log: Logger, faces: Face[]) {
   log.logLine(`  - subtract.triagles: ${subtract.model.faces.length}`)
   const triangles = face.triangles()
   for (const triangle of triangles) {
@@ -102,7 +106,7 @@ function addSubtractFace(face: Face, subtract: SpaceModel, master: Model, log: S
  */
 }
 
-function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: Model, log: SubtractLogger, faces: Face[]) {
+function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: Model, log: Logger, faces: Face[]) {
 
   const subtractToMaster = translateSpaceTriangle(triangle, subtract)
   const point1InMaster = master.contains(subtractToMaster.point1)

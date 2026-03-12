@@ -5,7 +5,7 @@ import {subtractSphereTestModelAkaDeathStar} from "../../tests/operations/subtra
 export function subtractSphere(): Scene {
 
   function subtractSphere() {
-    const model = subtractSphereTestModelAkaDeathStar()
+    const model = subtractSphereTestModelAkaDeathStar(10, 7)
     return new ModelObject("subtract", model)
   }
 

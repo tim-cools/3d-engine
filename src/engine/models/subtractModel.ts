@@ -6,18 +6,7 @@ import {nothing, Nothing, Text} from "../nothing"
 import {Face} from "./face"
 import {subtractFaces} from "../operations/subtractFaces"
 import {subtractSegments} from "../operations/subtractSegments"
-
-export interface SubtractLogger {
-  logLine(message: Text): void
-  log(segment: Segment, message: Text): void
-}
-
-function noLogger(): SubtractLogger {
-  return {
-    logLine: function (message: Text) {},
-    log: function (segment: Segment, message: Text) {}
-  }
-}
+import {Logger, noLogger} from "./logger"
 
 export class SubtractModel extends Model {
 
@@ -25,13 +14,13 @@ export class SubtractModel extends Model {
     super(points, segments, faces, contains, onBoundary)
   }
 
-  static create(master: Model, subtract: SpaceModel, newPosition: Point, scale: Size, logging: SubtractLogger | Nothing = nothing): SpaceModel {
+  static create(master: Model, subtract: SpaceModel, newPosition: Point, scale: Size, logging: Logger | Nothing = nothing): SpaceModel {
 
-    const log: SubtractLogger = logging ? logging : noLogger()
+    const log: Logger = logging ? logging : noLogger()
     const wireframe = subtractSegments(master, subtract, log)
-    //const {points, segments, faces} = subtractFaces(master, subtract, log)
-    //const result = new SubtractModel(points, [...wireframe, ...segments], faces, this.notSupported, this.notSupported)
-    const result = new SubtractModel([], [...wireframe], [], this.notSupported, this.notSupported)
+    const {points, segments, faces} = subtractFaces(master, subtract, log)
+    const result = new SubtractModel(points, [...wireframe, ...segments], faces, this.notSupported, this.notSupported)
+    //const result = new SubtractModel([], [...wireframe], [], this.notSupported, this.notSupported)
 
     return new SpaceModel(result, newPosition, scale)
   }

@@ -5,13 +5,13 @@ import {
   CanContainPoint,
   Model,
   SpaceModel,
-  SubtractLogger
 } from "../models"
 import {Nothing, nothing} from "../nothing"
 import {intersectionTriangleSegment} from "./intersectionTriangleSegment"
 import {IntersectionType} from "./intersectionResult"
+import {Logger} from "../models/logger"
 
-export function subtractSegments(master: Model, subtract: SpaceModel, logging: SubtractLogger): Segment[] {
+export function subtractSegments(master: Model, subtract: SpaceModel, logging: Logger): Segment[] {
 
   const intersections: Point[] = []
   const segments: Segment[] = []
@@ -21,18 +21,18 @@ export function subtractSegments(master: Model, subtract: SpaceModel, logging: S
   return segments
 }
 
-function addMasterSegments(master: Model, subtract: SpaceModel, log: SubtractLogger, segments: Segment[], intersections: Point[]) {
+function addMasterSegments(master: Model, subtract: SpaceModel, log: Logger, segments: Segment[], intersections: Point[]) {
   log.logLine(`- master.segments: ${master.segments.length}`)
   for (const segment of master.segments) {
     addMasterSegment(subtract, segment, log, segments, intersections)
   }
 }
 
-function addMasterSegment(subtract: SpaceModel, segment: Segment, log: SubtractLogger, segments: Segment[], intersections: Point[]) {
+function addMasterSegment(subtract: SpaceModel, segment: Segment, log: Logger, segments: Segment[], intersections: Point[]) {
   const beginInSubtract = subtract.contains(segment.begin)
   const endInSubtract = subtract.contains(segment.end)
 
-  log.log(segment, `in subtract begin: ${beginInSubtract} end: ${endInSubtract}`)
+  //log.log(segment, `in subtract begin: ${beginInSubtract} end: ${endInSubtract}`)
 
   if (beginInSubtract && endInSubtract) {
     segments.push(segment.disabled(true))
@@ -48,19 +48,19 @@ function addMasterSegment(subtract: SpaceModel, segment: Segment, log: SubtractL
   }
 }
 
-function addSubtractSegments(subtract: SpaceModel, master: Model, log: SubtractLogger, segments: Segment[], intersections: Point[]) {
+function addSubtractSegments(subtract: SpaceModel, master: Model, log: Logger, segments: Segment[], intersections: Point[]) {
   log.logLine(`- subtract.segments: ${subtract.segments.length}`)
   for (const segment of subtract.segments) {
     addSubtractSegment(segment, subtract, master, log, segments, intersections)
   }
 }
 
-function addSubtractSegment(segment: Segment, subtract: SpaceModel, master: Model, log: SubtractLogger, segments: Segment[], intersections: Point[]) {
+function addSubtractSegment(segment: Segment, subtract: SpaceModel, master: Model, log: Logger, segments: Segment[], intersections: Point[]) {
 
   const beginInMaster = master.contains(segment.begin)
   const endInMaster = master.contains(segment.end)
 
-  log.log(segment, `in master begin: ${beginInMaster} end: ${endInMaster}`)
+  //log.log(segment, `in master begin: ${beginInMaster} end: ${endInMaster}`)
 
   if (beginInMaster && endInMaster) {
     if (master.onBoundary(segment.begin)) {
@@ -82,7 +82,7 @@ function addSubtractSegment(segment: Segment, subtract: SpaceModel, master: Mode
   }
 }
 
-function addIntersectionsPath(intersections: Point[], segments: Segment[], log: SubtractLogger) {
+function addIntersectionsPath(intersections: Point[], segments: Segment[], log: Logger) {
   log.logLine(`- intersections: ${intersections.length}`)
   if (intersections.length <= 1) return
   const start = intersections[0]
@@ -156,12 +156,12 @@ function partialIntersectionSegments(segment: Segment, intersectionSegment: Segm
   const {begin, end} = orderBeginAndEnd(segment, intersectionSegment)
   const result: Segment[] = []
   if (segment.begin.equals(begin)) {
-    console.log("partialIntersectionSegments: segment.begin.equals(intersectionSegment.begin)")
+    //console.log("partialIntersectionSegments: segment.begin.equals(intersectionSegment.begin)")
     result.push(new Segment(segment.begin, intersectionSegment.end, ModelType.Disabled, true))
     result.push(new Segment(intersectionSegment.end, segment.end, ModelType.Secondary))
     intersections.push(intersectionSegment.end)
   } else if (segment.end.equals(end)) {
-    console.log("partialIntersectionSegments: segment.end.equals(intersectionSegment.end)")
+    //console.log("partialIntersectionSegments: segment.end.equals(intersectionSegment.end)")
     result.push(new Segment(segment.begin, intersectionSegment.begin, ModelType.Secondary))
     result.push(new Segment(intersectionSegment.begin, segment.end, ModelType.Disabled, true))
     intersections.push(intersectionSegment.begin)

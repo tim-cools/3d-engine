@@ -30,6 +30,4 @@ function verifySphere(segments: number) {
   )
 }
 
-it.each([2, 3, 4, 10, 25, 99, 256])("create sphere '%s'", segments => {
-  verifySphere(segments)
-});
+it.each([2, 3, 4, 10, 25, 99, 256])("create sphere '%s'", verifySphere);
