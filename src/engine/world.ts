@@ -138,7 +138,7 @@ export class World {
   private renderShape3D(shape: Shape, space: Space, result: ObjectRender[]) {
 
     const boundaries = shape.boundaries(space)
-    const z = this.view.toViewCoordinateZ(boundaries.maxZPoint)
+    const z = this.view.toViewCoordinateZ(boundaries.averageZ)
     const view = this.view
 
     this.logZ(shape, z, boundaries)

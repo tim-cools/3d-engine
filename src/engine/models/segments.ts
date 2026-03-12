@@ -2,7 +2,7 @@ import {ModelType, Point, Segment} from "./primitives"
 import {Size} from "./size"
 import {nothing, Nothing} from "../nothing"
 
-export function segments(segments: number, begin: Point, end: Point, size: Size | null = null, type: ModelType | Nothing = nothing) {
+export function segments(segments: number, begin: Point, end: Point, size: Size | null = null, type: ModelType = ModelType.Primary) {
 
   const xSize = (end.x - begin.x) * (size != null ? size.x : 1)
   const ySize = (end.y - begin.y) * (size != null ? size.y : 1)

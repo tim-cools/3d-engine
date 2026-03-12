@@ -20,14 +20,14 @@ export function intro(scenes: readonly Scene[]): Scene {
     text("Keys arrows: move world (+shift: move camera))"),
     text("a: toggle axis"),
     text("b: toggle boundaries"),
-    text("s: change object style"),
+    text("s: change render style (wireframe, faces, debug, faces wires...)"),
     text(""),
     text("0: intro"),
   ]
 
-  for (let i = 0; i < scenes.length; i++) {
-    const scene = scenes[i]
-    texts.push(text(`${(i + 1).toString()}: ${scene.title}`))
+  for (let index = 0; index < scenes.length; index++) {
+    const scene = scenes[index]
+    texts.push(text(`${(index + 1).toString()}: ${scene.title}`))
   }
 
   return new Scene("Intro", texts)

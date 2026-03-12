@@ -6,7 +6,7 @@ export function subtractCube(): Scene {
 
   function subtractCube() {
     const subtractPosition = new Point(.5, .5, .5)
-    const master = CubeModel.create(2)
+    const master = CubeModel.create(1)
     const subtract = new SpaceModel(CubeModel.create(4), subtractPosition, Size.default)
 
     const size = new Size(.5, .5, .5)

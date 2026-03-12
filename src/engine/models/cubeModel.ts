@@ -20,7 +20,7 @@ export class CubeModel extends Model {
   private static rightTopBack     = new Point(1, 1, 1)
 
   private constructor(boundaries: Boundaries, segments: readonly Segment[], faces: readonly Face[]) {
-    super(segments, faces, CubeModel.contains(boundaries), CubeModel.onBoundary(boundaries))
+    super([], segments, faces, CubeModel.contains(boundaries), CubeModel.onBoundary(boundaries))
   }
 
   static create(segmentsNumber: number, start: Point = Point.null, end: Point = Point.one, type: ModelType = ModelType.Primary) {

@@ -1,6 +1,5 @@
 import {Line, Point, Segment} from "../models"
 import {
-  Intersection,
   SegmentIntersection,
   NoIntersection,
   noIntersection,
@@ -12,11 +11,7 @@ import {equalsTolerance, equalsTolerancePoint, greaterTolerance, smallerToleranc
 export function intersectionSegments(lineSegment1: Segment, lineSegment2: Segment, sourceSegments: readonly Segment[]): SegmentIntersection | PointIntersection | NoIntersection {
 
   if (lineSegment1.equals(lineSegment2)) {
-    return {
-      type: Intersection.Segment,
-      segment: lineSegment1,
-      sourceSegments: [lineSegment1]
-    }
+    return new SegmentIntersection(lineSegment1,[lineSegment1])
   }
 
   const line1 = lineSegment1.line()
@@ -44,10 +39,10 @@ export function intersectionSegments(lineSegment1: Segment, lineSegment2: Segmen
 
     // One common point
     if (equalsTolerance(Math.max(x3, x4), x1)) {
-      return {type: Intersection.Point, point: cs.toGlobal(new Point(x1, 0, 0))}
+      return new PointIntersection(cs.toGlobal(new Point(x1, 0, 0)))
     }
     if (equalsTolerance(Math.min(x3, x4), x2)) {
-      return {type: Intersection.Point, point: cs.toGlobal(new Point(x2, 0, 0))}
+      return new PointIntersection(cs.toGlobal(new Point(x2, 0, 0)))
     }
 
     // Overlapping segments
@@ -57,22 +52,14 @@ export function intersectionSegments(lineSegment1: Segment, lineSegment2: Segmen
     const overlapEnd = cs.toGlobal(new Point(overlapX2, 0, 0))
 
     if (equalsTolerancePoint(overlapEnd, lineSegment1.begin) || equalsTolerancePoint(overlapBegin, lineSegment1.end)) {
-      return {
-        type: Intersection.Segment,
-        segment: new Segment(overlapEnd, overlapBegin),
-        sourceSegments: sourceSegments
-      }
+      return new SegmentIntersection(new Segment(overlapEnd, overlapBegin), sourceSegments)
     } else {
-      return {
-        type: Intersection.Segment,
-        segment: new Segment(overlapBegin, overlapEnd),
-        sourceSegments: sourceSegments
-      }
+      return new SegmentIntersection(new Segment(overlapBegin, overlapEnd), sourceSegments)
     }
   } else {
     const perpendicular = line1.perpendicularTo(line2)
     if (perpendicular != null && perpendicular.belongsTo(lineSegment1) && perpendicular.belongsTo(lineSegment2)) {
-      return {type: Intersection.Point, point: perpendicular}
+      return new PointIntersection(perpendicular)
     } else {
       return noIntersection
     }
@@ -82,12 +69,12 @@ export function intersectionSegments(lineSegment1: Segment, lineSegment2: Segmen
 export function intersectionSegmentLine(segment: Segment, line: Line): PointIntersection | SegmentIntersection | NoIntersection {
 
   if (segment.belongsToLine(line)) {
-    return {type: Intersection.Segment, segment: segment, sourceSegments: []}
+    return new SegmentIntersection(segment, [])
   }
 
   const point = line.perpendicularTo(segment.line());
   if (point != null && point.belongsTo(segment) && point.belongsToLine(line)) {
-    return {type: Intersection.Point, point: point};
+    return new PointIntersection(point)
   } else {
     return noIntersection;
   }

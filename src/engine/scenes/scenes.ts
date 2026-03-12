@@ -3,8 +3,14 @@ import {Text} from "../nothing"
 import {intro} from "./intro"
 import {subtractTriangle1} from "./subtractTriangle1"
 import {subtractTriangle2} from "./subtractTriangle2"
+import {subtractTriangle3} from "./subtractTriangle3"
 import {subtractCube} from "./subtractCube"
 import {subtractSphere} from "./subtractSphere"
+import {layers} from "./layers"
+import {cube} from "./cube"
+import {sphere} from "./sphere"
+import {cubesAndSphere} from "./cubesAndSphere"
+import {subtractTriangle4} from "./subtractTriangle4"
 
 export class Scene {
 
@@ -20,17 +26,16 @@ export class Scene {
 export function scenes(): readonly Scene[] {
 
   const scenes = [
+    sphere(),
     /*layers(),
     cube(),
-    sphere(),
     cubesAndSphere(),
     subtractCube(),
-    subtractSphere(),
-    subtractCubeTest(), */
-    subtractCube(),
-    subtractSphere(),
-    //subtractTriangle1(),
+    subtractSphere(), */
+    subtractTriangle1(),
     subtractTriangle2(),
+    subtractTriangle3(),
+    subtractTriangle4(),
   ]
 
   return [intro(scenes), ...scenes]

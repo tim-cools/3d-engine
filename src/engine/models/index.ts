@@ -3,8 +3,11 @@ export * from './cubeModel'
 export * from './subtractModel'
 export * from "./spaceModel"
 export * from "./face"
+export * from "./faceType"
 export * from "./primitives"
 export * from "./size"
 export * from "./rotation"
 export * from "./transformations"
 export * from "./boundaries"
+export * from "./triangle"
+export * from "./path"

@@ -4,18 +4,10 @@ import {betweenTolerance, equalsTolerance} from "./equals"
 const size = 1
 const half = size / 2
 
-function logSegmentes(segments: Segment[]) {
-  const log: string[] = ["---begin>>>"]
-  for (const segment of segments) {
-    log.push(segment.toString())
-  }
-  return log.join("\n") + "<<<end---"
-}
-
 export class SphereModel extends Model {
 
   private constructor(segments: readonly Segment[], faces: readonly Face[]) {
-    super(segments, faces, SphereModel.contains(), SphereModel.onBoundary())
+    super([], segments, faces, SphereModel.contains(), SphereModel.onBoundary())
   }
 
   static create(segmentsNumber: number): SphereModel {
@@ -38,21 +30,26 @@ export class SphereModel extends Model {
 
       const rotateHorizontal = rotateY(pi / segmentsNumber * indexHorizontal)
       let valueVertical = startTop
-      for (let indexVertical = 0; indexVertical <= segmentsNumber; indexVertical++) {
+
+      for (let indexVertical = 1; indexVertical <= segmentsNumber; indexVertical++) {
 
         const rotateVertical = rotateZ(pi / segmentsNumber * indexVertical)
         const nextVertical = rotateHorizontal(rotateVertical(startTop))
 
         segments.push(new Segment(valueVertical, nextVertical))
 
-        if (indexVertical > 0 && indexVertical <= segmentsNumber) {
-          const nextHorizontal = rotateNext(valueVertical)
-          segments.push(new Segment(valueVertical, nextHorizontal))
+        const nextHorizontal = rotateNext(valueVertical)
+        const nextVerticalHorizontal = rotateNext(nextVertical)
 
-          const nextVerticalHorizontal = rotateNext(nextVertical)
+        if (indexVertical >= 2) {
+          segments.push(new Segment(valueVertical, nextHorizontal))
+          //first and last row have only one triangle, all other rows two
           triangles.push(new Triangle(valueVertical, nextVertical, nextHorizontal))
+        }
+        if (indexVertical < segmentsNumber) {
           triangles.push(new Triangle(nextVertical, nextHorizontal, nextVerticalHorizontal))
         }
+
         valueVertical = nextVertical
       }
     }

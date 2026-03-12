@@ -23,7 +23,6 @@ export class Controller {
   }
 
   private keyPress(event: KeyboardEvent) {
-    console.log("keyPress: " + event.key)
     if (event.key >= "0" && event.key <= "9") {
       this.world.setScene(parseInt(event.key))
       this.view.reset()
@@ -31,14 +30,12 @@ export class Controller {
   }
 
   private keyUp(event: KeyboardEvent) {
-    console.log("keyUp: " + event.key)
     if (event.key == "Shift") {
       this.shiftDown = false
     }
   }
 
   private keyDown(event: KeyboardEvent) {
-    console.log("keyDown: " + event.key)
     if (event.key == "Shift") {
       this.shiftDown = true
     } else if (event.key == "ArrowDown") {

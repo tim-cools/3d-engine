@@ -2,7 +2,7 @@
 import {Plane, Point, Ray, Segment, Triangle, Vector} from "../models"
 import {tolerance} from "../models/equals"
 import {
-  Intersection,
+  IntersectionType,
   NoIntersection,
   noIntersection,
   PointIntersection,
@@ -41,7 +41,7 @@ export function intersectionTriangleRay(triangle: Triangle, ray: Ray): PointInte
 
       for (let edge of edges) {
         const inter = intersectionRaySegment(ray, edge)
-        if (inter.type == Intersection.Point && intersections.length < 2) {
+        if (inter.type == IntersectionType.Point && intersections.length < 2) {
           // Check that the point is actually inside the triangle
           if (inter.point.belongsToRay(ray)) {
             intersections.push(inter.point);
@@ -51,14 +51,14 @@ export function intersectionTriangleRay(triangle: Triangle, ray: Ray): PointInte
 
       if (intersections.length == 2) {
         if (intersections[0] == intersections[1]) {
-          return {type: Intersection.Point, point: intersections[0]}
+          return new PointIntersection(intersections[0])
         }
-        return {type: Intersection.Segment, segment: new Segment(intersections[0], intersections[1]), sourceSegments: []};
+        return new SegmentIntersection(new Segment(intersections[0], intersections[1]), [])
       } else if (intersections.length == 1) {
         if (intersections[0] == ray.point) {
-          return {type: Intersection.Point, point: intersections[0]}
-        }else {
-          return {type: Intersection.Segment, segment: new Segment(ray.point, intersections[0]), sourceSegments: []};
+          return new PointIntersection(intersections[0])
+        } else {
+          return new SegmentIntersection(new Segment(ray.point, intersections[0]), [])
         }
       } else {
         return noIntersection;
@@ -85,7 +85,7 @@ export function intersectionTriangleRay(triangle: Triangle, ray: Ray): PointInte
   if (t > tolerance) {
     // intersectionPoint = rayOrigin + t * rayVector
     const intersectionPoint = ray.point.add(ray.direction.multiplyNumber(t));
-    return {type: Intersection.Point, point: intersectionPoint}
+    return new PointIntersection(intersectionPoint)
   } else {
     return noIntersection;
   }
@@ -95,9 +95,9 @@ function intersectionRaySegment(ray: Ray, segment: Segment): PointIntersection |
 
   const intersection = intersectionSegmentLine(segment, ray.line());
 
-  if (intersection.type == Intersection.None) {
+  if (intersection.type == IntersectionType.None) {
     return noIntersection;
-  } else if (intersection.type == Intersection.Point) {
+  } else if (intersection.type == IntersectionType.Point) {
     if (intersection.point.belongsToRay(ray)) {
       return intersection;
     }
@@ -109,17 +109,17 @@ function intersectionRaySegment(ray: Ray, segment: Segment): PointIntersection |
     return intersection;
   } else if (intersectionSegment.begin.belongsToRay(ray)) {
     if (intersectionSegment.begin.equals(ray.point)) {
-      return {type: Intersection.Point, point: ray.point};
+      return new PointIntersection(ray.point);
     } else {
-      return {type: Intersection.Point, point: intersectionSegment.begin};
+      return new PointIntersection(intersectionSegment.begin)
     }
   } else if (intersectionSegment.end.belongsToRay(ray)) {
     if (intersectionSegment.end.equals(ray.point)) {
-      return {type: Intersection.Point, point: ray.point};
+      return new PointIntersection(ray.point)
     } else {
-      return {type: Intersection.Point, point: intersectionSegment.end};
+      return new PointIntersection(intersectionSegment.end)
     }
   }
 
-  return noIntersection;
+  return noIntersection
 }

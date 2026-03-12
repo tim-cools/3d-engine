@@ -1,12 +1,12 @@
 import {Model} from "./model"
 import {ModelType, Point, Segment} from "./primitives"
 import {any} from "../../infrastructure"
-import {Triangle} from "./face"
+import {Triangle} from "./triangle"
 
 export class TriangleModel extends Model {
 
   private constructor(segments: readonly Segment[], triangles: Triangle[]) {
-    super(segments, triangles, TriangleModel.contains(triangles), TriangleModel.onBoundary(segments))
+    super([], segments, triangles, TriangleModel.contains(triangles), TriangleModel.onBoundary(segments))
   }
 
   static create(point1: Point, point2: Point, point3: Point, type: ModelType = ModelType.Primary): TriangleModel {
@@ -17,6 +17,17 @@ export class TriangleModel extends Model {
       new Segment(point3, point1, type),
     ]
     const triangle = new Triangle(point1, point2, point3, type)
+
+    return new TriangleModel(segments, [triangle])
+  }
+
+  static createFromTriangle(triangle: Triangle): TriangleModel {
+
+    const segments = [
+      new Segment(triangle.point1, triangle.point2, triangle.type),
+      new Segment(triangle.point2, triangle.point3, triangle.type),
+      new Segment(triangle.point3, triangle.point1, triangle.type),
+    ]
 
     return new TriangleModel(segments, [triangle])
   }

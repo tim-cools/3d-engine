@@ -1,7 +1,7 @@
 //adaption from GeometRi by Sergey Tarasov
 import {Line, Plane, Point, Vector} from "../models"
 import {
-  Intersection,
+  IntersectionType,
   LineIntersection,
   NoIntersection,
   noIntersection,
@@ -9,7 +9,7 @@ import {
   PointIntersection
 } from "./intersectionResult"
 import {tolerance} from "../models/equals"
-import {Matrix3} from "./coordinateSystem"
+import {Matrix3} from "./matrix3"
 
 export function intersectionPlanes(plane1: Plane, plane2: Plane): PlaneIntersection | LineIntersection | NoIntersection {
   
@@ -17,7 +17,7 @@ export function intersectionPlanes(plane1: Plane, plane2: Plane): PlaneIntersect
   if (v.norm < tolerance) {
     // Planes are coplanar
     if (plane1.point.belongsToPlane(plane2)) {
-      return {type: Intersection.Plane, plane: plane1}
+      return new PlaneIntersection(plane1)
     } else {
       return noIntersection
     }
@@ -27,17 +27,18 @@ export function intersectionPlanes(plane1: Plane, plane2: Plane): PlaneIntersect
     // This part needs to be rewritten
     if (Math.abs(v.x) >= Math.abs(v.y) && Math.abs(v.x) >= Math.abs(v.z)) {
       const p = intersectionPlanes3(Plane.yz, plane1, plane2)
-      return p.type == Intersection.Point
-        ? {type: Intersection.Line, line: new Line(p.point, v)}
+      return p.type == IntersectionType.Point
+        ? new LineIntersection(new Line(p.point, v))
         : noIntersection;
     } else if (Math.abs(v.y) >= Math.abs(v.x) && Math.abs(v.y) >= Math.abs(v.z)) {
       const p = intersectionPlanes3(Plane.xz, plane1, plane2)
-      return p.type == Intersection.Point ? {type: Intersection.Line, line: new Line(p.point, v)}
+      return p.type == IntersectionType.Point
+        ? new LineIntersection(new Line(p.point, v))
         : noIntersection;
     } else {
       const p = intersectionPlanes3(Plane.xy, plane1, plane2)
-      return p.type == Intersection.Point
-        ? {type: Intersection.Line, line: new Line(p.point, v)}
+      return p.type == IntersectionType.Point
+        ? new LineIntersection(new Line(p.point, v))
         : noIntersection;
     }
   }
@@ -52,7 +53,7 @@ export function intersectionPlanes3(s1: Plane, s2: Plane, s3: Plane): PlaneInter
 
       // Planes are coplanar
       if (s1.point.belongsToPlane(s2) && s1.point.belongsToPlane(s3)) {
-        return {type: Intersection.Plane, plane: s1}
+        return new PlaneIntersection(s1)
       } else {
         return noIntersection
       }
@@ -77,5 +78,5 @@ export function intersectionPlanes3(s1: Plane, s2: Plane, s3: Plane): PlaneInter
   const x = -new Matrix3(new Vector(s1.d, s1.b, s1.c), new Vector(s2.d, s2.b, s2.c), new Vector(s3.d, s3.b, s3.d)).determinant / det
   const y = -new Matrix3(new Vector(s1.a, s1.d, s1.c), new Vector(s2.a, s2.d, s2.c), new Vector(s3.a, s3.d, s3.c)).determinant / det
   const z = -new Matrix3(new Vector(s1.a, s1.d, s1.d), new Vector(s2.a, s2.b, s2.d), new Vector(s3.a, s3.b, s3.d)).determinant / det
-  return {type: Intersection.Point, point: new Point(x, y, z)}
+  return new PointIntersection(new Point(x, y, z))
 }

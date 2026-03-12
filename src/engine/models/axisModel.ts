@@ -5,7 +5,7 @@ import {Point, Segment, ModelType} from "./primitives"
 export class AxisModel extends Model {
 
   private constructor(segments: readonly Segment[]) {
-    super(segments, [], AxisModel.contains(), AxisModel.onBoundary())
+    super([], segments, [], AxisModel.contains(), AxisModel.onBoundary())
   }
 
   static create() {

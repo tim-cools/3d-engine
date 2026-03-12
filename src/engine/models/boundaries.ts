@@ -5,9 +5,11 @@ import {Lazy} from "../../infrastructure/lazy"
 import {Space} from "./transformations"
 
 interface HandlerState {
-  min: Point,
-  max: Point,
-  maxZPoint: Point
+  min: Point
+  max: Point
+  maxZ: Point
+  averageZ: Point
+  counter: number
 }
 
 export class Boundaries {
@@ -16,7 +18,8 @@ export class Boundaries {
 
   readonly min: Point
   readonly max: Point
-  readonly maxZPoint: Point
+  readonly maxZ: Point
+  readonly averageZ: Point
 
   get leftBottomFront(): Point {
     return new Point(this.min.x, this.min.y, this.min.z)
@@ -54,10 +57,11 @@ export class Boundaries {
     return this.middleLazy.value
   }
 
-  private constructor(min: Point, max: Point, maxZPoint: Point) {
+  private constructor(min: Point, max: Point, maxZ: Point, averageZ: Point) {
     this.min = min
     this.max = max
-    this.maxZPoint = maxZPoint
+    this.maxZ = maxZ
+    this.averageZ = averageZ
   }
 
   static fromItems(...points: Point[]): Boundaries {
@@ -74,13 +78,15 @@ export class Boundaries {
 
     function pointHandler(point: Point) {
       if (state == nothing) {
-        state = {min: point, max: point, maxZPoint: point}
+        state = {min: point, max: point, maxZ: point, averageZ: point, counter: 1 }
       } else {
         state.min = Point.min(state.min, point)
         state.max = Point.max(state.max, point)
-        if (point.z > state.maxZPoint.z) {
-          state.maxZPoint = point
+        if (point.z > state.maxZ.z) {
+          state.maxZ = point
         }
+        state.averageZ = state.averageZ.add(point)
+        state.counter += 1
       }
     }
 
@@ -90,8 +96,8 @@ export class Boundaries {
 
     const stateValue: HandlerState | Nothing = state == nothing ? nothing : state as HandlerState
     return stateValue == nothing
-      ? new Boundaries(Point.null, Point.null, Point.null)
-      : new Boundaries(stateValue.min, stateValue.max, stateValue.maxZPoint)
+      ? new Boundaries(Point.null, Point.null, Point.null, Point.null)
+      : new Boundaries(stateValue.min, stateValue.max, stateValue.maxZ, stateValue.averageZ.divide(stateValue.counter))
   }
 
   toString() {
@@ -101,8 +107,9 @@ export class Boundaries {
   toSpace(space: Space): Boundaries {
     const spaceMin = space.translate(this.min)
     const spaceMax = space.translate(this.max)
-    const spaceMaxZPoint = space.translate(this.maxZPoint)
-    return new Boundaries(spaceMin, spaceMax, spaceMaxZPoint)
+    const spaceMaxZ = space.translate(this.maxZ)
+    const spaceAverageZ = space.translate(this.averageZ)
+    return new Boundaries(spaceMin, spaceMax, spaceMaxZ, spaceAverageZ)
   }
 
   contains(coordinate: Point) {

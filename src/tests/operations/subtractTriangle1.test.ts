@@ -1,10 +1,10 @@
 import {Point} from "../../engine/models"
 import {Verify} from "../infrastructure"
 import {ModelContext} from "../infrastructure/modelContext"
-import {subtractTriangleTestCases} from "./subtractTriangleTestCases"
+import {subtractTriangleTestCases1} from "./subtractTriangleTestCases1"
 
 test('subtract triangle 1 intersect segment bc', async () => {
-  const result = subtractTriangleTestCases.intersect1_segmentBC()
+  const result = subtractTriangleTestCases1.intersect1_segmentBC()
   const points = [
     new Point(0, 0, 0),
     new Point(.5, 0, 0),
@@ -19,7 +19,7 @@ test('subtract triangle 1 intersect segment bc', async () => {
 })
 
 test('subtract triangle 2 intersect 2 point ca', async () => {
-  const result = subtractTriangleTestCases.intersect2_2pointCA()
+  const result = subtractTriangleTestCases1.intersect2_2pointCA()
   const points = [
     new Point(0, 0, 0),
     new Point(.5, 0, 0),
@@ -36,7 +36,7 @@ test('subtract triangle 2 intersect 2 point ca', async () => {
 })
 
 test('subtract triangle 3 intersect 1 point ca', async () => {
-  const result = subtractTriangleTestCases.intersect3_1pointCA()
+  const result = subtractTriangleTestCases1.intersect3_1pointCA()
   const points = [
     new Point(0, 0, 0),
     new Point(1, 0, 0),
@@ -50,7 +50,7 @@ test('subtract triangle 3 intersect 1 point ca', async () => {
 })
 
 test('subtract triangle 4 no intersect', async () => {
-  const result = subtractTriangleTestCases.intersect4_no()
+  const result = subtractTriangleTestCases1.intersect4_no()
   const points = [
     new Point(0, 0, 0),
     new Point(1, 0, 0),
@@ -65,7 +65,7 @@ test('subtract triangle 4 no intersect', async () => {
 })
 
 test('subtract triangle 5 intersect 1 point bc - ca', async () => {
-  const result = subtractTriangleTestCases.intersect5_1pointBC_CA()
+  const result = subtractTriangleTestCases1.intersect5_1pointBC_CA()
 
   const points = [
     new Point(0, 0, 0),
@@ -81,7 +81,7 @@ test('subtract triangle 5 intersect 1 point bc - ca', async () => {
 })
 
 test('subtract triangle 6 intersect 1 point bc segment ca', async () => {
-  const result = subtractTriangleTestCases.intersect6_1pointBCSegmentCA()
+  const result = subtractTriangleTestCases1.intersect6_1pointBCSegmentCA()
   const points = [
     new Point(0, 0, 0),
     new Point(.5, 0, 0),
@@ -96,7 +96,7 @@ test('subtract triangle 6 intersect 1 point bc segment ca', async () => {
 })
 
 test('subtract triangle 7 intersect 2 point bc', async () => {
-  const result = subtractTriangleTestCases.intersect7_2pointsBC()
+  const result = subtractTriangleTestCases1.intersect7_2pointsBC()
   const points = [
     new Point(0, 0, 0),
     new Point(1, 0, 0),
@@ -113,7 +113,7 @@ test('subtract triangle 7 intersect 2 point bc', async () => {
 })
 
 test('subtract triangle 8 intersect 1 point bc', async () => {
-  const result = subtractTriangleTestCases.intersect8_1pointBC()
+  const result = subtractTriangleTestCases1.intersect8_1pointBC()
   const points = [
     new Point(0, 0, 0),
     new Point(1, 0, 0),
@@ -127,7 +127,7 @@ test('subtract triangle 8 intersect 1 point bc', async () => {
 })
 
 test('subtract triangle 9 no intersect above', async () => {
-  const result = subtractTriangleTestCases.intersect9_noTriangleAbove()
+  const result = subtractTriangleTestCases1.intersect9_noTriangleAbove()
   const points = [
     new Point(0, 0, 0),
     new Point(1, 0, 0),

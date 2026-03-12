@@ -2,13 +2,15 @@ import {Point, Segment} from "./primitives"
 import {Size} from "./size"
 import {invertSpace, Space, SpaceObject, translateSpace, translateSpaceTriangle} from "./transformations"
 import {CanContainPoint, Model} from "./model"
-import {Face, Triangle} from "./face"
+import {Face} from "./face"
 import {Lazy} from "../../infrastructure/lazy"
 import {Boundaries} from "./boundaries"
+import {Triangle} from "./triangle"
 
 export class SpaceModel implements Space, SpaceObject, CanContainPoint {
 
-  private readonly middleLazy = new Lazy<Point>(() => this.translate(this.model.boundaries.middle))
+  private readonly middleLazy = new Lazy<Point>(() => this.translate(this.model.middle))
+  private readonly pointsLazy = new Lazy<readonly Point[]>(() => this.translatePoints())
   private readonly faceLazy = new Lazy<readonly Face[]>(() => this.translateFaces())
   private readonly segmentsLazy = new Lazy<readonly Segment[]>(() => this.translateSegments())
   private readonly boundariesLazy = new Lazy<Boundaries>(() => this.translateBoundaries())
@@ -19,6 +21,10 @@ export class SpaceModel implements Space, SpaceObject, CanContainPoint {
 
   get middle(): Point {
     return this.middleLazy.value
+  }
+
+  get points(): readonly Point[] {
+    return this.pointsLazy.value
   }
 
   get faces(): readonly Face[] {
@@ -32,7 +38,6 @@ export class SpaceModel implements Space, SpaceObject, CanContainPoint {
   get boundaries(): Boundaries {
     return this.boundariesLazy.value
   }
-
 
   constructor(model: Model, position: Point, scale: Size) {
     this.model = model
@@ -51,6 +56,10 @@ export class SpaceModel implements Space, SpaceObject, CanContainPoint {
 
   translateTriangle(triangle: Triangle): Triangle {
     return translateSpaceTriangle(triangle, this)
+  }
+
+  private translatePoints(): readonly Point[] {
+    return this.model.points.map(point => point.toSpace(this))
   }
 
   private translateFaces(): readonly Face[] {

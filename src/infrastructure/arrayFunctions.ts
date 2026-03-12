@@ -5,6 +5,12 @@ export function any<TItem>(array: ReadonlyArray<TItem>, where: ((value: TItem) =
   return false
 }
 
+export function pushMany<TItem>(array: Array<TItem>, values: readonly TItem[]): void {
+  for (const value of values) {
+    array.push(value)
+  }
+}
+
 export function firstOrDefault<TItem>(array: ReadonlyArray<TItem>, where: ((value: TItem) => boolean) | null = null): TItem | null {
 
   if (where == null) return array.length > 0 ? array[0] : null

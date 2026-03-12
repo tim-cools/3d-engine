@@ -1,7 +1,8 @@
 import {ModelPropertyHandler, VerifyModelContext} from "./verifyModelContext"
 import {VerifyLogging} from "./verifyLogging"
-import {any, Assert} from "../../infrastructure"
+import {any, Assert, count} from "../../infrastructure"
 import {compileExpression} from "./compileExpression"
+import {Nothing} from "../../engine/nothing"
 
 export class VerifyCollectionContext<TItem> {
 
@@ -19,16 +20,16 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
-  valueAt(index: number , verify: (item: TItem) => boolean): VerifyCollectionContext<TItem> {
+  valueAt(index: number , verify: (item: TItem) => boolean, message: string | Nothing): VerifyCollectionContext<TItem> {
 
     const value = index >= 0 && index < this.model.length ? this.model[index] : null
     if (value != null) {
       let valid = verify(value)
-      this.logging.logAssert(valid, value.toString(), `- ValueAt[{index}] not as expected: `)
+      this.logging.logAssert(valid, message, `- ValueAt[${index}] not as expected: ${value.toString()}`)
       return this
     }
 
-    this.logging.logAssert(false, "null", `- valueAtEquals[${index}] invalid: `)
+    this.logging.logAssert(false, message, `- valueAtEquals[${index}] invalid: no item. `)
 
     return this
   }
@@ -101,8 +102,14 @@ export class VerifyCollectionContext<TItem> {
   none(criteria: (value: TItem) => boolean, extraMessage: string): VerifyCollectionContext<TItem> {
 
     let value = !any(this.model, criteria)
-    this.logging.logAssert(value, criteria.toString(), `- None invalid$ - (${extraMessage}): `)
+    this.logging.logAssert(value, criteria.toString(), `- None invalid - (${extraMessage}): `)
 
+    return this
+  }
+
+  count(number: number, filter: (item: TItem) => boolean, message: string) {
+    const countNumber = count(this.model, filter)
+    this.logging.logAssert(countNumber == number, message, `- Count invalid (${countNumber} != ${number}): `)
     return this
   }
 }

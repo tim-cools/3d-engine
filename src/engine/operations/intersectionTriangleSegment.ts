@@ -1,8 +1,7 @@
 //adaption from GeometRi by Sergey Tarasov
-
 import {Line, Plane, Segment, Triangle} from "../models"
 import {
-  Intersection,
+  IntersectionType,
   LineIntersection,
   NoIntersection,
   noIntersection,
@@ -15,11 +14,11 @@ import {coplanarIntersectionWith} from "./coplanarIntersectionWith"
 export function intersectionTriangleSegment(triangle: Triangle, lineSegment: Segment): PointIntersection | SegmentIntersection | NoIntersection {
 
   const intersection = intersectionTriangleLine(triangle, lineSegment.line())
-  if (intersection.type == Intersection.Point) {
+  if (intersection.type == IntersectionType.Point) {
     return intersection.point.belongsTo(lineSegment)
       ? intersection
       : noIntersection
-  } else if (intersection.type == Intersection.Segment) {
+  } else if (intersection.type == IntersectionType.Segment) {
     return intersectionSegments(lineSegment, intersection.segment, intersection.sourceSegments)
   }
   return noIntersection
@@ -30,10 +29,10 @@ function intersectionTriangleLine(triangle: Triangle, line: Line): PointIntersec
   const plane = new Plane(triangle.point1, triangle.direction())
 
   const intersection = intersectionPlaneLine(plane, line)
-  if (intersection.type == Intersection.Line) {
+  if (intersection.type == IntersectionType.Line) {
     return coplanarIntersectionWith(triangle, line)
   }
-  if (intersection.type == Intersection.Point) {
+  if (intersection.type == IntersectionType.Point) {
     return intersection.point.belongsTo(triangle)
       ? intersection
       : noIntersection
@@ -49,14 +48,14 @@ function intersectionPlaneLine(plane: Plane, line: Line): PointIntersection | Li
     // Line and plane are parallel
     if (line.point.belongsToPlane(plane)) {
       // Line lies in the plane
-      return {type: Intersection.Line, line: line}
+      return new LineIntersection(line)
     } else {
       return noIntersection
     }
   } else {
-    // Intersection point
+    // IntersectionType point
     const d = (plane.point.subtract(line.point)).dot(plane.direction) / (plane.direction.dot(line.direction))
-    return {type: Intersection.Point, point: line.point.translate(line.direction.multiplyNumber(d))}
+    return new PointIntersection(line.point.translate(line.direction.multiplyNumber(d)))
   }
 }
 

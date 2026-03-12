@@ -7,7 +7,7 @@ export function sphere() {
 
   function cube() {
     const position = Point.null
-    const model = SphereModel.create(4)
+    const model = SphereModel.create(33)
     const spaceModel = new SpaceModel(model, position, Size.default)
     return new ModelObject("cube", spaceModel)
   }

@@ -9,12 +9,11 @@ import {
 } from "../models"
 import {Nothing, nothing} from "../nothing"
 import {intersectionTriangleSegment} from "./intersectionTriangleSegment"
-import {Intersection} from "./intersectionResult"
+import {IntersectionType} from "./intersectionResult"
 
 export function subtractSegments(master: Model, subtract: SpaceModel, logging: SubtractLogger): Segment[] {
 
   const intersections: Point[] = []
-
   const segments: Segment[] = []
   addMasterSegments(master, subtract, logging, segments, intersections)
   addSubtractSegments(subtract, master, logging, segments, intersections)
@@ -39,12 +38,12 @@ function addMasterSegment(subtract: SpaceModel, segment: Segment, log: SubtractL
     segments.push(segment.disabled(true))
   } else if (!beginInSubtract && !endInSubtract) {
     segments.push(segment)
-  } else if (beginInSubtract || endInSubtract) {
+  } else {
     const partials = getPartials(subtract, segment, intersections)
     if (partials != nothing) {
       partials.map(partial => segments.push(partial))
     } else {
-      segments.push(segment.disabled(true))
+      segments.push(segment)
     }
   }
 }
@@ -101,18 +100,14 @@ function addIntersectionsPath(intersections: Point[], segments: Segment[], log: 
   }
 }
 
-function notSupported(point: Point): boolean {
-  throw new Error("not supported")
-}
-
 function getPartials(subtract: SpaceModel, segment: Segment, intersections: Point[]): Segment[] | Nothing {
   for (const face of subtract.faces) {
     for (const triangle of face.triangles) {
       const intersection = intersectionTriangleSegment(triangle, segment)
-      if (intersection.type == Intersection.Point) {
+      if (intersection.type == IntersectionType.Point) {
         intersections.push(intersection.point)
         return partialSegments(subtract, segment, intersection.point, false)
-      } else if (intersection.type == Intersection.Segment) {
+      } else if (intersection.type == IntersectionType.Segment) {
         return partialIntersectionSegments(segment, intersection.segment, intersections)
       }
     }
@@ -125,9 +120,11 @@ function partialMaster(model: Model, segment: Segment, intersections: Point[]): 
     const face = model.faces[index]
     for (const triangle of face.triangles) {
       const intersection = intersectionTriangleSegment(triangle, segment)
-      if (intersection.type == Intersection.Point) {
+      if (intersection.type == IntersectionType.Point) {
         intersections.push(intersection.point)
         return partialSegments(model, segment, intersection.point,true)
+      } else if (intersection.type == IntersectionType.Segment) {
+        console.log("Side case not implemented!")
       }
     }
   }
@@ -141,11 +138,11 @@ function partialSegments(subtract: CanContainPoint, segment: Segment, intersecti
       result.push(new Segment(intersectionPoint, segment.end, ModelType.Secondary))
     }
     if (!intersectionPoint.equals(segment.begin)) {
-      result.push(new Segment(segment.begin, intersectionPoint, ModelType.Disabled, true))
+      //result.push(new Segment(segment.begin, intersectionPoint, ModelType.Disabled, true))
     }
   } else {
     if (!intersectionPoint.equals(segment.end)) {
-      result.push(new Segment(intersectionPoint, segment.end, ModelType.Disabled, true))
+      //result.push(new Segment(intersectionPoint, segment.end, ModelType.Disabled, true))
     }
     if (!intersectionPoint.equals(segment.begin)) {
       result.push(new Segment(segment.begin, intersectionPoint, ModelType.Secondary),)

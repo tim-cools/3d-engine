@@ -1,40 +1,12 @@
-import {Segment, SpaceModel} from "../../engine/models"
-import {Point, Size} from "../../engine/models"
-import {Verify, VerifyLogging} from "../infrastructure"
-import {SegmentsContext} from "../infrastructure"
-import {SubtractModel} from "../../engine/models"
-import {CubeModel} from "../../engine/models"
-import {Text} from "../../engine/nothing"
+import {CubeModel, Point, Size, SpaceModel, SubtractModel} from "../../engine/models"
+import {SegmentsContext, Verify} from "../infrastructure"
+import {createSegmentsLogger} from "./createSegmentsLogger"
 
 const segments = 4
 const segmentsHalf = 2
 const segmentsOne = 1
 
-function createLogger(factor: number | null = null) {
-
-  const lines: string[] = []
-
-  function logLine(message: Text) {
-    lines.push(message);
-  }
-
-  function log(segment: Segment, message: Text) {
-    const temp = factor != null ? new Segment(segment.begin.divide(factor), segment.end.divide(factor), segment.type, segment.debug) : segment
-    lines.push(` - ${temp}: ${message}`)
-  }
-
-  function dump(logging: VerifyLogging) {
-    logging.appendLine(`------------------------------------------\nsubtraction log: \n${lines.join("\n")}\n------------------------------------------\n`)
-  }
-
-  return {
-    logLine: logLine,
-    log: log,
-    dump: dump
-  }
-}
-
-test('subtract square in square', async () => {
+test('subtract cube in cube', async () => {
 
   const size = 1
   const min = 0
@@ -47,13 +19,12 @@ test('subtract square in square', async () => {
   const top = size
   const back = size
 
-
   const sizeSquare = new Size(1, 1, 1)
-  const square = CubeModel.create(4, Point.null, Point.single(size))
+  const cube = CubeModel.create(4, Point.null, Point.single(size))
   const subtractSquare = new SpaceModel(CubeModel.create(4), Point.single(half), sizeSquare)
 
-  const logger = createLogger()
-  const result = SubtractModel.create(square, subtractSquare, Point.null, Size.default, logger)
+  const logger = createSegmentsLogger()
+  const result = SubtractModel.create(cube, subtractSquare, Point.null, Size.default, logger)
 
   Verify.model(result, context => context
 
@@ -100,7 +71,7 @@ test('subtract square in square', async () => {
   )
 })
 
-test('subtract square in square scaled', async () => {
+test('subtract cube in cube scaled', async () => {
 
   const size = 100
   const min = 0
@@ -114,11 +85,11 @@ test('subtract square in square scaled', async () => {
   const back = size
 
   const sizeSquare = new Size(100, 100, 100)
-  const square = CubeModel.create(4, Point.null, Point.single(100))
+  const cube = CubeModel.create(4, Point.null, Point.single(100))
   const subtractSquare = new SpaceModel(CubeModel.create(4), new Point(50, 50, 50), sizeSquare)
 
-  const logger = createLogger(size)
-  const result = SubtractModel.create(square, subtractSquare, Point.null, Size.default, logger)
+  const logger = createSegmentsLogger(size)
+  const result = SubtractModel.create(cube, subtractSquare, Point.null, Size.default, logger)
 
   Verify.model(result, context => context
 

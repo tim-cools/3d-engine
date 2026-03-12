@@ -1,8 +1,7 @@
 //adaption from GeometRi by Sergey Tarasov
-
 import {Line, Segment, Triangle, Vector} from "../models"
 import {
-  Intersection,
+  IntersectionType,
   NoIntersection,
   noIntersection,
   PointIntersection,
@@ -31,12 +30,12 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
 
     if (positionOnAB >= 1 - tolerance && positionOnAB <= 1 + tolerance
       && positionOnBC >= -tolerance && positionOnBC <= tolerance) {
-      return {type: Intersection.Point, point: triangle.point2}
+      return new PointIntersection(triangle.point2)
     }
 
     if (positionOnAB >= -tolerance && positionOnAB < 1 - tolerance
       && positionOnBC > tolerance && positionOnBC <= 1 + tolerance) {
-      return {type: Intersection.Segment, segment: new Segment(onAB, onBC), sourceSegments: [abSegment, bcSegment]}
+      return new SegmentIntersection(new Segment(onAB, onBC), [abSegment, bcSegment])
     }
   }
 
@@ -55,12 +54,12 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
 
     if (positionOnAB >= -tolerance && positionOnAB <= tolerance
       && positionOnAC >= -tolerance && positionOnAC <= tolerance) {
-      return {type: Intersection.Point, point: triangle.point1}
+      return new PointIntersection(triangle.point1)
     }
 
     if (positionOnAB > tolerance && positionOnAB <= 1 + tolerance
       && positionOnAC > tolerance && positionOnAC <= 1 + tolerance) {
-      return {type: Intersection.Segment, segment: new Segment(onAB, onAC), sourceSegments: [abSegment, acSegment]}
+      return new SegmentIntersection(new Segment(onAB, onAC), [abSegment, acSegment])
     }
   }
 
@@ -73,10 +72,10 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
 
     if (positionOnBC >= 1 - tolerance && positionOnBC <= 1 + tolerance
       && positionOnAC >= 1 - tolerance && positionOnAC <= 1 + tolerance) {
-      return {type: Intersection.Point, point: triangle.point3}
+      return new PointIntersection(triangle.point3)
     } else if (positionOnBC >= -tolerance && positionOnBC < 1 - tolerance
       && positionOnAC >= -tolerance && positionOnAC < 1 - tolerance) {
-      return {type: Intersection.Segment, segment: new Segment(onBC, onAC), sourceSegments: [bcSegment, acSegment]}
+      return new SegmentIntersection(new Segment(onBC, onAC), [bcSegment, acSegment])
     }
   }
 

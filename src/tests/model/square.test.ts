@@ -1,26 +1,43 @@
-import {SphereModel} from "../../engine/models/sphereModel"
+import {Point} from "../../engine/models"
+import {Verify} from "../infrastructure"
+import {SegmentsContext} from "../infrastructure"
+import {CubeModel} from "../../engine/models"
 
-test('create sphere 2 ', async () => {
-  const sphere = SphereModel.create(2)
-  expect(sphere.segments.length).toEqual(12)
-})
+test('create cube', async () => {
 
-test('create sphere 4 ', async () => {
+  const size = 1
+  const min = 0
 
-  const sphere = SphereModel.create(4)
-  const verticalSegmentsPer = 4
-  const horizontalSegmentsPer = 3
-  const interations = 8
+  const left = min
+  const front = min
+  const bottom = min
+  const right = size
+  const top = size
+  const back = size
 
-  expect(sphere.segments.length).toEqual((verticalSegmentsPer + horizontalSegmentsPer) * interations)
-})
+  const square = CubeModel.create(1, Point.null, Point.one)
 
-test('create sphere 10 ', async () => {
+  Verify.model(square, context => context
+    .collection(model => model.segments, context => new SegmentsContext(context)
+      .logSegments("init")
 
-  const sphere = SphereModel.create(10)
-  const verticalSegmentsPer = 10
-  const horizontalSegmentsPer = 9
-  const interations = 20
+      .contains(1, left, bottom, front, left, top, front, "front left")
+      .contains(1, right, bottom, front, right, top, front, "front right")
+      .contains(1, left, bottom, front, right, bottom, front, "front bottom")
+      .contains(1, left, top, front, right, top, front, "front top")
 
-  expect(sphere.segments.length).toEqual((verticalSegmentsPer + horizontalSegmentsPer) * interations)
+      .contains(1, left, bottom, back, left, top, back, "back left")
+      .contains(1, right, bottom, back, right, top, back, "front right")
+      .contains(1, left, bottom, back, right, bottom, back, "back bottom")
+      .contains(1, left, top, back, right, top, back, "front top")
+
+      .contains(1, left, bottom, front, left, bottom, back, "z left bottom")
+      .contains(1, left, top, front, left, top, back, "z left top")
+      .contains(1, right, bottom, front, right, bottom, back, "z right bottom")
+      .contains(1, right, top, front, right, top, back, "z right top")
+
+      .logSegments("remaining")
+      .verifyNoRemaining()
+    )
+  )
 })

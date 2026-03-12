@@ -1,9 +1,9 @@
 //adaption from GeometRi by Sergey Tarasov
 import {Plane, Triangle} from "../models"
 import {
-  Intersection,
+  IntersectionType,
   NoIntersection,
-  noIntersection,
+  noIntersection, PlaneIntersection,
   PointIntersection,
   SegmentIntersection,
   TriangleIntersection
@@ -11,24 +11,24 @@ import {
 import {coplanarIntersectionWith} from "./coplanarIntersectionWith"
 import {intersectionPlanes} from "./intersectionPlanes"
 
-export function intersectionTrianglePlane(triangle: Triangle, plane: Plane): TriangleIntersection | PointIntersection | SegmentIntersection | NoIntersection {
+export function intersectionTrianglePlane(triangle: Triangle, plane: Plane): PlaneIntersection | TriangleIntersection | PointIntersection | SegmentIntersection | NoIntersection {
 
   const st = new Plane(triangle.point1, triangle.direction());
 
   if (plane.isParallelTo(st)) {
     if (triangle.point1.belongsToPlane(plane)) {
-      return {type: Intersection.Triangle, triangle: triangle}
+      return new TriangleIntersection(triangle)
     } else {
       return noIntersection
     }
   }
 
   const l = intersectionPlanes(plane, st);
-  if (l.type == Intersection.None) {
+  if (l.type == IntersectionType.None) {
     return noIntersection
   }
-  if (l.type != Intersection.Line) {
-    throw new Error("Not implemeneted: " + l.type)
+  if (l.type == IntersectionType.Plane) {
+    return l
   }
 
   // Line "l" is coplanar with triangle by construction

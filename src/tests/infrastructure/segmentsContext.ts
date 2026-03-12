@@ -1,8 +1,9 @@
 import {VerifyCollectionContext} from "./verifyCollectionContext"
-import {Segment} from "../../engine/models"
+import {ModelType, Segment} from "../../engine/models"
 import {Point} from "../../engine/models"
 import {VerifyLogging} from "./verifyLogging"
 import {segments} from "../../engine/models/segments"
+import {IntersectionType} from "../../engine/operations/intersectionResult"
 
 export class SegmentsContext {
 
@@ -18,6 +19,26 @@ export class SegmentsContext {
     this.model = context.model
     this.logging = context.logging
     this.factor = factor
+  }
+
+  primarySegments(number: number) {
+    this.context.count(number, item => item.type == ModelType.Primary, "Primary segments")
+    return this
+  }
+
+  secondarySegments(number: number) {
+    this.context.count(number, item => item.type == ModelType.Secondary, "Secondary segments")
+    return this
+  }
+
+  thirdSegments(number: number) {
+    this.context.count(number, item => item.type == ModelType.Third, "Third segments")
+    return this
+  }
+
+  disabledSegments(number: number) {
+    this.context.count(number, item => item.type == ModelType.Disabled, "Disabled segments")
+    return this
   }
 
   contains(segmentsNumber: number, beginX: number, beginY: number, beginZ: number, endX: number, endY: number, endZ: number, message: string | null): SegmentsContext {

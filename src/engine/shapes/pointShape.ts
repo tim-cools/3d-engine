@@ -1,8 +1,8 @@
 import {View, View2D} from ".."
-import {TransformablePoint, Boundaries, Space, Point} from "../models"
-import {Shape} from "."
+import {TransformablePoint, Boundaries, Space, Point, Transformer} from "../models"
+import {Shape, UpdatableShape} from "."
 
-export class PointShape implements Shape {
+export class PointShape implements UpdatableShape {
 
   readonly id: string
   readonly color: string
@@ -16,12 +16,15 @@ export class PointShape implements Shape {
     this.position = new TransformablePoint(position)
   }
 
+  update(transformers: readonly Transformer[]): void {
+  }
+
   boundaries(space: Space): Boundaries {
     return Boundaries.fromItems(space.translate(this.position))
   }
 
   render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
-    console.log(`point: 3D (${this.position.x}, ${this.position.y}, ${this.position.z})`)
+    //console.log(`point: 3D (${this.position.x}, ${this.position.y}, ${this.position.z})`)
     const coordinate = space.translate(this.position)
     const coordinate2D = view.translate(coordinate)
     const radius = this.size

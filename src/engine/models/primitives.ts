@@ -2,8 +2,8 @@ import {Space, transform, Transformer} from "./transformations"
 import {equalsTolerance, tolerance} from "./equals"
 import {Size} from "./size"
 import {Colors} from "../colors"
-import {Nothing} from "../nothing"
 import {Lazy} from "../../infrastructure/lazy"
+import {Nothing} from "../nothing"
 
 export enum ModelType {
   Primary,
@@ -89,10 +89,15 @@ export class Point implements Coordinate {
     return this.zValue
   }
 
-  constructor(x: number, y: number, z: number) {
+  readonly type: ModelType
+  readonly debug: boolean
+
+  constructor(x: number, y: number, z: number, type: ModelType = ModelType.Primary, debug: boolean = false) {
     this.xValue = x
     this.yValue = y
     this.zValue = z
+    this.type = type
+    this.debug = debug
   }
 
   equals(value: Point): boolean {
@@ -186,13 +191,16 @@ export class Point implements Coordinate {
     return this.x * vector.x + this.y * vector.y + this.z * vector.z
   }
 
-
   translate(vector: Vector): Point {
     return this.add(vector.point())
   }
 
   negate() {
     return new Point(-this.x, -this.y, -this.z)
+  }
+
+  third(debug: boolean) {
+    return new Point(this.x, this.y, this.z, ModelType.Third, debug)
   }
 
   protected set(point: Point) {
@@ -218,6 +226,10 @@ export class Point implements Coordinate {
 
   static single(number: number) {
     return new Point(number, number, number)
+  }
+
+  toSpace(space: Space) {
+    return space.translate(this);
   }
 }
 
@@ -447,6 +459,10 @@ export class Vector implements Coordinate, Linear {
       point2.y - point1.y,
       point2.z - point1.z)
   }
+
+  equals(vector: Vector) {
+    return equalsTolerance(this.x, vector.x) && equalsTolerance(this.y, vector.y) && equalsTolerance(this.z, vector.z)
+  }
 }
 
 export class Line {
@@ -468,7 +484,7 @@ export class Line {
     return `point (${this.point}) direction (${this.direction})`
   }
 
-  perpendicularTo(line: Line): Point | null {
+  perpendicularTo(line: Line): Point | Nothing {
 
     const r1 = this.point.vector()
     const r2 = line.point.vector()
@@ -490,6 +506,10 @@ export class Line {
       s2.multiplyNumber(vectorR2R1.dot(crossS1crossS2) / s1multiplyS1CrossS2))
 
     return value.point()
+  }
+
+  equals(line: Line) {
+    return this.point.equals(line.point) && this.direction.equals(line.direction)
   }
 }
 
@@ -521,13 +541,13 @@ export class Segment implements Finite {
   readonly type: ModelType
   readonly debug: boolean
 
-  constructor(begin: Point, end: Point, type: ModelType | Nothing = ModelType.Primary, debug: boolean = false) {
+  constructor(begin: Point, end: Point, type: ModelType = ModelType.Primary, debug: boolean = false) {
     if (begin.equals(end)) {
       //throw new Error(`Segments with equal begin and end are not supported: begin: ${begin} end: ${end}`)
     }
     this.begin = begin
     this.end = end
-    this.type = type ?? ModelType.Primary
+    this.type = type
     this.debug = debug
   }
 

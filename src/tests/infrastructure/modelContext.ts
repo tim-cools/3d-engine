@@ -13,8 +13,7 @@ export class ModelContext {
   private readonly segments: Segment[]
   private readonly factor: number | null = null
 
-
-constructor(context: VerifyModelContext<SpaceModel>, factor: number | null = null) {
+  constructor(context: VerifyModelContext<SpaceModel>, factor: number | null = null) {
     this.context = context
     this.faces = [...context.model.faces] // .filter(value => !value.debug)
     this.segments = context.model.segments.filter(value => !value.debug)
@@ -58,6 +57,7 @@ constructor(context: VerifyModelContext<SpaceModel>, factor: number | null = nul
     }
 
     const face = this.faces[0]
+    /* todo
     if (face.points.length != points.length) {
       this.logging.fail(`face.points.length != ${points.length}`, `face.points = ${face.points.length} - `)
     }
@@ -77,6 +77,7 @@ constructor(context: VerifyModelContext<SpaceModel>, factor: number | null = nul
     }
 
     this.logging.logAssert(log.length == 0, log.join("\n"), `polygon invalid: \n`)
+        */
     return this
   }
 

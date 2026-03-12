@@ -1,19 +1,34 @@
-import {CubeModel, FaceType, ModelType, Point, Polygon, SpaceModel, Triangle} from "../models"
-import {LineShape, PathShape, Shape, UpdatableShape} from "../shapes"
+import {
+  CubeModel,
+  FaceType,
+  modelColor,
+  ModelType,
+  Point,
+  Path,
+  SpaceModel,
+  translateSpace,
+  Triangle
+} from "../models"
+import {LineShape, PathShape, PointShape, Shape, UpdatableShape} from "../shapes"
 import {BaseObject3D, HasObjectStyle, ObjectStyle} from "./object"
+import {Transformer} from "../models"
+import {Nothing, nothing} from "../nothing"
+import {Colors} from "../colors"
 
 export class ModelObject extends BaseObject3D implements HasObjectStyle {
 
   protected readonly model: SpaceModel
 
   private showBoundaries: boolean = false
+  private debugShapes: ((translate: Transformer) => readonly UpdatableShape[]) | Nothing
   private style: ObjectStyle = ObjectStyle.Wireframe
 
   protected shapesValue: readonly UpdatableShape[]
 
-  constructor(id: string, spaceModel: SpaceModel) {
+  constructor(id: string, spaceModel: SpaceModel, debugShape: ((translate: Transformer) => readonly UpdatableShape[]) | Nothing = nothing) {
     super(id, Point.null)
     this.model = spaceModel
+    this.debugShapes = debugShape
     this.shapesValue = this.createShapes()
   }
 
@@ -49,20 +64,44 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
 
   private wireframe(debug: boolean) {
     const result: UpdatableShape[] = []
-    if (this.showBoundaries) {
-      this.addBoundaries(debug, result)
-    }
-    for (let index = 0; index < this.model.segments.length; index++) {
-      const segment = this.model.segments[index]
-      if (debug || !segment.debug) {
-        result.push(LineShape.fromSegment(this.id + ".line." + index, segment, debug))
-      }
-    }
+
+    this.addBoundaries(debug, result)
+    this.addSegments(debug, result)
+    this.addPoints(debug, result)
+    this.addDebugShapes(result)
+
     return result
   }
 
+  private addSegments(debug: boolean, result: UpdatableShape[]) {
+    for (let index = 0; index < this.model.segments.length; index++) {
+      const segment = this.model.segments[index]
+      if (debug || !segment.debug) {
+        result.push(LineShape.fromSegment(`${this.id}.line.${index}`, segment, debug))
+      }
+    }
+  }
+
+  private addPoints(debug: boolean, result: UpdatableShape[]) {
+    for (let index = 0; index < this.model.points.length; index++) {
+      const point = this.model.points[index]
+      if (debug || !point.debug) {
+        const color = debug ? modelColor(point.type) : point.type == ModelType.Utility ? Colors.gray.darker : Colors.primary.middle
+        result.push(new PointShape(`${this.id}.point.${index}`, color, point, 2))
+      }
+    }
+  }
+
+  private addDebugShapes(result: UpdatableShape[]) {
+    if (this.debugShapes == nothing) return
+    let debugShapes = this.debugShapes(point => translateSpace(point, this.model))
+    for (const debugShape of debugShapes) {
+      result.push(debugShape)
+    }
+  }
+
   private addBoundaries(showBoundaries: boolean, result: UpdatableShape[]) {
-    if (!showBoundaries) return
+    if (!this.showBoundaries) return
 
     const boundaries = this.model.boundaries
     const cubeModel = CubeModel.create(1, boundaries.min, boundaries.max, ModelType.UtilityLight)
@@ -82,12 +121,12 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
     return result
   }
 
-  private addFace(face: Triangle | Polygon, result: UpdatableShape[], index: number) {
+  private addFace(face: Triangle | Path, result: UpdatableShape[], index: number) {
     if (face.debug) return
     if (face.faceType == FaceType.Triangle) {
       result.push(PathShape.fromTriangle(this.id + ".triangle." + index, face))
     } else {
-      result.push(PathShape.fromPolygon(this.id + ".polygon." + index, face))
+      result.push(PathShape.fromPolygon(this.id + ".closePath." + index, face))
     }
   }
 
@@ -106,6 +145,7 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
         }
       }
     }
+    this.addPoints(true, result)
     return result
   }
 }

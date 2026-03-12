@@ -9,10 +9,16 @@ export interface CanContainPoint {
 
 export class Model implements CanContainPoint {
 
-  private boundaryLazy: Lazy<Boundaries> = new Lazy<Boundaries>(() => this.createBoundaries())
+  private readonly middleLazy = new Lazy<Point>(() => this.calculateMiddle())
+  private readonly boundaryLazy: Lazy<Boundaries> = new Lazy<Boundaries>(() => this.createBoundaries())
 
+  readonly points: readonly Point[]
   readonly segments: readonly Segment[]
   readonly faces: readonly Face[]
+
+  get middle(): Point {
+    return this.middleLazy.value
+  }
 
   get boundaries(): Boundaries {
     return this.boundaryLazy.value
@@ -23,10 +29,12 @@ export class Model implements CanContainPoint {
   readonly containsFunction: (coordinate: Point) => boolean
   readonly onBoundaryFunction: (coordinate: Point) => boolean
 
-  constructor(segments: readonly Segment[],
+  constructor(points: readonly Point[],
+              segments: readonly Segment[],
               faces: readonly Face[],
               contains: (coordinate: Point) => boolean,
               onBoundary: (coordinate: Point) => boolean) {
+    this.points = points
     this.segments = segments
     this.faces = faces
     this.containsFunction = contains
@@ -47,5 +55,30 @@ export class Model implements CanContainPoint {
       pointHandler(segment.end)
     })
     return boundaries
+  }
+
+  private calculateMiddle() {
+
+    let x = 0
+    let y = 0
+    let z = 0
+    let counter = 0
+
+    function addPoint(point: Point) {
+      x += point.x
+      y += point.y
+      z += point.z
+      counter++
+    }
+
+    for (const face of this.faces) {
+      for (const triangle of face.triangles) {
+        addPoint(triangle.point1)
+        addPoint(triangle.point2)
+        addPoint(triangle.point3)
+      }
+    }
+
+    return new Point(x / counter, y / counter, z / counter)
   }
 }

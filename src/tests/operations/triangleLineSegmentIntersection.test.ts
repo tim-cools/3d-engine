@@ -2,7 +2,7 @@ import {Segment, Triangle} from "../../engine/models"
 import {Point} from "../../engine/models"
 import {equalsTolerancePoint} from "../../engine/models/equals"
 import {intersectionTriangleSegment} from "../../engine/operations/intersectionTriangleSegment"
-import {Intersection} from "../../engine/operations/intersectionResult"
+import {IntersectionType} from "../../engine/operations/intersectionResult"
 
 describe("triangle line segment intersection", () => {
 
@@ -15,7 +15,7 @@ describe("triangle line segment intersection", () => {
 
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
-    expect(intersection.type).toBe(Intersection.None)
+    expect(intersection.type).toBe(IntersectionType.None)
   })
 
   test('straight', async () => {
@@ -27,7 +27,7 @@ describe("triangle line segment intersection", () => {
 
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
-    if (intersection.type != Intersection.Point) throw new Error("intersection.type != Intersection.Point: " + Intersection[intersection.type])
+    if (intersection.type != IntersectionType.Point) throw new Error("intersection.type != IntersectionType.Point: " + IntersectionType[intersection.type])
     expect(intersection.point).toEqual(new Point(1, 1, 0))
   })
 
@@ -40,7 +40,7 @@ describe("triangle line segment intersection", () => {
 
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
-    if (intersection.type != Intersection.Point) throw new Error("intersection.type != Intersection.Point: " + Intersection[intersection.type])
+    if (intersection.type != IntersectionType.Point) throw new Error("intersection.type != IntersectionType.Point: " + IntersectionType[intersection.type])
     expect(equalsTolerancePoint(intersection.point, new Point(1, 1, -0.5))).toBeTruthy()
   })
 
@@ -53,7 +53,7 @@ describe("triangle line segment intersection", () => {
 
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
-    if (intersection.type != Intersection.Point) throw new Error("intersection.type != Intersection.Point: " + Intersection[intersection.type])
+    if (intersection.type != IntersectionType.Point) throw new Error("intersection.type != IntersectionType.Point: " + IntersectionType[intersection.type])
     expect(intersection.point).toEqual(new Point(0.85, 0.8, 0))
   })
 
@@ -68,7 +68,7 @@ describe("triangle line segment intersection", () => {
 
     const expected = new Point(0.82352941176470584, 0.76470588235294112, -0.17647058823529405)
 
-    if (intersection.type != Intersection.Point) throw new Error("intersection.type != Intersection.Point: " + Intersection[intersection.type])
+    if (intersection.type != IntersectionType.Point) throw new Error("intersection.type != IntersectionType.Point: " + IntersectionType[intersection.type])
     expect(equalsTolerancePoint(intersection.point, expected)).toBeTruthy()
   })
 
@@ -81,7 +81,7 @@ describe("triangle line segment intersection", () => {
 
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
-    if (intersection.type != Intersection.Segment) throw new Error("intersection.type != Intersection.Segment: " + Intersection[intersection.type])
+    if (intersection.type != IntersectionType.Segment) throw new Error("intersection.type != IntersectionType.Segment: " + IntersectionType[intersection.type])
     expect(intersection.segment).toEqual(new Segment(
       new Point(0, 0, 0),
       new Point(1, 1, 0)))
@@ -96,7 +96,7 @@ describe("triangle line segment intersection", () => {
 
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
-    if (intersection.type != Intersection.Segment) throw new Error("intersection.type != Intersection.Segment: " + Intersection[intersection.type])
+    if (intersection.type != IntersectionType.Segment) throw new Error("intersection.type != IntersectionType.Segment: " + IntersectionType[intersection.type])
     expect(equalsTolerancePoint(intersection.segment.begin, new Point(0, 1.5, 0)))
     expect(equalsTolerancePoint(intersection.segment.end, new Point(.2, 1.8, 0)))
   })

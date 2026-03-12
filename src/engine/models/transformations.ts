@@ -1,6 +1,6 @@
 import {Point, Point2D, Segment} from "./primitives"
 import {Size} from "./size"
-import {Triangle} from "./face"
+import {Triangle} from "./triangle"
 
 export function dontTransform(value: Point): Point {
   return value
@@ -71,7 +71,10 @@ export function moveBy(xOffset: number | null = null, yOffset: number | null = n
     new Point(
       xOffset ? value.x + xOffset : value.x,
       yOffset ? value.y + yOffset : value.y,
-      zOffset ? value.z + zOffset : value.z)
+      zOffset ? value.z + zOffset : value.z,
+      value.type,
+      value.debug
+      )
 }
 
 export function rotateX(radiant: number) {
@@ -79,7 +82,9 @@ export function rotateX(radiant: number) {
     new Point(
       value.x,
       value.y * Math.cos(radiant) - value.z * Math.sin(radiant),
-      value.y * Math.sin(radiant) + value.z * Math.cos(radiant)
+      value.y * Math.sin(radiant) + value.z * Math.cos(radiant),
+      value.type,
+      value.debug
     )
 }
 
@@ -88,7 +93,9 @@ export function rotateY(radiant: number) {
     new Point(
       value.x *  Math.cos(radiant) + value.z * Math.sin(radiant),
       value.y,
-      value.x * -Math.sin(radiant) + value.z * Math.cos(radiant)
+      value.x * -Math.sin(radiant) + value.z * Math.cos(radiant),
+      value.type,
+      value.debug
     )
 }
 
@@ -97,31 +104,33 @@ export function rotateZ(angle: number): Transformer {
     new Point(
       value.x * Math.cos(angle) - value.y * Math.sin(angle),
       value.x * Math.sin(angle) + value.y * Math.cos(angle),
-      value.z
+      value.z,
+      value.type,
+      value.debug
     )
 }
 
 export function add(position: Point) {
   return (value: Point): Point =>
-    new Point(value.x + position.x, value.y + position.y, value.z + position.z)
+    new Point(value.x + position.x, value.y + position.y, value.z + position.z, value.type, value.debug)
 }
 
 export function subtract(position: Point) {
   return (value: Point): Point =>
-    new Point(value.x - position.x, value.y - position.y,value.z - position.z)
+    new Point(value.x - position.x, value.y - position.y,value.z - position.z, value.type, value.debug)
 }
 
 export function multiply(scale: Size) {
   return (value: Point): Point =>
-    new Point(value.x * scale.x, value.y * scale.y, value.z * scale.z)
+    new Point(value.x * scale.x, value.y * scale.y, value.z * scale.z, value.type, value.debug)
 }
 
 export function multiplyFactor(factor: number) {
   return (value: Point): Point =>
-    new Point(value.x * factor, value.y * factor, value.z * factor)
+    new Point(value.x * factor, value.y * factor, value.z * factor, value.type, value.debug)
 }
 
 export function divide(scale: Size) {
   return (value: Point): Point =>
-    new Point(value.x / scale.x, value.y / scale.y, value.z / scale.z)
+    new Point(value.x / scale.x, value.y / scale.y, value.z / scale.z, value.type, value.debug)
 }

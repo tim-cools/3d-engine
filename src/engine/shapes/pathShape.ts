@@ -6,7 +6,7 @@ import {
   Space,
   Point,
   Triangle,
-  modelColor, Polygon
+  modelColor, Path
 } from "../models"
 import {colorLuminance, View2D} from ".."
 
@@ -28,6 +28,9 @@ export class PathShape implements Shape {
   }
 
   render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
+
+    if (this.points.length == 0) return;
+
     //console.log(`drawLine: (${this.point1.x}, ${this.point1.y}, ${this.point1.z}) (${this.end.x}, ${this.end.y}, ${this.end.z})`)
     const points = this.transform(space)
     const pointsView = view.translateMany(points)
@@ -66,7 +69,7 @@ export class PathShape implements Shape {
     return new PathShape(id, modelColor(triangle.type), [triangle.point1, triangle.point2, triangle.point3])
   }
 
-  static fromPolygon(id: string, polygon: Polygon) {
-    return new PathShape(id, modelColor(polygon.type), polygon.points)
+  static fromPolygon(id: string, polygon: Path) {
+    return new PathShape(id, modelColor(polygon.type), []) // todo polygon.points)
   }
 }

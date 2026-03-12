@@ -1,43 +1,35 @@
-import {Point} from "../../engine/models"
+import {SphereModel} from "../../engine/models/sphereModel"
 import {Verify} from "../infrastructure"
-import {SegmentsContext} from "../infrastructure"
-import {CubeModel} from "../../engine/models"
 
-test('create square', async () => {
+function numberOfSegments(segments: number): number {
+  const segmentsHorizontal = 2 * segments
+  const verticalSegmentsPer = segments
+  const horizontalSegmentsPer = segments - 1
+  return (verticalSegmentsPer + horizontalSegmentsPer) * segmentsHorizontal
+}
 
-  const size = 1
-  const min = 0
+function numberOfTriangles(segments: number): number {
+  const segmentsHorizontal = 2 * segments
+  const topBottomRows = 2
+  const trianglesPerQuadrant = 2
+  const trianglesTopBottomRow = topBottomRows * segmentsHorizontal
+  const trianglesPerOtherRow = (segments - topBottomRows) * trianglesPerQuadrant * segmentsHorizontal
+  return trianglesTopBottomRow + trianglesPerOtherRow
+}
 
-  const left = min
-  const front = min
-  const bottom = min
-  const right = size
-  const top = size
-  const back = size
+function verifySphere(segments: number) {
 
-  const square = CubeModel.create(1, Point.null, Point.one)
+  const segmentsTotal = numberOfSegments(segments)
+  const trianglesTotal = numberOfTriangles(segments)
 
-  Verify.model(square, context => context
-    .collection(model => square.segments, context => new SegmentsContext(context)
-      .logSegments("init")
+  const sphere = SphereModel.create(segments)
 
-      .contains(1, left, bottom, front, left, top, front, "front left")
-      .contains(1, right, bottom, front, right, top, front, "front right")
-      .contains(1, left, bottom, front, right, bottom, front, "front bottom")
-      .contains(1, left, top, front, right, top, front, "front top")
-
-      .contains(1, left, bottom, back, left, top, back, "back left")
-      .contains(1, right, bottom, back, right, top, back, "front right")
-      .contains(1, left, bottom, back, right, bottom, back, "back bottom")
-      .contains(1, left, top, back, right, top, back, "front top")
-
-      .contains(1, left, bottom, front, left, bottom, back, "z left bottom")
-      .contains(1, left, top, front, left, top, back, "z left top")
-      .contains(1, right, bottom, front, right, bottom, back, "z right bottom")
-      .contains(1, right, top, front, right, top, back, "z right top")
-
-      .logSegments("remaining")
-      .verifyNoRemaining()
-    )
+  Verify.model(sphere, context => context
+    .areEqual(sphere => sphere.segments.length, segmentsTotal)
+    .areEqual(sphere => sphere.faces.length, trianglesTotal)
   )
-})
+}
+
+it.each([2, 3, 4, 10, 25, 99, 256])("create sphere '%s'", segments => {
+  verifySphere(segments)
+});
