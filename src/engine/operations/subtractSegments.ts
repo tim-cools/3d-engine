@@ -83,20 +83,30 @@ function addSubtractSegment(segment: Segment, subtract: SpaceModel, master: Mode
 }
 
 function addIntersectionsPath(intersections: Point[], segments: Segment[], log: Logger) {
+
   log.logLine(`- intersections: ${intersections.length}`)
+
   if (intersections.length <= 1) return
+
   const start = intersections[0]
   let begin = intersections[0]
   intersections.splice(0, 1)
+
+  let last: Segment | Nothing = nothing
   while (intersections.length > 0) {
     const end = closestPoint(intersections, begin)
     if (!begin.equals(end)) {
-      segments.push(new Segment(begin, end, ModelType.Third))
+      last = new Segment(begin, end, ModelType.Third)
+      segments.push(last)
     }
     begin = end
   }
+
   if (!begin.equals(start)) {
-    segments.push(new Segment(start, begin, ModelType.Third))
+    const closing = new Segment(start, begin, ModelType.Third);
+    if (last != nothing && !last.equals(closing)) {
+      segments.push(closing)
+    }
   }
 }
 

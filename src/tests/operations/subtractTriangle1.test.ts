@@ -14,7 +14,7 @@ test('subtract triangle 1 intersect segment bc', async () => {
   ]
   Verify.model(result, context => new ModelContext(context)
     .containsPolygon(points)
-    //.containsSegments(points) // TODO: subtractSegments is not (yet) completely implemented
+    .containsSegments(points)
   );
 })
 
@@ -91,7 +91,7 @@ test('subtract triangle 6 intersect 1 point bc segment ca', async () => {
   ]
   Verify.model(result, context => new ModelContext(context)
     .containsPolygon(points)
-    //.containsSegments(points)      // TODO: subtractSegments is not (yet) completely implemented
+    .containsSegments(points)
   );
 })
 
