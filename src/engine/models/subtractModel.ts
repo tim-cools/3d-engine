@@ -14,15 +14,13 @@ export class SubtractModel extends Model {
     super(points, segments, faces, contains, onBoundary)
   }
 
-  static create(master: Model, subtract: SpaceModel, newPosition: Point, scale: Size, logging: Logger | Nothing = nothing): SpaceModel {
+  static create(master: Model, subtract: SpaceModel, logging: Logger | Nothing = nothing): SubtractModel {
 
     const log: Logger = logging ? logging : noLogger()
     const wireframe = subtractSegments(master, subtract, log)
     const {points, segments, faces} = subtractFaces(master, subtract, log)
-    const result = new SubtractModel(points, [...wireframe, ...segments], faces, this.notSupported, this.notSupported)
-    //const result = new SubtractModel([], [...wireframe], [], this.notSupported, this.notSupported)
 
-    return new SpaceModel(result, newPosition, scale)
+    return new SubtractModel(points, [...wireframe, ...segments], faces, this.notSupported, this.notSupported)
   }
 
   private static notSupported(point: Point): boolean {

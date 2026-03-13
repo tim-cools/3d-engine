@@ -11,8 +11,8 @@ export function subtractCube(): Scene {
 
     const size = new Size(.5, .5, .5)
     const position = size.half().negate()
-    const model = SubtractModel.create(master, subtract, position, size)
-    return new ModelObject("subtract", model)
+    const model = SubtractModel.create(master, subtract)
+    return new ModelObject("subtract", new SpaceModel(model, position, size))
   }
 
   return new Scene("subtract cube", [

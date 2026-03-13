@@ -29,13 +29,13 @@ export function scenes(): readonly Scene[] {
     /* layers(),
     cube(),
     sphere(),
-    cubesAndSphere(),
-    subtractCube(), */
+    cubesAndSphere(), */
+    subtractCube(),
     subtractSphere(),
-    /* subtractTriangle1(),
+    subtractTriangle1(),
     subtractTriangle2(),
     subtractTriangle3(),
-    subtractTriangle4(), */
+    subtractTriangle4(),
   ]
 
   return [intro(scenes), ...scenes]

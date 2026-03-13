@@ -69,7 +69,7 @@ export class PathShape implements Shape {
     return new PathShape(id, modelColor(triangle.type), [triangle.point1, triangle.point2, triangle.point3])
   }
 
-  static fromPolygon(id: string, polygon: Path) {
-    return new PathShape(id, modelColor(polygon.type), []) // todo polygon.points)
+  static fromPolygon(id: string, path: Path): readonly Shape[] {
+    return path.chains.map(chain => new PathShape(id, modelColor(path.type), chain.points))
   }
 }

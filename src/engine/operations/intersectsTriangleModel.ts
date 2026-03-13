@@ -89,15 +89,17 @@ export function intersectsTriangleModel(triangleInMaster: Triangle, model: Space
 
   for (let faceIndex = 0; faceIndex < model.faces.length; faceIndex++){
     const subtractFace = model.faces[faceIndex]
+
     for (const subtractTriangle of subtractFace.triangles) {
-      const faceToMiddle = middleOfModelToTriangleTetrahedron(middle, subtractTriangle)
 
       if (outsideModel) {
-        for (const faceTriangle of faceToMiddle) {
-           const intersectionBetweenMiddleOfMiddleAndFace = intersectsTriangles(triangleInMaster, faceTriangle)
-            if (intersectionBetweenMiddleOfMiddleAndFace) {
-              outsideModel = false
-            }
+        const faceToMiddle = middleOfModelToTriangleTetrahedron(middle, subtractTriangle)
+        for (let index = 0; outsideModel && index < faceToMiddle.length ; index++) {
+          const faceTriangle = faceToMiddle[index]
+          const intersectionBetweenMiddleOfMiddleAndFace = intersectsTriangles(triangleInMaster, faceTriangle)
+          if (intersectionBetweenMiddleOfMiddleAndFace) {
+            outsideModel = false
+          }
         }
       }
 

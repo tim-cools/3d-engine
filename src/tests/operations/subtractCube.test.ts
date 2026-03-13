@@ -24,12 +24,9 @@ test('subtract cube in cube', async () => {
   const subtractSquare = new SpaceModel(CubeModel.create(4), Point.single(half), sizeSquare)
 
   const logger = createSegmentsLogger()
-  const result = SubtractModel.create(cube, subtractSquare, Point.null, Size.default, logger)
+  const result = SubtractModel.create(cube, subtractSquare,logger)
 
   Verify.model(result, context => context
-
-    .areEqual(model => model.scale, Size.default)
-    .areEqual(model => model.position, Point.null)
     .collection(model => model.segments, context => new SegmentsContext(context)
       .logSegments("init")
 
@@ -89,12 +86,9 @@ test('subtract cube in cube scaled', async () => {
   const subtractSquare = new SpaceModel(CubeModel.create(4), new Point(50, 50, 50), sizeSquare)
 
   const logger = createSegmentsLogger(size)
-  const result = SubtractModel.create(cube, subtractSquare, Point.null, Size.default, logger)
+  const result = SubtractModel.create(cube, subtractSquare, logger)
 
   Verify.model(result, context => context
-
-    .areEqual(model => model.scale, Size.default)
-    .areEqual(model => model.position, Point.null)
     .collection(model => model.segments, context => new SegmentsContext(context, 100)
       .logSegments("init")
 

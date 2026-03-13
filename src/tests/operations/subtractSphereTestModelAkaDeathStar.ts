@@ -12,5 +12,7 @@ export function subtractSphereTestModelAkaDeathStar(segmentsMaster: number = 10,
   const subtract = new SpaceModel(subtractModel, subtractPosition, sizeSubtract)
 
   const sphereModel = SphereModel.create(segmentsMaster)
-  return SubtractModel.create(sphereModel, subtract, Point.null, sizeModel, logger)
+  const deathStar = SubtractModel.create(sphereModel, subtract, logger)
+
+  return new SpaceModel(deathStar, Point.null, sizeModel)
 }

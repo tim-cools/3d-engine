@@ -1,5 +1,6 @@
 import {PathBuilder, PathSegment, Point} from "../../engine/models"
 import {Verify, VerifyCollectionContext} from "../infrastructure"
+import {Assert} from "../../infrastructure"
 
 class PathContext {
 
@@ -10,7 +11,7 @@ class PathContext {
   }
 
   length(number: number) {
-    this.context.length(number, number + "segments expected")
+    this.context.length(number, number + " segments expected")
     return this
   }
 
@@ -30,7 +31,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(1, 0, 0), new Point(0, 1, 0))
     builder.addSegment(new Point(0, 1, 0), new Point(0, 0, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(3)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))
@@ -44,7 +45,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(0, 0, 0), new Point(1, 0, 0))
     builder.addSegment(new Point(1, 0, 0), new Point(0, 1, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(3)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))
@@ -59,7 +60,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(1, 0, 0), new Point(1, 1, 0))
     builder.addSegment(new Point(1, 1, 0), new Point(0, 1, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(4)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))
@@ -74,7 +75,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(0, 0, 0), new Point(1, 0, 0))
     builder.addSegment(new Point(1, 1, 0), new Point(0, 1, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(4)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))
@@ -90,7 +91,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(0, 1, 0), new Point(1, 0, 0))
     builder.addSegment(new Point(0, 0, 0), new Point(0, 1, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(3)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))
@@ -104,7 +105,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(0, 0, 0), new Point(1, 0, 0))
     builder.addSegment(new Point(0, 1, 0), new Point(1, 0, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(3)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))
@@ -119,7 +120,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(1, 1, 0), new Point(1, 0, 0))
     builder.addSegment(new Point(0, 1, 0), new Point(1, 1, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(4)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))
@@ -134,7 +135,7 @@ describe('build paths', () => {
     builder.addSegment(new Point(0, 0, 0), new Point(1, 0, 0))
     builder.addSegment(new Point(0, 1, 0), new Point(1, 1, 0))
 
-    const path = builder.closePath()
+    const path = Assert.notNull(builder.closePath(), "path")
     Verify.collection(path.segments, context => new PathContext(context)
       .length(4)
       .segmentAt(0, new Point(0, 0, 0), new Point(1, 0, 0))

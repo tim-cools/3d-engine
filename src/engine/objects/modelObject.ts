@@ -14,6 +14,7 @@ import {BaseObject3D, HasObjectStyle, ObjectStyle} from "./object"
 import {Transformer} from "../models"
 import {Nothing, nothing} from "../nothing"
 import {Colors} from "../colors"
+import {pushMany} from "../../infrastructure"
 
 export class ModelObject extends BaseObject3D implements HasObjectStyle {
 
@@ -126,7 +127,7 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
     if (face.faceType == FaceType.Triangle) {
       result.push(PathShape.fromTriangle(this.id + ".triangle." + index, face))
     } else {
-      result.push(PathShape.fromPolygon(this.id + ".closePath." + index, face))
+      pushMany(result, PathShape.fromPolygon(this.id + ".closePath." + index, face))
     }
   }
 

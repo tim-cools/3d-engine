@@ -1,12 +1,49 @@
 import {Finite, ModelType, Point} from "./primitives"
-import {nothing} from "../nothing"
+import {Nothing, nothing} from "../nothing"
 import {Lazy} from "../../infrastructure/lazy"
-import {pushMany} from "../../infrastructure"
 import {Triangle} from "./triangle"
 import {Space} from "./transformations"
 import {FaceType} from "./faceType"
+import {pushMany} from "../../infrastructure"
 
 class SegmentChain {
+
+  private readonly segmentsValue: PathSegment[]
+
+  get segments(): readonly PathSegment[] {
+    return this.segmentsValue
+  }
+
+  readonly points: readonly Point[]
+
+  constructor(segments: PathSegment[]) {
+    this.segmentsValue = segments
+    this.points = this.checkPoints(segments)
+  }
+
+  translate(space: Space): SegmentChain {
+    return new SegmentChain(this.segmentsValue.map(segment => segment.translate(space)))
+  }
+
+  private checkPoints(segments: PathSegment[]): Point[] {
+    const first = segments[0].begin
+    let last = first
+    const result: Point[] = [last]
+    for (const segment of segments) {
+      if (!last.equals(segment.begin)) {
+        throw new Error("Segment 'begin' does not match previous 'end'")
+      }
+      last = segment.end
+      result.push(last)
+    }
+    if (segments.length > 1 && !last.equals(first)) {
+      throw new Error("First segment 'begin' does not match last segment 'end'")
+    }
+    return result
+  }
+}
+
+class SegmentChainBuilder {
 
   private segmentsValue: PathSegment[]
   private segmentBegin: PathSegment
@@ -42,37 +79,47 @@ class SegmentChain {
   }
 
   connect(segment: PathSegment) {
-
-    const beginConnection = this.segmentBegin.normalizeConnection(segment)
-    if (beginConnection != nothing) {
-      this.segmentBegin = beginConnection
-      this.segmentsValue.push(this.segmentBegin)
+    const connectionEnd = this.segmentEnd.normalizeEndConnection(segment)
+    if (connectionEnd != nothing) {
+      this.insertSegment(connectionEnd.begin, connectionEnd.segment)
+      this.segmentEnd = connectionEnd.segment
       return true
     }
-
-    const endConnection = this.segmentEnd.normalizeConnection(segment)
-    if (endConnection != nothing) {
-      this.segmentEnd = endConnection
-      this.segmentsValue.push(this.segmentEnd)
+    const connectionBegin = this.segmentBegin.normalizeBeginConnection(segment)
+    if (connectionBegin != nothing) {
+      this.insertSegment(connectionBegin.begin, connectionBegin.segment)
+      this.segmentBegin = connectionBegin.segment
       return true
     }
-
     return false
   }
 
   close() {
-    if (this.segmentBegin.connectsWith(this.segmentEnd)) {
-      return this.segments
-    }
 
     const first = this.segments[0]
     const last = this.segments[this.segments.length - 1]
 
-    return [...this.segments, new PathSegment(last.end, first.begin)]
+    if (last.end.equals(first.begin)) {
+      return this.segments
+    }
+
+    this.segmentsValue.push(new PathSegment(last.end, first.begin))
   }
 
   single() {
     return this.segments.length == 1
+  }
+
+  build(): SegmentChain {
+    return new SegmentChain(this.segmentsValue)
+  }
+
+  private insertSegment(begin: boolean, segment: PathSegment) {
+    if (begin) {
+      this.segmentsValue = [segment, ...this.segmentsValue]
+    } else {
+      this.segmentsValue.push(segment)
+    }
   }
 }
 
@@ -84,12 +131,12 @@ export class PathBuilder {
     this.segmentsValue.push(new PathSegment(begin, end))
   }
 
-  closePath() {
-    if (this.segmentsValue.length < 2) return new Path(this.segmentsValue)
+  closePath(): Path | Nothing {
+    if (this.segmentsValue.length == 0) return nothing
+    if (this.segmentsValue.length == 1) return new Path([new SegmentChain(this.segmentsValue)])
 
     const remaining: PathSegment[] = [...this.segmentsValue]
-    const newPath: PathSegment[] = []
-    let chains: SegmentChain[] = []
+    let chains: SegmentChainBuilder[] = []
 
     while (remaining.length > 0) {
       chains.push(PathBuilder.nextChain(remaining))
@@ -98,36 +145,40 @@ export class PathBuilder {
     chains = this.combineSingles(chains)
 
     for (const chain of chains) {
-      const chainSegments = chain.close()
-      pushMany(newPath, chainSegments)
+      chain.close()
     }
 
-    return new Path(newPath)
+    return new Path(chains.map(chain => chain.build()))
   }
 
-  private static nextChain(remaining: PathSegment[]): SegmentChain {
+  private static nextChain(remaining: PathSegment[]): SegmentChainBuilder {
 
     const nextSegment = remaining[0]
     remaining.splice(0, 1)
-    const chain = new SegmentChain(nextSegment)
+    const chain = new SegmentChainBuilder(nextSegment)
 
-    let index = 0
-    while (index < remaining.length){
-      const pathSegment = remaining[index]
-      if (chain.connect(pathSegment)) {
-        remaining.splice(index, 1)
-      } else {
-        index++
+    let segmentAdded = true
+    while (segmentAdded && remaining.length > 0) {
+      segmentAdded = false
+      let index = 0
+      while (index < remaining.length) {
+        const pathSegment = remaining[index]
+        if (chain.connect(pathSegment)) {
+          remaining.splice(index, 1)
+          segmentAdded = true
+        } else {
+          index++
+        }
       }
     }
 
     return chain
   }
 
-  private combineSingles(chains: SegmentChain[]) {
+  private combineSingles(chains: SegmentChainBuilder[]) {
 
-    const singles: SegmentChain[] = []
-    const polyglots: SegmentChain[] = []
+    const singles: SegmentChainBuilder[] = []
+    const polyglots: SegmentChainBuilder[] = []
 
     for (const chain of chains) {
       if (chain.single()) {
@@ -139,7 +190,7 @@ export class PathBuilder {
 
     if (singles.length <= 1) return chains
 
-    const combined = new SegmentChain(singles[0].first)
+    const combined = new SegmentChainBuilder(singles[0].first)
     singles.splice(0, 1)
 
     while (singles.length > 0) {
@@ -150,7 +201,7 @@ export class PathBuilder {
     return [...polyglots, combined]
   }
 
-  private popClosest(latest: PathSegment, singles: SegmentChain[]): PathSegment {
+  private popClosest(latest: PathSegment, singles: SegmentChainBuilder[]): PathSegment {
     let closest = this.closestDistance(latest, 0, singles[0].first)
     for (let index = 1; index < singles.length; index++){
       const segmentClosest = this.closestDistance(latest, index, singles[index].first)
@@ -192,32 +243,54 @@ export class PathSegment {
   connectsWith(segment: PathSegment) {
     return this.end.equals(segment.end) || this.end.equals(segment.begin)
   }
-  normalizeConnection(segment: PathSegment) {
-    if (this.end.equals(segment.end)) {
-      return new PathSegment(segment.end, segment.begin)
-    } else if (this.end.equals(segment.begin)) {
-      return segment
+
+  normalizeBeginConnection(segment: PathSegment) {
+    if (this.begin.equals(segment.end)) {
+      return {begin: true, segment: segment}
+    } else if (this.begin.equals(segment.begin)) {
+      return {begin: true, segment: new PathSegment(segment.end, segment.begin)}
     } else {
       return nothing
     }
+  }
+
+  normalizeEndConnection(segment: PathSegment) {
+    if (this.end.equals(segment.end)) {
+      return {begin: false, segment: new PathSegment(segment.end, segment.begin)}
+    } else if (this.end.equals(segment.begin)) {
+      return {begin: false, segment: segment}
+    } else {
+      return nothing
+    }
+  }
+
+  translate(space: Space) {
+      const begin = space.translate(this.begin)
+      const end = space.translate(this.end)
+      return new PathSegment(begin, end)
   }
 }
 
 export class Path implements Finite {
 
+  private segmentsLazy: Lazy<readonly PathSegment[]> = new Lazy<readonly PathSegment[]>(() => this.getSegments())
   private trianglesLazy: Lazy<readonly Triangle[]> = new Lazy<readonly Triangle[]>(() => this.getTriangles())
 
   readonly faceType = FaceType.Polygon
   readonly type = ModelType.Primary
   readonly debug: boolean = false
-  readonly segments: readonly PathSegment[]
+  readonly chains: readonly SegmentChain[]
 
   get triangles(): readonly Triangle[] {
     return this.trianglesLazy.value
   }
 
-  constructor(segments: PathSegment[], type: ModelType = ModelType.Primary, debug: boolean = false) {
-    this.segments = segments
+  get segments(): readonly PathSegment[] {
+    return this.segmentsLazy.value
+  }
+
+  constructor(chains: readonly SegmentChain[], type: ModelType = ModelType.Primary, debug: boolean = false) {
+    this.chains = chains
     this.type = ModelType.Primary
     this.debug = debug
   }
@@ -227,8 +300,14 @@ export class Path implements Finite {
   }
 
   toSpace(space: Space) {
-    const translated = this.segments.map(segment => Path.translate(segment, space))
+    const translated = this.chains.map(chain => chain.translate(space))
     return new Path(translated, this.type, this.debug)
+  }
+
+  private getSegments(): readonly PathSegment[] {
+    const result: PathSegment[] = []
+    this.chains.forEach(chain => pushMany(result, chain.segments))
+    return result
   }
 
   private getTriangles(): readonly Triangle[] {
@@ -288,9 +367,4 @@ export class Path implements Finite {
   }
      */
 
-  private static translate(segment: PathSegment, space: Space) {
-    const begin = space.translate(segment.begin)
-    const end = space.translate(segment.end)
-    return new PathSegment(begin, end)
-  }
 }

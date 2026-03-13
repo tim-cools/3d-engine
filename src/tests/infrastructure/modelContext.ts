@@ -1,19 +1,19 @@
 import {VerifyLogging} from "./verifyLogging"
-import {Face, Model, Point, Segment, SpaceModel} from "../../engine/models"
+import {Face, Model, Point, Segment, SpaceModel, SubtractModel} from "../../engine/models"
 import {equalsTolerancePoint} from "../../engine/models/equals"
 import {nothing} from "../../engine/nothing"
 import {VerifyModelContext} from "./verifyModelContext"
 
 export class ModelContext {
 
-  private readonly context: VerifyModelContext<SpaceModel>
+  private readonly context: VerifyModelContext<SubtractModel>
   private readonly logging: VerifyLogging
-  private readonly model: SpaceModel
+  private readonly model: SubtractModel
   private readonly faces: Face[]
   private readonly segments: Segment[]
   private readonly factor: number | null = null
 
-  constructor(context: VerifyModelContext<SpaceModel>, factor: number | null = null) {
+  constructor(context: VerifyModelContext<SubtractModel>, factor: number | null = null) {
     this.context = context
     this.faces = [...context.model.faces] // .filter(value => !value.debug)
     this.segments = context.model.segments.filter(value => !value.debug)
@@ -25,7 +25,7 @@ export class ModelContext {
   containsSegments(points: readonly Point[]): ModelContext {
 
     if (this.segments.length != points.length - 1) {
-      this.logging.fail(`segments.length != ${points.length - 1}`, `segments.length = ${this.segments.length} - `)
+      this.logging.fail(`segments.length != ${points.length - 1}`, `actual = ${this.segments.length} - `)
     }
 
     const log: string[] = []

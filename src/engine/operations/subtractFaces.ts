@@ -149,11 +149,7 @@ function addTriangleSegment(segment: Segment, subtract: SpaceModel, intersection
 
   const segmentIntersection = intersection.segmentInteraction(segment)
   if (segmentIntersection == nothing || segmentIntersection.type == IntersectionType.None) {
-    /* todo if (resultPolygon.points.length == 0) {
-      resultPolygon.add(segment.begin)
-    }
-    resultPolygon.add(segment.end)
-     */
+    resultPolygon.addSegment(segment.begin, segment.end)
   } else if (segmentIntersection.type == IntersectionType.Point) {
     addPolygonPartialByPoint(segment, subtract, segmentIntersection.point, resultPolygon)
   } else if (segmentIntersection.type == IntersectionType.Segment) {
