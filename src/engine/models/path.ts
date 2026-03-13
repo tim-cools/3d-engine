@@ -1,10 +1,12 @@
-import {Finite, ModelType, Point} from "./primitives"
+import {Finite, ModelType, Point, Segment} from "./primitives"
 import {Nothing, nothing} from "../nothing"
 import {Lazy} from "../../infrastructure/lazy"
 import {Triangle} from "./triangle"
 import {Space} from "./transformations"
 import {FaceType} from "./faceType"
 import {pushMany} from "../../infrastructure"
+import {intersectionTriangleSegment} from "../operations/intersectionTriangleSegment"
+import {IntersectionType} from "../operations/intersectionResult"
 
 class SegmentChain {
 
@@ -311,39 +313,38 @@ export class Path implements Finite {
   }
 
   private getTriangles(): readonly Triangle[] {
-    return []
+    if (this.chains.length == 0) return []
+    const triangles: Triangle[] = []
+    for (const chain of this.chains) {
+      this.getChainTriangles(chain, triangles)
+    }
+    return triangles
   }
-    /*if (this.points.length == 0) return []
-    for (let indexStart = 0; indexStart < this.points.length; indexStart ++) {
-      const pointStart = this.points[indexStart]
-      const result = this.checkTriangles(pointStart)
+
+  private getChainTriangles(chain: SegmentChain, triangles: Triangle[]) {
+    let found = false
+    for (let indexStart = 0; !found && indexStart < chain.points.length; indexStart++) {
+      const pointStart = chain.points[indexStart]
+      const result = Path.checkTriangles(chain.points, pointStart)
       if (result != nothing) {
-        return result
+        found = true
+        pushMany(triangles, result)
       }
     }
-    throw new Error("No valid triangles found")
-  }
-
-  private getSegments(): readonly Segment[] {
-    const result: Segment[] = []
-    const beginPoint = this.points[0]
-    for (let index = 1; index < this.points.length; index++) {
-      const endPoint = this.points[index]
-      const segment = new Segment(beginPoint, endPoint)
-      result.push(segment)
+    if (!found) {
+      throw new Error("No valid triangles found")
     }
-    return result
   }
 
-  private checkTriangles(pointStart: Point) {
+  private static checkTriangles(points: readonly Point[], pointStart: Point) {
     const result: Triangle[] = []
-    for (let index = 1; index < this.points.length; index++) {
-      const point2 = this.points[index - 1]
-      const point3 = this.points[index]
+    for (let index = 1; index < points.length; index++) {
+      const point2 = points[index - 1]
+      const point3 = points[index]
 
       if (!pointStart.equals(point2) && !pointStart.equals(point3)) {
         let triangle = new Triangle(pointStart, point2, point3)
-        if (this.overlapsOutside(triangle)) {
+        if (Path.overlapsOutside(points, triangle)) {
           return nothing;
         }
         result.push(  triangle)
@@ -352,10 +353,10 @@ export class Path implements Finite {
     return result
   }
 
-  private overlapsOutside(triangle: Triangle): boolean {
-    let start = this.points[0]
-    for (let index = 1; index < this.points.length; index++){
-      const point = this.points[index]
+  private static overlapsOutside(points: readonly Point[], triangle: Triangle): boolean {
+    let start = points[0]
+    for (let index = 1; index < points.length; index++){
+      const point = points[index]
       const segment = new Segment(start, point)
       const intersection = intersectionTriangleSegment(triangle, segment)
       if (intersection.type == IntersectionType.Segment && !triangle.containsSegment(intersection.segment)) {
@@ -365,6 +366,4 @@ export class Path implements Finite {
     }
     return false
   }
-     */
-
 }
