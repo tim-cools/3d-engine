@@ -534,7 +534,13 @@ export class Ray implements Linear {
   }
 }
 
-export class Segment implements Finite {
+export interface SegmentBase {
+  readonly begin: Point
+  readonly end: Point
+  equals(segment: SegmentBase): boolean
+}
+
+export class Segment implements Finite, SegmentBase {
 
   readonly begin: Point
   readonly end: Point
@@ -576,7 +582,7 @@ export class Segment implements Finite {
     return this.begin.distanceToPoint(this.end)
   }
 
-  equals(segment: Segment) {
+  equals(segment: SegmentBase) {
     return (this.begin.equals(segment.begin) && this.end.equals(segment.end))
         || (this.begin.equals(segment.end) && this.end.equals(segment.begin))
   }

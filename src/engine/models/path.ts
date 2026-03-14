@@ -1,4 +1,4 @@
-import {Finite, ModelType, Point, Segment} from "./primitives"
+import {Finite, ModelType, Point, Segment, SegmentBase} from "./primitives"
 import {Nothing, nothing} from "../nothing"
 import {Lazy} from "../../infrastructure/lazy"
 import {Triangle} from "./triangle"
@@ -20,14 +20,14 @@ class SegmentChain {
 
   constructor(segments: PathSegment[]) {
     this.segmentsValue = segments
-    this.points = this.checkPoints(segments)
+    this.points = SegmentChain.checkPoints(segments)
   }
 
   translate(space: Space): SegmentChain {
     return new SegmentChain(this.segmentsValue.map(segment => segment.translate(space)))
   }
 
-  private checkPoints(segments: PathSegment[]): Point[] {
+  private static checkPoints(segments: PathSegment[]): Point[] {
     const first = segments[0].begin
     let last = first
     const result: Point[] = [last]
@@ -204,9 +204,9 @@ export class PathBuilder {
   }
 
   private popClosest(latest: PathSegment, singles: SegmentChainBuilder[]): PathSegment {
-    let closest = this.closestDistance(latest, 0, singles[0].first)
+    let closest = PathBuilder.closestDistance(latest, 0, singles[0].first)
     for (let index = 1; index < singles.length; index++){
-      const segmentClosest = this.closestDistance(latest, index, singles[index].first)
+      const segmentClosest = PathBuilder.closestDistance(latest, index, singles[index].first)
       if (segmentClosest.distance < closest.distance) {
         closest = segmentClosest
       }
@@ -219,7 +219,7 @@ export class PathBuilder {
     }
   }
 
-  private closestDistance(latest: PathSegment, index: number, segment: PathSegment) {
+  private static closestDistance(latest: PathSegment, index: number, segment: PathSegment) {
     const distanceBegin = latest.end.distanceToPoint(segment.begin)
     const distanceEnd = latest.end.distanceToPoint(segment.end)
     return distanceBegin < distanceEnd
@@ -228,7 +228,7 @@ export class PathBuilder {
   }
 }
 
-export class PathSegment {
+export class PathSegment implements SegmentBase {
 
   readonly begin: Point
   readonly end: Point
@@ -240,10 +240,6 @@ export class PathSegment {
 
   toString() {
     return `begin ${this.begin} end: ${this.end}`
-  }
-
-  connectsWith(segment: PathSegment) {
-    return this.end.equals(segment.end) || this.end.equals(segment.begin)
   }
 
   normalizeBeginConnection(segment: PathSegment) {
@@ -270,6 +266,11 @@ export class PathSegment {
       const begin = space.translate(this.begin)
       const end = space.translate(this.end)
       return new PathSegment(begin, end)
+  }
+
+  equals(segment: SegmentBase) {
+    return (this.begin.equals(segment.begin) && this.end.equals(segment.end))
+        || (this.begin.equals(segment.end) && this.end.equals(segment.begin))
   }
 }
 

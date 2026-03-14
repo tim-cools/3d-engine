@@ -42,7 +42,7 @@ export class World {
   }
 
   update(difference: number) {
-    for (const object of this.scene.objects) {
+    for (const object of this.scene.objects.value) {
       object.update(difference)
     }
   }
@@ -82,7 +82,7 @@ export class World {
 
   toggleShowBoundaries() {
     this.showBoundaries = !this.showBoundaries
-    for (const object of this.scene.objects) {
+    for (const object of this.scene.objects.value) {
       const hasObjectStyle = object as any as HasObjectStyle
       if (hasObjectStyle.setShowBoundaries != undefined) {
         hasObjectStyle.setShowBoundaries(this.showBoundaries)
@@ -100,7 +100,7 @@ export class World {
   }
 
   private setObjectStyle() {
-    for (const object of this.scene.objects) {
+    for (const object of this.scene.objects.value) {
       const hasObjectStyle = object as any as HasObjectStyle
       if (hasObjectStyle.setStyle != undefined) {
         hasObjectStyle.setStyle(this.objectStyle)
@@ -112,8 +112,8 @@ export class World {
     const result: ObjectRender[] = []
     const space2D = this.view.space2D()
 
-    const objects = this.axisVisible ? [this.axis, ...this.scene.objects] : this.scene.objects
-    for (const object of  objects) {
+    const objects = this.axisVisible ? [this.axis, ...this.scene.objects.value] : this.scene.objects.value
+    for (const object of objects) {
       if (object.is3D) {
         this.renderObject3D(object, result)
       } else {

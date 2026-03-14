@@ -187,16 +187,13 @@ function addPolygonPartialSegment(segment: Segment, intersection: SegmentInterse
   } else if (segment.end.equals(end)) {
     resultPolygon.addSegment(segment.begin, begin)
   } else {
-    /* todo
-    resultPolygon.add(segment.begin)
-    resultPolygon.add(begin)
+    resultPolygon.addSegment(segment.begin, begin)
     const inlet = sharedPoint(intersection.sourceSegments)
     if (inlet != nothing) {
-      resultPolygon.add(inlet)
+      resultPolygon.addSegment(begin, inlet)
+      resultPolygon.addSegment(inlet, end)
     }
-    resultPolygon.add(end)
-    resultPolygon.add(segment.end)
-     */
+    resultPolygon.addSegment(end, segment.end)
   }
 }
 

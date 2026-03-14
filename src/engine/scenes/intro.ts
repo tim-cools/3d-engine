@@ -1,7 +1,8 @@
 import {Scene} from "./scenes"
 import {Point2D} from "../models"
-import {Title} from "../objects"
+import {Title, Object} from "../objects"
 import {Colors} from "../colors"
+import {Lazy} from "../../infrastructure/lazy"
 
 export function intro(scenes: readonly Scene[]): Scene {
 
@@ -30,5 +31,5 @@ export function intro(scenes: readonly Scene[]): Scene {
     texts.push(text(`${(index + 1).toString()}: ${scene.title}`))
   }
 
-  return new Scene("Intro", texts)
+  return new Scene("Intro", new Lazy<Object[]>(() => texts))
 }

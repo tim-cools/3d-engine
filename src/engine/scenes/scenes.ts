@@ -11,13 +11,14 @@ import {cube} from "./cube"
 import {sphere} from "./sphere"
 import {cubesAndSphere} from "./cubesAndSphere"
 import {subtractTriangle4} from "./subtractTriangle4"
+import {Lazy} from "../../infrastructure/lazy"
 
 export class Scene {
 
   readonly title: Text
-  readonly objects: Object[] = []
+  readonly objects: Lazy<Object[]>
 
-  constructor(title: Text, objects: Object[]) {
+  constructor(title: Text, objects: Lazy<Object[]>) {
     this.title = title
     this.objects = objects
   }

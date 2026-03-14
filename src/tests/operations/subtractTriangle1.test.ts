@@ -1,7 +1,23 @@
-import {Point} from "../../engine/models"
+import {Point, SubtractModel} from "../../engine/models"
 import {Verify} from "../infrastructure"
 import {ModelContext} from "../infrastructure/modelContext"
 import {subtractTriangleTestCases1} from "./subtractTriangleTestCases1"
+
+function verifyPath(result: SubtractModel, points: Point[], triangles: number) {
+  Verify.model(result, context => new ModelContext(context)
+    .containsPath(points)
+    .containsSegments(points)
+    .validateTriangles(triangles)
+  )
+}
+
+function verifyTriangle(result: SubtractModel, points: Point[], triangles: number) {
+  Verify.model(result, context => new ModelContext(context)
+    .containsTriangle(points)
+    .containsSegments(points)
+    .validateTriangles(triangles)
+  )
+}
 
 test('subtract triangle 1 intersect segment bc', async () => {
   const result = subtractTriangleTestCases1.intersect1_segmentBC()
@@ -12,10 +28,7 @@ test('subtract triangle 1 intersect segment bc', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    .containsSegments(points)
-  );
+  verifyPath(result, points, 2)
 })
 
 test('subtract triangle 2 intersect 2 point ca', async () => {
@@ -30,8 +43,9 @@ test('subtract triangle 2 intersect 2 point ca', async () => {
     new Point(0, 0, 0)
   ]
   Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    //.containsSegments(points)  // TODO: subtractSegments is not (yet) completely implemented (inlets not yet supported)
+    .containsPath(points)
+    //.containsSegments(points)   // not yet implemented, inlets are currently not supported by the subtractSegments
+    .validateTriangles(4)
   );
 })
 
@@ -43,10 +57,7 @@ test('subtract triangle 3 intersect 1 point ca', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0),
   ]
-  Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    .containsSegments(points)
-  );
+  verifyPath(result, points, 1)
 })
 
 test('subtract triangle 4 no intersect', async () => {
@@ -57,11 +68,7 @@ test('subtract triangle 4 no intersect', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0),
   ]
-
-  Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    .containsSegments(points)
-  );
+  verifyTriangle(result, points, 1)
 })
 
 test('subtract triangle 5 intersect 1 point bc - ca', async () => {
@@ -74,10 +81,7 @@ test('subtract triangle 5 intersect 1 point bc - ca', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    //.containsSegments(points)        // TODO: subtractSegments is not (yet) completely implemented
-  );
+  verifyPath(result, points, 2)
 })
 
 test('subtract triangle 6 intersect 1 point bc segment ca', async () => {
@@ -89,10 +93,7 @@ test('subtract triangle 6 intersect 1 point bc segment ca', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    .containsSegments(points)
-  );
+  verifyPath(result, points, 2)
 })
 
 test('subtract triangle 7 intersect 2 point bc', async () => {
@@ -107,8 +108,9 @@ test('subtract triangle 7 intersect 2 point bc', async () => {
     new Point(0, 0, 0)
   ]
   Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    //.containsSegments(points)  // TODO: subtractSegments is not (yet) completely implemented (inlets not yet supported)
+    .containsPath(points)
+    //.containsSegments(points)   // not yet implemented, inlets are currently not supported by the subtractSegments
+    .validateTriangles(4)
   );
 })
 
@@ -120,10 +122,7 @@ test('subtract triangle 8 intersect 1 point bc', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0),
   ]
-    Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    .containsSegments(points)
-  );
+  verifyPath(result, points, 1)
 })
 
 test('subtract triangle 9 no intersect above', async () => {
@@ -134,8 +133,5 @@ test('subtract triangle 9 no intersect above', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  Verify.model(result, context => new ModelContext(context)
-    .containsPolygon(points)
-    .containsSegments(points)
-  );
+  verifyTriangle(result, points, 1)
 })

@@ -32,7 +32,7 @@ function addMasterSegment(subtract: SpaceModel, segment: Segment, log: Logger, s
   const beginInSubtract = subtract.contains(segment.begin)
   const endInSubtract = subtract.contains(segment.end)
 
-  //log.log(segment, `in subtract begin: ${beginInSubtract} end: ${endInSubtract}`)
+  log.log(segment, `in subtract begin: ${beginInSubtract} end: ${endInSubtract}`)
 
   if (beginInSubtract && endInSubtract) {
     segments.push(segment.disabled(true))
@@ -60,7 +60,7 @@ function addSubtractSegment(segment: Segment, subtract: SpaceModel, master: Mode
   const beginInMaster = master.contains(segment.begin)
   const endInMaster = master.contains(segment.end)
 
-  //log.log(segment, `in master begin: ${beginInMaster} end: ${endInMaster}`)
+  log.log(segment, `in master begin: ${beginInMaster} end: ${endInMaster}`)
 
   if (beginInMaster && endInMaster) {
     if (master.onBoundary(segment.begin)) {
@@ -116,9 +116,9 @@ function getPartials(subtract: SpaceModel, segment: Segment, intersections: Poin
       const intersection = intersectionTriangleSegment(triangle, segment)
       if (intersection.type == IntersectionType.Point) {
         intersections.push(intersection.point)
-        return partialSegments(subtract, segment, intersection.point, false)
+        return partialSegmentsPointIntersection(subtract, segment, intersection.point, false)
       } else if (intersection.type == IntersectionType.Segment) {
-        return partialIntersectionSegments(segment, intersection.segment, intersections)
+        return partialSubtractIntersectionSegments(segment, intersection.segment, intersections)
       }
     }
   }
@@ -132,7 +132,7 @@ function partialMaster(model: Model, segment: Segment, intersections: Point[]): 
       const intersection = intersectionTriangleSegment(triangle, segment)
       if (intersection.type == IntersectionType.Point) {
         intersections.push(intersection.point)
-        return partialSegments(model, segment, intersection.point,true)
+        return partialSegmentsPointIntersection(model, segment, intersection.point,true)
       } else if (intersection.type == IntersectionType.Segment) {
         console.log("Side case not implemented!")
       }
@@ -141,18 +141,18 @@ function partialMaster(model: Model, segment: Segment, intersections: Point[]): 
   return nothing
 }
 
-function partialSegments(subtract: CanContainPoint, segment: Segment, intersectionPoint: Point, invert: boolean) {
+function partialSegmentsPointIntersection(subtract: CanContainPoint, segment: Segment, intersectionPoint: Point, invert: boolean) {
   const result: Segment[] = []
   if (subtract.contains(segment.begin) !== invert) {
     if (!intersectionPoint.equals(segment.end)) {
       result.push(new Segment(intersectionPoint, segment.end, ModelType.Secondary))
     }
     if (!intersectionPoint.equals(segment.begin)) {
-      //result.push(new Segment(segment.begin, intersectionPoint, ModelType.Disabled, true))
+      result.push(new Segment(segment.begin, intersectionPoint, ModelType.Disabled, true))
     }
   } else {
     if (!intersectionPoint.equals(segment.end)) {
-      //result.push(new Segment(intersectionPoint, segment.end, ModelType.Disabled, true))
+      result.push(new Segment(intersectionPoint, segment.end, ModelType.Disabled, true))
     }
     if (!intersectionPoint.equals(segment.begin)) {
       result.push(new Segment(segment.begin, intersectionPoint, ModelType.Secondary),)
@@ -161,17 +161,16 @@ function partialSegments(subtract: CanContainPoint, segment: Segment, intersecti
   return result
 }
 
-function partialIntersectionSegments(segment: Segment, intersectionSegment: Segment, intersections: Point[]) {
+
+function partialSubtractIntersectionSegments(segment: Segment, intersectionSegment: Segment, intersections: Point[]) {
 
   const {begin, end} = orderBeginAndEnd(segment, intersectionSegment)
   const result: Segment[] = []
   if (segment.begin.equals(begin)) {
-    //console.log("partialIntersectionSegments: segment.begin.equals(intersectionSegment.begin)")
     result.push(new Segment(segment.begin, intersectionSegment.end, ModelType.Disabled, true))
     result.push(new Segment(intersectionSegment.end, segment.end, ModelType.Secondary))
     intersections.push(intersectionSegment.end)
   } else if (segment.end.equals(end)) {
-    //console.log("partialIntersectionSegments: segment.end.equals(intersectionSegment.end)")
     result.push(new Segment(segment.begin, intersectionSegment.begin, ModelType.Secondary))
     result.push(new Segment(intersectionSegment.begin, segment.end, ModelType.Disabled, true))
     intersections.push(intersectionSegment.begin)

@@ -5,4 +5,5 @@ export * from './raster'
 export * from './rectangle'
 export * from './sphere'
 export * from './title'
-export {PointObject} from "./pointObject"
+export * from "./pointObject"
+export * from "./modelObject"

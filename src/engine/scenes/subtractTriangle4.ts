@@ -1,7 +1,8 @@
 import {Scene} from "./scenes"
 import {Model, Point, Size, SpaceModel, Triangle} from "../models"
-import {ModelObject} from "../objects/modelObject"
 import {subtractTriangleTestCases4} from "../../tests/operations/subtractTriangleTestCases4"
+import {Object, ModelObject} from "../objects"
+import {Lazy} from "../../infrastructure/lazy"
 
 function debugModel(): Model {
 
@@ -22,7 +23,7 @@ export function subtractTriangle4(): Scene {
     return new ModelObject("model." + count++, spaceModel)
   }
 
-  return new Scene("subtract triangles 2", [
+  return new Scene("subtract triangles 2", new Lazy<Object[]>(() => [
     model(subtractTriangleTestCases4.intersect1_skewedTriangle(), new Point(-1, .5, 0)),
     model(subtractTriangleTestCases4.intersect2_outsideTriangle(), new Point(-.5, .5, 0)),
     model(subtractTriangleTestCases4.intersect3_skewedTriangle(), new Point(0, .5, 0)),
@@ -32,5 +33,5 @@ export function subtractTriangle4(): Scene {
     model(subtractTriangleTestCases4.intersect6_skewedTriangle(), new Point(0, -.25, 0)),
 
     model(debugModel(), new Point(.5, -.25,0)),
-  ])
+  ]))
 }
