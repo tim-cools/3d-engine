@@ -9,6 +9,8 @@ export interface CanContainPoint {
 
 export class Model implements CanContainPoint {
 
+  static empty: Model = new Model([], [], [], coordinate => false, coordinate => false)
+
   private readonly middleLazy = new Lazy<Point>(() => this.calculateMiddle())
   private readonly boundaryLazy: Lazy<Boundaries> = new Lazy<Boundaries>(() => this.createBoundaries())
 

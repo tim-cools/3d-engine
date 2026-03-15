@@ -1,13 +1,12 @@
 import {VerifyLogging} from "./verifyLogging"
 import {
   Face,
-  FaceType,
+  FaceType, Model,
   Path,
   PathSegment,
   Point,
   Segment,
   SegmentBase,
-  SubtractModel,
   Triangle
 } from "../../engine/models"
 import {nothing} from "../../engine/nothing"
@@ -16,14 +15,14 @@ import {selectMany} from "../../infrastructure"
 
 export class ModelContext {
 
-  private readonly context: VerifyModelContext<SubtractModel>
+  private readonly context: VerifyModelContext<Model>
   private readonly logging: VerifyLogging
-  private readonly model: SubtractModel
+  private readonly model: Model
   private readonly faces: Face[]
   private readonly segments: Segment[]
   private readonly factor: number | null = null
 
-  constructor(context: VerifyModelContext<SubtractModel>, factor: number | null = null) {
+  constructor(context: VerifyModelContext<Model>, factor: number | null = null) {
     this.context = context
     this.faces = [...context.model.faces] // .filter(value => !value.debug)
     this.segments = context.model.segments.filter(value => !value.debug)

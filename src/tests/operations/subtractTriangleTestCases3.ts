@@ -1,5 +1,4 @@
 import {Point} from "../../engine/models"
-import {Nothing} from "../../engine/nothing"
 import {subtractTriangle} from "./subtractTriangleTestCases1"
 
 //TriangleModel.create(Point.null, new Point(1, 0, 0), new Point(0, 1, 0))

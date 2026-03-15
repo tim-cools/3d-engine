@@ -1,11 +1,10 @@
 import {CubeModel, Point, rotateX, rotateZ, Size, SpaceModel} from "../models"
-import {ObjectStyle} from "./object"
 import {ModelObject} from "./modelObject"
-import {Colors} from "../colors"
+import {RenderStyle} from "./renderStyle"
 
 export class Cube extends ModelObject {
 
-  constructor(id: string, position: Point, size: Size, style: ObjectStyle = ObjectStyle.Wireframe) {
+  constructor(id: string, position: Point, size: Size, style: RenderStyle = RenderStyle.Wireframe) {
     super(id, Cube.createModel(position, size, style))
   }
 
@@ -20,7 +19,7 @@ export class Cube extends ModelObject {
     }
   }
 
-  private static createModel(position: Point, size: any, style: ObjectStyle) {
+  private static createModel(position: Point, size: any, style: RenderStyle) {
     const model = CubeModel.create(4)
     return new SpaceModel(model, position, size)
   }

@@ -7,6 +7,8 @@ import {
 } from "./models"
 
 export interface View2D {
+  width: number
+  height: number
   translate(point: Point): Point2D
   translateMany(point: readonly Point[]): readonly Point2D[]
 }
@@ -83,6 +85,9 @@ export class View implements View2D {
     return {
       translate(point: Point2D): Point2D {
         return new Point2D(width * point.x, height * point.y)
+      },
+      translatePoints(points: Point2D[]): Point2D[] {
+        return points.map(point => new Point2D(width * point.x, height * point.y))
       }
     }
   }

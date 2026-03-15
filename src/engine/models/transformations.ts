@@ -25,6 +25,7 @@ export interface SpaceObject {
 
 export interface Space2D {
   translate(point: Point2D): Point2D
+  translatePoints(points: readonly Point2D[]): Point2D[]
 }
 
 export interface Space {

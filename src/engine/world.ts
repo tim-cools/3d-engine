@@ -11,8 +11,18 @@ import {
 } from "./models"
 import {Shape, Shape2D} from "./shapes"
 import {Scene, scenes} from "./scenes"
-import {HasObjectStyle, Object2D, Object3D, ObjectStyle} from "./objects"
-import {axis} from "./objects/axis"
+import {
+  Object2D,
+  Object3D,
+  axis,
+  info,
+  HasRenderStyle,
+  RenderStyle,
+  Algorithm,
+  HasAlgorithm,
+  HasSceneName,
+  Object
+} from "./objects"
 
 type ObjectRender = {
   z: number
@@ -25,14 +35,17 @@ export class World {
   private readonly logEnabled = false
 
   private readonly axis = axis();
+  private readonly info = info();
   private readonly lastZ: Map<string, number> = new Map()
   private readonly scenes: readonly Scene[] = []
   private readonly view: View
 
   private axisVisible: boolean = false
   private showBoundaries: boolean = false
-  private objectStyle: ObjectStyle = ObjectStyle.Wireframe
+  private renderStyle: RenderStyle = RenderStyle.Wireframe
+  private algorithm: Algorithm = Algorithm.SubtractFaces
   private scene: Scene
+  private objects: Object[] = []
 
   constructor(view: View) {
     this.view = view
@@ -52,7 +65,7 @@ export class World {
     context.fillStyle = "#fff";
     context.fillRect(0, 0, canvas.width, canvas.height)
 
-    const shapes = this.shapes()
+    const shapes = this.updateShapes()
     shapes.sort((first, second) => {
       return first.z > second.z ? -1 : 1
     })
@@ -67,13 +80,22 @@ export class World {
       return
     }
     this.scene = this.scenes[number]
-    this.setObjectStyle()
+    this.updateShapes()
+    this.setRenderStyle()
+    this.setAlgorithm()
+    this.setSceneName()
   }
 
-  switchObjectStyle() {
-    this.objectStyle = (this.objectStyle + 1) % 4
-    console.log("switchObjectStyle: " + ObjectStyle[this.objectStyle])
-    this.setObjectStyle()
+  switchRenderStyle() {
+    this.renderStyle = (this.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
+    console.log("switchRenderStyle: " + RenderStyle[this.renderStyle])
+    this.setRenderStyle()
+  }
+
+  switchAlgorithm() {
+    this.algorithm = (this.algorithm + 1) % (Algorithm.SubtractFaces + 1)
+    console.log("switchSAlgorithm: " + Algorithm[this.algorithm])
+    this.setAlgorithm()
   }
 
   toggleAxis() {
@@ -82,8 +104,8 @@ export class World {
 
   toggleShowBoundaries() {
     this.showBoundaries = !this.showBoundaries
-    for (const object of this.scene.objects.value) {
-      const hasObjectStyle = object as any as HasObjectStyle
+    for (const object of this.objects) {
+      const hasObjectStyle = object as any as HasRenderStyle
       if (hasObjectStyle.setShowBoundaries != undefined) {
         hasObjectStyle.setShowBoundaries(this.showBoundaries)
       }
@@ -91,7 +113,7 @@ export class World {
   }
 
   logShapes() {
-    const shapes = this.shapes()
+    const shapes = this.updateShapes()
     console.log("Shapes     ----------------------------------------------------------------------")
     for (const objectShape of shapes) {
       console.log("-- " + objectShape.shape.toString())
@@ -99,21 +121,42 @@ export class World {
     console.log("Shapes End ----------------------------------------------------------------------")
   }
 
-  private setObjectStyle() {
-    for (const object of this.scene.objects.value) {
-      const hasObjectStyle = object as any as HasObjectStyle
+  private setRenderStyle() {
+    for (const object of this.objects) {
+      const hasObjectStyle = object as any as HasRenderStyle
       if (hasObjectStyle.setStyle != undefined) {
-        hasObjectStyle.setStyle(this.objectStyle)
+        hasObjectStyle.setStyle(this.renderStyle)
       }
     }
   }
 
-  private shapes(): ObjectRender[] {
+  private setAlgorithm() {
+    for (const object of this.objects) {
+      const hasObjectStyle = object as any as HasAlgorithm
+      if (hasObjectStyle.setAlgorithm != undefined) {
+        hasObjectStyle.setAlgorithm(this.algorithm)
+      }
+    }
+  }
+
+  private setSceneName() {
+    for (const object of this.objects) {
+      const hasSceneName = object as any as HasSceneName
+      if (hasSceneName.setSceneName != undefined) {
+        hasSceneName.setSceneName(this.scene.title)
+      }
+    }
+  }
+
+  private updateShapes(): ObjectRender[] {
     const result: ObjectRender[] = []
     const space2D = this.view.space2D()
 
-    const objects = this.axisVisible ? [this.axis, ...this.scene.objects.value] : this.scene.objects.value
-    for (const object of objects) {
+    this.objects = this.axisVisible
+      ? [this.axis, this.info, ...this.scene.objects.value]
+      : [this.info, ...this.scene.objects.value]
+
+    for (const object of this.objects) {
       if (object.is3D) {
         this.renderObject3D(object, result)
       } else {

@@ -1,6 +1,7 @@
 import {Point, rotateX, rotateZ, Size} from "../models"
 import {LineShape, Shape, UpdatableShape} from "../shapes"
-import {BaseObject3D, ObjectStyle} from "./object"
+import {BaseObject3D} from "./object"
+import {RenderStyle} from "./renderStyle"
 import {PathShape} from "../shapes"
 
 export class Rectangle extends BaseObject3D {
@@ -14,9 +15,9 @@ export class Rectangle extends BaseObject3D {
 
   private readonly color: string
   private readonly shapesValue: UpdatableShape[]
-  private readonly style: ObjectStyle
+  private readonly style: RenderStyle
 
-  constructor(id: string, color: string, position: Point, size: Size, style: ObjectStyle = ObjectStyle.Wireframe) {
+  constructor(id: string, color: string, position: Point, size: Size, style: RenderStyle = RenderStyle.Wireframe) {
     super(id, position, size)
     this.color = color
     this.style = style
@@ -39,7 +40,7 @@ export class Rectangle extends BaseObject3D {
   }
 
   private createShapes() {
-    return this.style == ObjectStyle.Wireframe
+    return this.style == RenderStyle.Wireframe
       ? this.wireframe()
       : this.solid()
   }

@@ -19,9 +19,10 @@ export function intro(scenes: readonly Scene[]): Scene {
     text("Mouse: rotate world (+shift: move camera)"),
     text("Keys 0-9: change scene"),
     text("Keys arrows: move world (+shift: move camera))"),
-    text("a: toggle axis"),
+    text("x: toggle axis"),
     text("b: toggle boundaries"),
-    text("s: change render style (wireframe, faces, debug, faces wires...)"),
+    text("r: change render style (wireframe, faces, debug, faces wires, ...)"),
+    text("a: change algorithm (subtract segment (not complete), subtract triangles)"),
     text(""),
     text("0: intro"),
   ]

@@ -1,16 +1,16 @@
 import {Scene} from "./scenes"
-import {Model, Point, Size, SpaceModel} from "../models"
+import {Point, Size, SpaceModel, Subtract, SubtractModels} from "../models"
 import {subtractTriangleTestCases3} from "../../tests/operations/subtractTriangleTestCases3"
 import {Object, ModelObject} from "../objects"
 import {Lazy} from "../../infrastructure/lazy"
+import {SubtractModelObject} from "../objects/subtractModelObject"
 
 export function subtractTriangle3(): Scene {
 
   let count = 0;
 
-  function testSpaceModel(model: Model, position: Point) {
-    const spaceModel = new SpaceModel(model, position, Size.quarter)
-    return new ModelObject("model." + count++, spaceModel)
+  function testSpaceModel(models: SubtractModels, position: Point) {
+    return new SubtractModelObject("model." + count++, models, position, Size.quarter)
   }
 
   return new Scene("subtract triangles 3", new Lazy<Object[]>(() => [

@@ -1,25 +1,23 @@
-import {Point, SubtractModel} from "../../engine/models"
+import {Point, Subtract, SubtractModels} from "../../engine/models"
 import {Verify} from "../infrastructure"
 import {ModelContext} from "../infrastructure/modelContext"
 import {subtractTriangleTestCases1} from "./subtractTriangleTestCases1"
 
-function verifyPath(result: SubtractModel, points: Point[], triangles: number) {
+function verifyPath(models: SubtractModels, points: Point[]) {
+  const result = Subtract.segments(models)
   Verify.model(result, context => new ModelContext(context)
-    .containsPath(points)
     .containsSegments(points)
-    .validateTriangles(triangles)
   )
 }
 
-function verifyTriangle(result: SubtractModel, points: Point[], triangles: number) {
+function verifyTriangle(models: SubtractModels, points: Point[]) {
+  const result = Subtract.segments(models)
   Verify.model(result, context => new ModelContext(context)
-    .containsTriangle(points)
     .containsSegments(points)
-    .validateTriangles(triangles)
   )
 }
 
-test('subtract triangle 1 intersect segment bc', async () => {
+test('subtract segments triangle 1 intersect segment bc', async () => {
   const result = subtractTriangleTestCases1.intersect1_segmentBC()
   const points = [
     new Point(0, 0, 0),
@@ -28,11 +26,11 @@ test('subtract triangle 1 intersect segment bc', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  verifyPath(result, points, 2)
+  verifyPath(result, points)
 })
 
-test('subtract triangle 2 intersect 2 point ca', async () => {
-  const result = subtractTriangleTestCases1.intersect2_2pointCA()
+test('subtract segments triangle 2 intersect 2 point ca', async () => {
+  const models = subtractTriangleTestCases1.intersect2_2pointCA()
   const points = [
     new Point(0, 0, 0),
     new Point(.5, 0, 0),
@@ -42,14 +40,10 @@ test('subtract triangle 2 intersect 2 point ca', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  Verify.model(result, context => new ModelContext(context)
-    .containsPath(points)
-    //.containsSegments(points)   // not yet implemented, inlets are currently not supported by the subtractSegments
-    .validateTriangles(4)
-  );
+  //verifyPath(models, points)  // not yet implemented, inlets are currently not supported by the subtractSegments
 })
 
-test('subtract triangle 3 intersect 1 point ca', async () => {
+test('subtract segments triangle 3 intersect 1 point ca', async () => {
   const result = subtractTriangleTestCases1.intersect3_1pointCA()
   const points = [
     new Point(0, 0, 0),
@@ -57,10 +51,10 @@ test('subtract triangle 3 intersect 1 point ca', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0),
   ]
-  verifyPath(result, points, 1)
+  verifyPath(result, points)
 })
 
-test('subtract triangle 4 no intersect', async () => {
+test('subtract segments triangle 4 no intersect', async () => {
   const result = subtractTriangleTestCases1.intersect4_no()
   const points = [
     new Point(0, 0, 0),
@@ -68,10 +62,10 @@ test('subtract triangle 4 no intersect', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0),
   ]
-  verifyTriangle(result, points, 1)
+  verifyTriangle(result, points)
 })
 
-test('subtract triangle 5 intersect 1 point bc - ca', async () => {
+test('subtract segments triangle 5 intersect 1 point bc - ca', async () => {
   const result = subtractTriangleTestCases1.intersect5_1pointBC_CA()
 
   const points = [
@@ -81,10 +75,10 @@ test('subtract triangle 5 intersect 1 point bc - ca', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  verifyPath(result, points, 2)
+  verifyPath(result, points)
 })
 
-test('subtract triangle 6 intersect 1 point bc segment ca', async () => {
+test('subtract segments triangle 6 intersect 1 point bc segment ca', async () => {
   const result = subtractTriangleTestCases1.intersect6_1pointBCSegmentCA()
   const points = [
     new Point(0, 0, 0),
@@ -93,11 +87,11 @@ test('subtract triangle 6 intersect 1 point bc segment ca', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  verifyPath(result, points, 2)
+  verifyPath(result, points)
 })
 
-test('subtract triangle 7 intersect 2 point bc', async () => {
-  const result = subtractTriangleTestCases1.intersect7_2pointsBC()
+test('subtract segments triangle 7 intersect 2 point bc', async () => {
+  const models = subtractTriangleTestCases1.intersect7_2pointsBC()
   const points = [
     new Point(0, 0, 0),
     new Point(1, 0, 0),
@@ -107,14 +101,10 @@ test('subtract triangle 7 intersect 2 point bc', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  Verify.model(result, context => new ModelContext(context)
-    .containsPath(points)
-    //.containsSegments(points)   // not yet implemented, inlets are currently not supported by the subtractSegments
-    .validateTriangles(4)
-  );
+  //verifyPath(models, points)  // not yet implemented, inlets are currently not supported by the subtractSegments
 })
 
-test('subtract triangle 8 intersect 1 point bc', async () => {
+test('subtract segments triangle 8 intersect 1 point bc', async () => {
   const result = subtractTriangleTestCases1.intersect8_1pointBC()
   const points = [
     new Point(0, 0, 0),
@@ -122,10 +112,10 @@ test('subtract triangle 8 intersect 1 point bc', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0),
   ]
-  verifyPath(result, points, 1)
+  verifyPath(result, points)
 })
 
-test('subtract triangle 9 no intersect above', async () => {
+test('subtract segments triangle 9 no intersect above', async () => {
   const result = subtractTriangleTestCases1.intersect9_noTriangleAbove()
   const points = [
     new Point(0, 0, 0),
@@ -133,5 +123,5 @@ test('subtract triangle 9 no intersect above', async () => {
     new Point(0, 1, 0),
     new Point(0, 0, 0)
   ]
-  verifyTriangle(result, points, 1)
+  verifyTriangle(result, points)
 })

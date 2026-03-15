@@ -1,26 +1,27 @@
 import {Scene} from "./scenes"
-import {Model, Point, Size, SpaceModel, Triangle} from "../models"
+import {Model, Point, Size, SpaceModel, SubtractModels, Triangle} from "../models"
 import {subtractTriangleTestCases4} from "../../tests/operations/subtractTriangleTestCases4"
-import {Object, ModelObject} from "../objects"
+import {ModelObject, Object} from "../objects"
 import {Lazy} from "../../infrastructure/lazy"
+import {SubtractModelObject} from "../objects/subtractModelObject"
 
-function debugModel(): Model {
+function debugModel(position: Point): ModelObject {
 
   const faces = [
     new Triangle(new Point(0.00000, 0.00000, 1.00000), new Point(0.00000, 0.50000, 1.00000), new Point(0.50000, 0.00000, 1.00000)),
     new Triangle(new Point(1.00000, 1.00000, 1.00000), new Point(0.50000, 0.75000, 1.00000), new Point(0.50000, 0.50000, 1.00000)),
   ]
 
-  return new Model([], [], faces, () => false, () => false)
+  let model = new Model([], [], faces, () => false, () => false)
+  return new ModelObject("debug", new SpaceModel(model, position, Size.default))
 }
 
 export function subtractTriangle4(): Scene {
 
   let count = 0;
 
-  function model(model: Model, position: Point) {
-    const spaceModel = new SpaceModel(model, position, Size.quarter)
-    return new ModelObject("model." + count++, spaceModel)
+  function model(models: SubtractModels, position: Point) {
+    return new SubtractModelObject("model." + count++, models, position, Size.default)
   }
 
   return new Scene("subtract triangles 2", new Lazy<Object[]>(() => [
@@ -32,6 +33,6 @@ export function subtractTriangle4(): Scene {
     model(subtractTriangleTestCases4.intersect5_outsideTriangle(), new Point(-.5, -.25, 0)),
     model(subtractTriangleTestCases4.intersect6_skewedTriangle(), new Point(0, -.25, 0)),
 
-    model(debugModel(), new Point(.5, -.25,0)),
+    debugModel(new Point(.5, -.25,0)),
   ]))
 }

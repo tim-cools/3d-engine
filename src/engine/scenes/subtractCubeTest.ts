@@ -1,7 +1,8 @@
 import {Scene} from "./scenes"
-import {CubeModel, Point, Size, SpaceModel, SubtractModel} from "../models"
-import {Object, ModelObject} from "../objects"
+import {CubeModel, Point, Size, SpaceModel, SubtractModels} from "../models"
+import {Object} from "../objects"
 import {Lazy} from "../../infrastructure/lazy"
+import {SubtractModelObject} from "../objects/subtractModelObject"
 
 export function subtractCubeTest(): Scene {
 
@@ -12,9 +13,8 @@ export function subtractCubeTest(): Scene {
 
   const size = Size.single(0.005)
   const position = Point.single(-.25)
-  const result = SubtractModel.create(square, subtractSquare)
 
   return new Scene("subtract cube test", new Lazy<Object[]>(() => [
-    new ModelObject("test", new SpaceModel(result, position, size)),
+    new SubtractModelObject("test", new SubtractModels(square, subtractSquare), position, size),
   ]))
 }

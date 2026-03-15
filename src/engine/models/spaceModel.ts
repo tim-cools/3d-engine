@@ -9,6 +9,8 @@ import {Triangle} from "./triangle"
 
 export class SpaceModel implements Space, SpaceObject, CanContainPoint {
 
+  static empty: SpaceModel = new SpaceModel(Model.empty, Point.null, Size.default)
+
   private readonly middleLazy = new Lazy<Point>(() => this.translate(this.model.middle))
   private readonly pointsLazy = new Lazy<readonly Point[]>(() => this.translatePoints())
   private readonly faceLazy = new Lazy<readonly Face[]>(() => this.translateFaces())

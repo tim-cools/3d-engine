@@ -1,11 +1,11 @@
-import {Point, Size, SpaceModel, SubtractModel} from "../../engine/models"
+import {Point, Size, SpaceModel, SubtractModels} from "../../engine/models"
 import {TriangleModel} from "../../engine/models/triangleModel"
 
-export function subtractTriangle(point1: Point, point2: Point, point3: Point): SubtractModel {
+export function subtractTriangle(point1: Point, point2: Point, point3: Point): SubtractModels {
   const triangle = TriangleModel.create(Point.null, new Point(1, 0, 0), new Point(0, 1, 0))
   const subtract = TriangleModel.create(point1, point2, point3)
   const subtractSpace = new SpaceModel(subtract, Point.null, Size.default)
-  return SubtractModel.create(triangle, subtractSpace)
+  return new SubtractModels(triangle, subtractSpace)
 }
 
 export const subtractTriangleTestCases1 = {

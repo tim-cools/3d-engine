@@ -2,7 +2,7 @@ import {Shape2D} from "./shape"
 import {Point2D, Space2D} from "../models"
 import {View2D} from "../view"
 
-export class Text2DShape implements Shape2D {
+export class TextShape2D implements Shape2D {
 
   readonly id: string
   readonly color: string

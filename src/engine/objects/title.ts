@@ -1,5 +1,5 @@
 import {Point2D} from "../models"
-import {Shape2D, Text2DShape} from "../shapes"
+import {Shape2D, TextShape2D} from "../shapes"
 import {BaseObject2D} from "./object"
 
 export class Title extends BaseObject2D {
@@ -18,7 +18,7 @@ export class Title extends BaseObject2D {
   }
 
   shapes(): readonly Shape2D[] {
-    const text = new Text2DShape(
+    const text = new TextShape2D(
       this.id + ".text",
       this.color,
       this.position,

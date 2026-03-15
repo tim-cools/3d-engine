@@ -127,7 +127,14 @@ class SegmentChainBuilder {
 
 export class PathBuilder {
 
-  private segmentsValue: PathSegment[] = []
+  private readonly segmentsValue: PathSegment[] = []
+  private readonly type: ModelType
+  private readonly debug: boolean
+
+  constructor(type: ModelType = ModelType.Primary, debug: boolean = false) {
+    this.type = type
+    this.debug = debug
+  }
 
   addSegment(begin: Point, end: Point) {
     this.segmentsValue.push(new PathSegment(begin, end))
@@ -150,7 +157,7 @@ export class PathBuilder {
       chain.close()
     }
 
-    return new Path(chains.map(chain => chain.build()))
+    return new Path(chains.map(chain => chain.build()), this.type, this.debug)
   }
 
   private static nextChain(remaining: PathSegment[]): SegmentChainBuilder {

@@ -1,16 +1,8 @@
 import {Point, Size, SpaceObject, TransformablePoint} from "../models"
 import {Shape, Shape2D} from "../shapes"
 
-export interface HasObjectStyle {
-  setShowBoundaries(showBoundaries: boolean): void
-  setStyle(style: ObjectStyle): void
-}
-
-export enum ObjectStyle {
-  Wireframe,
-  Solid,
-  WireframeDebug,
-  FacesWireframe
+export interface HasSceneName {
+  setSceneName(sceneName: string): void
 }
 
 export type Object = Object2D | Object3D

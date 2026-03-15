@@ -10,19 +10,20 @@ import {
   Triangle
 } from "../models"
 import {LineShape, PathShape, PointShape, Shape, UpdatableShape} from "../shapes"
-import {BaseObject3D, HasObjectStyle, ObjectStyle} from "./object"
+import {BaseObject3D} from "./object"
 import {Transformer} from "../models"
 import {Nothing, nothing} from "../nothing"
 import {Colors} from "../colors"
 import {pushMany} from "../../infrastructure"
+import {HasRenderStyle, RenderStyle} from "./renderStyle"
 
-export class ModelObject extends BaseObject3D implements HasObjectStyle {
+export class ModelObject extends BaseObject3D implements HasRenderStyle {
 
-  protected readonly model: SpaceModel
+  protected model: SpaceModel
 
   private showBoundaries: boolean = false
   private debugShapes: ((translate: Transformer) => readonly UpdatableShape[]) | Nothing
-  private style: ObjectStyle = ObjectStyle.Wireframe
+  private style: RenderStyle = RenderStyle.Wireframe
 
   protected shapesValue: readonly UpdatableShape[]
 
@@ -38,7 +39,7 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
     this.shapesValue = this.createShapes()
   }
 
-  setStyle(style: ObjectStyle) {
+  setStyle(style: RenderStyle) {
     this.style = style
     this.shapesValue = this.createShapes()
   }
@@ -50,22 +51,21 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
     return this.shapesValue
   }
 
-  private createShapes(): readonly UpdatableShape[] {
-    if (this.style == ObjectStyle.Wireframe) {
+  protected createShapes(): readonly UpdatableShape[] {
+    if (this.style == RenderStyle.Wireframe) {
       return this.wireframe(false)
-    } else if (this.style == ObjectStyle.WireframeDebug) {
+    } else if (this.style == RenderStyle.WireframeDebug) {
       return this.wireframe(true)
-    } else if (this.style == ObjectStyle.Solid) {
+    } else if (this.style == RenderStyle.Solid) {
       return this.solid()
-    } else if (this.style == ObjectStyle.FacesWireframe) {
-      return this.facesWireframe()
     }
-    throw new Error(`Invalid style: ${ObjectStyle[this.style]}`)
+    throw new Error(`Invalid style: ${RenderStyle[this.style]}`)
   }
 
   private wireframe(debug: boolean) {
-    const result: UpdatableShape[] = []
 
+    const result: UpdatableShape[] = []
+    this.addFacesWireframe(debug, result)
     this.addBoundaries(debug, result)
     this.addSegments(debug, result)
     this.addPoints(debug, result)
@@ -131,22 +131,28 @@ export class ModelObject extends BaseObject3D implements HasObjectStyle {
     }
   }
 
-  private facesWireframe() {
+  private addFacesWireframe(debug: boolean, result: UpdatableShape[]) {
     const added: Map<string, any> = new Map()
-    const result: UpdatableShape[] = []
     for (let index = 0 ; index < this.model.faces.length ; index++) {
       const face = this.model.faces[index]
-      for (const triangle of face.triangles) {
-        const key = triangle.key()
-        if (!added.has(key)) {
-          result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point1, triangle.point2))
-          result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point2, triangle.point3))
-          result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point3, triangle.point1))
-          added.set(key, {})
-        }
+      if (debug || face.debug) {
+        this.addFaceWireframeTriangles(face, added, result, index)
       }
     }
     this.addPoints(true, result)
-    return result
+  }
+
+  private addFaceWireframeTriangles(face: Triangle | Path, added: Map<string, any>, result: UpdatableShape[], index: number) {
+    for (const triangle of face.triangles) {
+
+      const key = triangle.key()
+      if (added.has(key)) continue
+
+      result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point1, triangle.point2))
+      result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point2, triangle.point3))
+      result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point3, triangle.point1))
+
+      added.set(key, {})
+    }
   }
 }

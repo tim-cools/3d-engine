@@ -1,14 +1,14 @@
 import {Scene} from "./scenes"
 import {Colors} from "../colors"
 import {Point, Size} from "../models"
-import {ObjectStyle, Rectangle, Object} from "../objects"
+import {RenderStyle, Rectangle, Object} from "../objects"
 import {Lazy} from "../../infrastructure/lazy"
 
 export function layers(): Scene {
 
   function rectangle(color: string, z: number) {
     const position = new Point(0, 0, z)
-    return new Rectangle("rectangle." + z, color, position, new Size(.5, .5, .5), ObjectStyle.Solid)
+    return new Rectangle("rectangle." + z, color, position, new Size(.5, .5, .5), RenderStyle.Solid)
   }
 
   return new Scene("layers", new Lazy<Object[]>(() => [

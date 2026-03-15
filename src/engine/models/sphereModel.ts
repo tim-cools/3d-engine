@@ -1,4 +1,4 @@
-import {Point, rotateY, rotateZ, Model, Segment, Triangle, Face} from "../models"
+import {Point, rotateY, rotateZ, Model, Segment, Triangle, Face, SpaceModel, Size} from "../models"
 import {betweenTolerance, equalsTolerance} from "./equals"
 
 const size = 1
@@ -11,10 +11,13 @@ export class SphereModel extends Model {
   }
 
   static create(segmentsNumber: number): SphereModel {
-
     const {segments, triangles} = this.createSphere(segmentsNumber)
-
     return new SphereModel(segments, triangles)
+  }
+
+  static createInSpace(segmentsNumber: number, position: Point, size: Size) {
+    const model = SphereModel.create(segmentsNumber)
+    return new SpaceModel(model, position, size)
   }
 
   static createSphere(segmentsNumber: number): {segments: Segment[], triangles: Triangle[]} {

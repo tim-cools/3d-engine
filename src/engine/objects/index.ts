@@ -7,3 +7,7 @@ export * from './sphere'
 export * from './title'
 export * from "./pointObject"
 export * from "./modelObject"
+export * from "./axis"
+export * from "./renderStyle"
+export * from "./algorithm"
+export * from "./info"

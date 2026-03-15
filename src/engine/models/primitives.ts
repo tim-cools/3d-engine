@@ -265,6 +265,10 @@ export class Point2D {
   translate(coordinate: Point) {
     return new Point2D(this.x + coordinate.x, this.y + coordinate.y)
   }
+
+  add(x: number, y: number) {
+    return new Point2D(this.x + x, this.y + y)
+  }
 }
 
 export class Plane {

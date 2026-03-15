@@ -1,7 +1,12 @@
 import {View} from "./view"
 import {World} from "./world"
+import {firstOrDefault} from "../infrastructure"
+
+type KeyHandler = { key: string, handler: () => void }
 
 export class Controller {
+
+  private readonly keyHandlers: KeyHandler[]
 
   private mouseIsDown: boolean = false
   private mouseX: number = 0
@@ -20,6 +25,20 @@ export class Controller {
     window.addEventListener('keyup', this.keyUp.bind(this))
     window.addEventListener('keydown', this.keyDown.bind(this))
     window.addEventListener('keypress', this.keyPress.bind(this))
+    this.keyHandlers = this.createKeyHandlers()
+  }
+
+  private createKeyHandlers() {
+    return [
+      {key: "Shift", handler: () => this.shiftDown = true},
+      {key: "ArrowDown", handler: () => this.view.moveCamera(null, null, -100)},
+      {key: "ArrowUp", handler: () => this.view.moveCamera(null, null, -100)},
+      {key: "r", handler: () => this.world.switchRenderStyle()},
+      {key: "a", handler: () => this.world.switchAlgorithm()},
+      {key: "x", handler: () => this.world.toggleAxis()},
+      {key: "l", handler: () => this.world.logShapes()},
+      {key: "b", handler: () => this.world.toggleShowBoundaries()}
+    ]
   }
 
   private keyPress(event: KeyboardEvent) {
@@ -36,21 +55,8 @@ export class Controller {
   }
 
   private keyDown(event: KeyboardEvent) {
-    if (event.key == "Shift") {
-      this.shiftDown = true
-    } else if (event.key == "ArrowDown") {
-      this.view.moveCamera(null, null, -100)
-    } else if (event.key == "ArrowUp") {
-      this.view.moveCamera(null, null, 100)
-    } else if (event.key == "s") {
-      this.world.switchObjectStyle()
-    } else if (event.key == "a") {
-      this.world.toggleAxis()
-    } else if (event.key == "l") {
-      this.world.logShapes()
-    } else if (event.key == "b") {
-      this.world.toggleShowBoundaries()
-    }
+    const keyHandler = firstOrDefault(this.keyHandlers, where => where.key == event.key)
+    keyHandler?.handler.bind(this)()
   }
 
   private mouseDown(event: MouseEvent) {

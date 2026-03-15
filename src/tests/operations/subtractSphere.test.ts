@@ -1,4 +1,4 @@
-import {Point, Size} from "../../engine/models"
+import {Subtract} from "../../engine/models"
 import {SegmentsContext, Verify} from "../infrastructure"
 import {createSegmentsLogger} from "./createSegmentsLogger"
 import {subtractSphereTestModelAkaDeathStar} from "./subtractSphereTestModelAkaDeathStar"
@@ -6,16 +6,29 @@ import {subtractSphereTestModelAkaDeathStar} from "./subtractSphereTestModelAkaD
 test('subtract sphere from sphere', async () => {
 
   const logger = createSegmentsLogger()
-  const model = subtractSphereTestModelAkaDeathStar(10, 7, logger)
+  const models = subtractSphereTestModelAkaDeathStar(10, 7)
+  const model = Subtract.segments(models, logger)
 
   Verify.model(model, context => context
-    .areEqual(model => model.scale, Size.default)
-    .areEqual(model => model.position, Point.null)
     .collection(model => model.segments, context => new SegmentsContext(context)
       .primarySegments(357)
       .secondarySegments(72)
       .thirdSegments(32)
-      .disabledSegments(133)
+      .disabledSegments(165)
+      .log(logging => logger.dump(logging))
+    )
+  )
+})
+
+test('face sphere from sphere', async () => {
+
+  const logger = createSegmentsLogger()
+  const models = subtractSphereTestModelAkaDeathStar(10, 7)
+  const model = Subtract.faces(models, logger)
+
+  Verify.model(model, context => context
+    .collection(model => model.segments, context => new SegmentsContext(context)
+      //todo complete when algo is complete
       .log(logging => logger.dump(logging))
     )
   )
