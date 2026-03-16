@@ -49,6 +49,21 @@ export class VerifyCollectionContext<TItem> {
     return this
   }
 
+  valueModelPropertyCollection<TValue>(index: number, expression: ModelPropertyHandler<TItem, readonly TValue[]>, verify: (item: VerifyCollectionContext<TValue>) => void): VerifyCollectionContext<TItem> {
+
+    const item = index >= 0 && index < this.model.length ? this.model[index] : null
+    const [value, message] = compileExpression(expression, item)
+    if (value != null) {
+      const model = new VerifyCollectionContext<TValue>(value as readonly TValue[], this.logging)
+      verify(model)
+      return this
+    }
+
+    this.logging.logAssert(false, message, `- valueModel[${index}] property is null: `)
+
+    return this
+  }
+
   valueModel<TValue>(index: number, verify: (item: VerifyModelContext<TItem>) => void): VerifyCollectionContext<TItem> {
 
     const item = index >= 0 && index < this.model.length ? this.model[index] : null

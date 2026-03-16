@@ -131,7 +131,7 @@ export class Triangle implements Finite {
   }
 
   key() {
-    return `${this.point1}-${this.point2}-${this.point3}` // todo sort so it's always the same
+    return `${this.point1}|${this.point2}|${this.point3}` // todo sort so it's always the same
   }
 
   disabled(debug: boolean) {

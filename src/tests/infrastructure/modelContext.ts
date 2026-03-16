@@ -11,7 +11,7 @@ import {
 } from "../../engine/models"
 import {nothing} from "../../engine/nothing"
 import {VerifyModelContext} from "./verifyModelContext"
-import {selectMany} from "../../infrastructure"
+import {any, firstOrDefault, selectMany} from "../../infrastructure"
 
 export class ModelContext {
 
@@ -61,12 +61,20 @@ export class ModelContext {
 
   containsPath(points: readonly Point[]): ModelContext {
 
-    if (this.faces[0].faceType != FaceType.Polygon) {
+    const face = firstOrDefault(this.faces, value => !value.debug)
+    if (face == null) {
+      this.logging.fail(`no face found`, "containsPath")
+      return this
+    }
+    return this.verifyPath(face, points)
+  }
+
+  private verifyPath(face: Face, points: readonly Point[]) {
+
+    if (face.faceType != FaceType.Polygon) {
       this.logging.fail(`this.faces.faceType != FaceType.Polygon`, "containsPath")
       return this
     }
-
-    const face = this.faces[0] as Path
 
     const actualSegments = face.segments
     if (actualSegments.length == 0 || actualSegments.length != points.length - 1) {
@@ -90,14 +98,34 @@ export class ModelContext {
     return this
   }
 
+  containsPaths(points: readonly Point[][]): ModelContext {
+
+    for (const facePoint of points) {
+      const face = firstOrDefault(this.faces, value => !value.debug && any(value.points, point => point.equals(facePoint[0])))
+      if (face == null) {
+        this.logging.fail(`no face found`, "containsPath")
+      } else {
+        this.verifyPath(face, facePoint)
+      }
+    }
+
+    return this
+  }
+
   containsTriangle(points: readonly Point[]): ModelContext {
 
-    if (this.faces[0].faceType != FaceType.Triangle) {
+    const face = firstOrDefault(this.faces, value => !value.debug)
+    if (face == null) {
+      this.logging.fail(`no face found`, "containsPath")
+      return this
+    }
+
+    if (face.faceType != FaceType.Triangle) {
       this.logging.fail(`this.faces.faceType != FaceType.Triangle`, "containsPath")
       return this
     }
 
-    const triangle = this.faces[0] as Triangle
+    const triangle = face as Triangle
     this.verifyPoint(0, triangle.point1, points[0])
     this.verifyPoint(1, triangle.point2, points[1])
     this.verifyPoint(2, triangle.point3, points[2])
@@ -119,7 +147,7 @@ export class ModelContext {
 
   validateTriangles(count: number) {
     try {
-      const triangles = selectMany(this.model.faces, face => face.triangles)
+      const triangles = selectMany(this.model.faces, face => face.debug ? [] : face.triangles)
       if (triangles.length != count) {
         this.context.fail("Invalid number of triangles: " + triangles.length + " != " +  count)
       }

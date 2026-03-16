@@ -8,43 +8,6 @@ import {pushMany} from "../../infrastructure"
 import {intersectionTriangleSegment} from "../operations/intersectionTriangleSegment"
 import {IntersectionType} from "../operations/intersectionResult"
 
-class SegmentChain {
-
-  private readonly segmentsValue: PathSegment[]
-
-  get segments(): readonly PathSegment[] {
-    return this.segmentsValue
-  }
-
-  readonly points: readonly Point[]
-
-  constructor(segments: PathSegment[]) {
-    this.segmentsValue = segments
-    this.points = SegmentChain.checkPoints(segments)
-  }
-
-  translate(space: Space): SegmentChain {
-    return new SegmentChain(this.segmentsValue.map(segment => segment.translate(space)))
-  }
-
-  private static checkPoints(segments: PathSegment[]): Point[] {
-    const first = segments[0].begin
-    let last = first
-    const result: Point[] = [last]
-    for (const segment of segments) {
-      if (!last.equals(segment.begin)) {
-        throw new Error("Segment 'begin' does not match previous 'end'")
-      }
-      last = segment.end
-      result.push(last)
-    }
-    if (segments.length > 1 && !last.equals(first)) {
-      throw new Error("First segment 'begin' does not match last segment 'end'")
-    }
-    return result
-  }
-}
-
 class SegmentChainBuilder {
 
   private segmentsValue: PathSegment[]
@@ -112,8 +75,8 @@ class SegmentChainBuilder {
     return this.segments.length == 1
   }
 
-  build(): SegmentChain {
-    return new SegmentChain(this.segmentsValue)
+  build(): PathSegment[] {
+    return this.segmentsValue
   }
 
   private insertSegment(begin: boolean, segment: PathSegment) {
@@ -140,9 +103,9 @@ export class PathBuilder {
     this.segmentsValue.push(new PathSegment(begin, end))
   }
 
-  closePath(): Path | Nothing {
+  closePaths(): Path[] | Nothing {
     if (this.segmentsValue.length == 0) return nothing
-    if (this.segmentsValue.length == 1) return new Path([new SegmentChain(this.segmentsValue)])
+    if (this.segmentsValue.length == 1) return [new Path(this.segmentsValue, this.type, this.debug)]
 
     const remaining: PathSegment[] = [...this.segmentsValue]
     let chains: SegmentChainBuilder[] = []
@@ -157,7 +120,7 @@ export class PathBuilder {
       chain.close()
     }
 
-    return new Path(chains.map(chain => chain.build()), this.type, this.debug)
+    return chains.map(chain => new Path(chain.build(), this.type, this.debug))
   }
 
   private static nextChain(remaining: PathSegment[]): SegmentChainBuilder {
@@ -283,26 +246,27 @@ export class PathSegment implements SegmentBase {
 
 export class Path implements Finite {
 
-  private segmentsLazy: Lazy<readonly PathSegment[]> = new Lazy<readonly PathSegment[]>(() => this.getSegments())
   private trianglesLazy: Lazy<readonly Triangle[]> = new Lazy<readonly Triangle[]>(() => this.getTriangles())
+  private segmentsValue: PathSegment[]
 
+  readonly points: readonly Point[]
   readonly faceType = FaceType.Polygon
-  readonly type = ModelType.Primary
+  readonly type: ModelType
   readonly debug: boolean = false
-  readonly chains: readonly SegmentChain[]
+
+  get segments(): readonly PathSegment[] {
+    return this.segmentsValue
+  }
 
   get triangles(): readonly Triangle[] {
     return this.trianglesLazy.value
   }
 
-  get segments(): readonly PathSegment[] {
-    return this.segmentsLazy.value
-  }
-
-  constructor(chains: readonly SegmentChain[], type: ModelType = ModelType.Primary, debug: boolean = false) {
-    this.chains = chains
-    this.type = ModelType.Primary
+  constructor(segments: PathSegment[], type: ModelType = ModelType.Primary, debug: boolean = false) {
+    this.type = type
     this.debug = debug
+    this.segmentsValue = segments
+    this.points = Path.checkPoints(segments)
   }
 
   pointLocation(point: Point): number {
@@ -310,30 +274,33 @@ export class Path implements Finite {
   }
 
   toSpace(space: Space) {
-    const translated = this.chains.map(chain => chain.translate(space))
+    const translated = this.segments.map(segment => segment.translate(space))
     return new Path(translated, this.type, this.debug)
   }
 
-  private getSegments(): readonly PathSegment[] {
-    const result: PathSegment[] = []
-    this.chains.forEach(chain => pushMany(result, chain.segments))
+  private static checkPoints(segments: PathSegment[]): Point[] {
+    const first = segments[0].begin
+    let last = first
+    const result: Point[] = [last]
+    for (const segment of segments) {
+      if (!last.equals(segment.begin)) {
+        throw new Error("Segment 'begin' does not match previous 'end'")
+      }
+      last = segment.end
+      result.push(last)
+    }
+    if (segments.length > 1 && !last.equals(first)) {
+      throw new Error("First segment 'begin' does not match last segment 'end'")
+    }
     return result
   }
 
   private getTriangles(): readonly Triangle[] {
-    if (this.chains.length == 0) return []
     const triangles: Triangle[] = []
-    for (const chain of this.chains) {
-      this.getChainTriangles(chain, triangles)
-    }
-    return triangles
-  }
-
-  private getChainTriangles(chain: SegmentChain, triangles: Triangle[]) {
     let found = false
-    for (let indexStart = 0; !found && indexStart < chain.points.length; indexStart++) {
-      const pointStart = chain.points[indexStart]
-      const result = Path.checkTriangles(chain.points, pointStart)
+    for (let indexStart = 0; !found && indexStart < this.points.length; indexStart++) {
+      const pointStart = this.points[indexStart]
+      const result = this.checkTriangles(this.points, pointStart)
       if (result != nothing) {
         found = true
         pushMany(triangles, result)
@@ -342,16 +309,17 @@ export class Path implements Finite {
     if (!found) {
       throw new Error("No valid triangles found")
     }
+    return triangles
   }
 
-  private static checkTriangles(points: readonly Point[], pointStart: Point) {
+  private checkTriangles(points: readonly Point[], pointStart: Point) {
     const result: Triangle[] = []
     for (let index = 1; index < points.length; index++) {
       const point2 = points[index - 1]
       const point3 = points[index]
 
       if (!pointStart.equals(point2) && !pointStart.equals(point3)) {
-        let triangle = new Triangle(pointStart, point2, point3)
+        let triangle = new Triangle(pointStart, point2, point3, this.type)
         if (Path.overlapsOutside(points, triangle)) {
           return nothing;
         }

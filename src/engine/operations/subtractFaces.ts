@@ -1,18 +1,19 @@
-import {Face, FaceType, Model, ModelType, PathBuilder, Point, Segment, SpaceModel, Triangle} from "../models"
+import {Face, FaceType, Model, ModelType, Path, PathBuilder, Point, Segment, SpaceModel, Triangle} from "../models"
 import {Nothing, nothing} from "../nothing"
 import {IntersectionType, SegmentIntersection} from "./intersectionResult"
 import {equalsTolerancePoint} from "../models/equals"
 import {intersectsTriangleModel, SpaceModelIntersectionResult} from "./intersectsTriangleModel"
 import {Logger} from "../models/logger"
+import {pushMany} from "../../infrastructure"
 
 export type SubtractFacesResult = {points: Point[], segments: Segment[], faces: Face[]}
 
 export function subtractFaces(master: Model, subtract: SpaceModel, logging: Logger): SubtractFacesResult {
-  const points: Point[] = [master.middle.third(true), subtract.middle.third(true)]
+  const points: Point[] = [master.middle.secondary(true), subtract.middle.primary(true)]
   const faces: Face[] = []
   const segments: Segment[] = []
+  addSubtractFaces(subtract, master, logging, faces, segments)
   addMasterFaces(master, subtract, logging, faces, points, segments)
-  addSubtractFaces(subtract, master, logging, segments)
   return {points: points, segments: segments, faces: faces}
 }
 
@@ -43,9 +44,9 @@ function addMasterTriangle(subtract: SpaceModel, triangle: Triangle, log: Logger
   } else if (!intersection.hasIntersections) {
     faces.push(triangle.disabled(true))
   } else {
-    const polygon = partialFace(subtract, triangle, intersection)
-    if (polygon != nothing) {
-      faces.push(polygon)
+    const paths = partialFace(subtract, triangle, intersection)
+    if (paths != nothing) {
+      pushMany(faces, paths)
     } else {
       //faces.push(triangle.disabled(true))
     }
@@ -63,12 +64,12 @@ function addIntersections(intersection: SpaceModelIntersectionResult, points: Po
   }
 }
 
-function partialFace(subtract: SpaceModel, masterTriangle: Triangle, intersection: SpaceModelIntersectionResult): Face | Nothing {
-  const resultPolygon = new PathBuilder(ModelType.Primary, false)
+function partialFace(subtract: SpaceModel, masterTriangle: Triangle, intersection: SpaceModelIntersectionResult): Face[] | Nothing {
+  const resultPolygon = new PathBuilder(ModelType.Secondary, false)
   addTriangleSegment(masterTriangle.abSegment(), subtract, intersection, resultPolygon)
   addTriangleSegment(masterTriangle.bcSegment(), subtract, intersection, resultPolygon)
   addTriangleSegment(masterTriangle.caSegment(), subtract, intersection, resultPolygon)
-  return resultPolygon.closePath()
+  return resultPolygon.closePaths()
 }
 
 function addTriangleSegment(segment: Segment, subtract: SpaceModel, intersection: SpaceModelIntersectionResult, resultPolygon: PathBuilder) {
@@ -91,6 +92,11 @@ function addPolygonPartialByPoint(segment: Segment, subtract: SpaceModel, point:
 
 function addPolygonPartialSegment(segment: Segment, intersection: SegmentIntersection, resultPolygon: PathBuilder) {
 
+  if (segment.equals(intersection.segment)) {
+    resultPolygon.addSegment(segment.begin, segment.end)
+    return;
+  }
+
   const {begin, end} = orderBeginAndEnd(segment, intersection.segment)
 
   if (segment.begin.equals(begin)) {
@@ -108,21 +114,21 @@ function addPolygonPartialSegment(segment: Segment, intersection: SegmentInterse
   }
 }
 
-function addSubtractFaces(subtract: SpaceModel, master: Model, log: Logger, segments: Segment[]) {
+function addSubtractFaces(subtract: SpaceModel, master: Model, log: Logger, faces: Face[], segments: Segment[]) {
   log.logLine(`- subtract.faces: ${subtract.faces.length}`)
   for (const face of subtract.faces) {
-    addSubtractFace(face, subtract, master, log, segments)
+    addSubtractFace(face, subtract, master, log, faces, segments)
   }
 }
 
-function addSubtractFace(face: Face, subtract: SpaceModel, master: Model, log: Logger, segments: Segment[]) {
+function addSubtractFace(face: Face, subtract: SpaceModel, master: Model, log: Logger, faces: Face[],segments: Segment[]) {
   log.logLine(`  - subtract.triagles: ${face.triangles}`)
   for (const triangle of face.triangles) {
-    addSubtractTriangle(triangle, subtract, master, log, segments)
+    addSubtractTriangle(triangle, subtract, master, log, faces, segments)
   }
 }
 
-function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: Model, log: Logger, segments: Segment[]) {
+function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: Model, log: Logger, faces: Face[], segments: Segment[]) {
 
   const intersection = intersectsTriangleModel(triangle, subtract, log)
 
@@ -137,22 +143,21 @@ function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: M
   } else if (!intersection.hasIntersections) {
     //faces.push(triangle.disabled(triangle))
   } else {
-    /* const polygon = partialSubtractFace(subtract, triangle, intersection)
-    if (polygon != nothing) {
-      faces.push(polygon)
+    const paths = partialSubtractFace(subtract, triangle, intersection)
+    if (paths != nothing) {
+      pushMany(faces, paths)
     } else {
       //faces.push(triangle.disabled(true))
     }
-     */
   }
 }
 
-function partialSubtractFace(subtract: SpaceModel, triangle: Triangle, intersection: SpaceModelIntersectionResult) {
-  const resultPolygon = new PathBuilder(ModelType.Third, true)
+function partialSubtractFace(subtract: SpaceModel, triangle: Triangle, intersection: SpaceModelIntersectionResult): Path[] | Nothing {
+  const resultPolygon = new PathBuilder(ModelType.Disabled, true)
   addSubtractTriangleSegment(triangle.abSegment(), subtract, intersection, resultPolygon)
   addSubtractTriangleSegment(triangle.bcSegment(), subtract, intersection, resultPolygon)
   addSubtractTriangleSegment(triangle.caSegment(), subtract, intersection, resultPolygon)
-  return resultPolygon.closePath()
+  return resultPolygon.closePaths()
 }
 
 function addSubtractTriangleSegment(segment: Segment, subtract: SpaceModel, intersection: SpaceModelIntersectionResult, resultPolygon: PathBuilder) {

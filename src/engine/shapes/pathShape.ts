@@ -6,9 +6,9 @@ import {
   Space,
   Point,
   Triangle,
-  modelColor, Path
+  modelColor, Path, ModelType
 } from "../models"
-import {colorLuminance, View2D} from ".."
+import {colorLuminance, Colors, View2D} from ".."
 
 export class PathShape implements Shape {
 
@@ -65,11 +65,20 @@ export class PathShape implements Shape {
     return sum / points.length
   }
 
-  static fromTriangle(id: string, triangle: Triangle) {
-    return new PathShape(id, modelColor(triangle.type), [triangle.point1, triangle.point2, triangle.point3])
+  static fromTriangle(id: string, debugColors: boolean, triangle: Triangle) {
+    const color = this.segmentColor(debugColors, triangle.type)
+    return new PathShape(id, color, [triangle.point1, triangle.point2, triangle.point3])
   }
 
-  static fromPolygon(id: string, path: Path): readonly Shape[] {
-    return path.chains.map(chain => new PathShape(id, modelColor(path.type), chain.points))
+  static fromPolygon(id: string, debugColors: boolean, path: Path) {
+    const color = this.segmentColor(debugColors, path.type)
+    return new PathShape(id, color, path.points)
+  }
+
+  private static segmentColor(debugColors: boolean, type: ModelType) {
+    if (debugColors) {
+      return modelColor(type)
+    }
+    return type == ModelType.Utility ? Colors.gray.darker : Colors.primary.middle
   }
 }

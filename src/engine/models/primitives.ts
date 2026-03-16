@@ -20,7 +20,7 @@ export function modelColor(modelType: ModelType) {
   } else if (modelType == ModelType.Secondary) {
     return Colors.secondary.middle
   } else if (modelType == ModelType.Third) {
-    return Colors.third.middle
+    return Colors.third.lighter
   } else if (modelType == ModelType.Utility) {
     return Colors.gray.darker
   } else if (modelType == ModelType.UtilityLight) {
@@ -196,7 +196,15 @@ export class Point implements Coordinate {
   }
 
   negate() {
-    return new Point(-this.x, -this.y, -this.z)
+    return new Point(-this.x, -this.y, -this.z, this.type, this.debug)
+  }
+
+  primary(debug: boolean) {
+    return new Point(this.x, this.y, this.z, ModelType.Primary, debug)
+  }
+
+  secondary(debug: boolean) {
+    return new Point(this.x, this.y, this.z, ModelType.Secondary, debug)
   }
 
   third(debug: boolean) {
@@ -217,11 +225,11 @@ export class Point implements Coordinate {
   }
 
   static min(value1: Point, value2: Point) {
-    return new Point(Math.min(value1.x, value2.x), Math.min(value1.y, value2.y), Math.min(value1.z, value2.z))
+    return new Point(Math.min(value1.x, value2.x), Math.min(value1.y, value2.y), Math.min(value1.z, value2.z), value1.type, value1.debug)
   }
 
   static max(value1: Point, value2: Point) {
-    return new Point(Math.max(value1.x, value2.x), Math.max(value1.y, value2.y), Math.max(value1.z, value2.z))
+    return new Point(Math.max(value1.x, value2.x), Math.max(value1.y, value2.y), Math.max(value1.z, value2.z), value1.type, value1.debug)
   }
 
   static single(number: number) {

@@ -13,7 +13,7 @@ export class Colors {
   static primary = {
     dark: "#001333",
     darker: "#193155",
-    middle: "#55699277",
+    middle: "#556992",
     lighter: "#90a3cf",
     light: "#cee1ff",
   }

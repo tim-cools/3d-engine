@@ -70,7 +70,6 @@ export class ModelObject extends BaseObject3D implements HasRenderStyle {
     this.addSegments(debug, result)
     this.addPoints(debug, result)
     this.addDebugShapes(result)
-
     return result
   }
 
@@ -125,9 +124,9 @@ export class ModelObject extends BaseObject3D implements HasRenderStyle {
   private addFace(face: Triangle | Path, result: UpdatableShape[], index: number) {
     if (face.debug) return
     if (face.faceType == FaceType.Triangle) {
-      result.push(PathShape.fromTriangle(this.id + ".triangle." + index, face))
+      result.push(PathShape.fromTriangle(this.id + ".triangle." + index, false, face))
     } else {
-      pushMany(result, PathShape.fromPolygon(this.id + ".closePath." + index, face))
+      result.push(PathShape.fromPolygon(this.id + ".closePath." + index, false, face))
     }
   }
 
@@ -135,22 +134,21 @@ export class ModelObject extends BaseObject3D implements HasRenderStyle {
     const added: Map<string, any> = new Map()
     for (let index = 0 ; index < this.model.faces.length ; index++) {
       const face = this.model.faces[index]
-      if (debug || face.debug) {
-        this.addFaceWireframeTriangles(face, added, result, index)
+      if (debug || !face.debug) {
+        this.addFaceWireframeTriangles(face, debug, added, result, index)
       }
     }
-    this.addPoints(true, result)
   }
 
-  private addFaceWireframeTriangles(face: Triangle | Path, added: Map<string, any>, result: UpdatableShape[], index: number) {
+  private addFaceWireframeTriangles(face: Triangle | Path, debug: boolean, added: Map<string, any>, result: UpdatableShape[], index: number) {
     for (const triangle of face.triangles) {
 
       const key = triangle.key()
       if (added.has(key)) continue
 
-      result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point1, triangle.point2))
-      result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point2, triangle.point3))
-      result.push(LineShape.fromPoints(this.id + ".line." + index, triangle.type, triangle.point3, triangle.point1))
+      result.push(LineShape.fromPoints(this.id + ".line." + index, debug, triangle.type, triangle.point1, triangle.point2))
+      result.push(LineShape.fromPoints(this.id + ".line." + index, debug, triangle.type, triangle.point2, triangle.point3))
+      result.push(LineShape.fromPoints(this.id + ".line." + index, debug, triangle.type, triangle.point3, triangle.point1))
 
       added.set(key, {})
     }

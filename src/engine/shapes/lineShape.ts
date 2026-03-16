@@ -59,16 +59,16 @@ export class LineShape implements Shape {
   }
 
   static fromSegment(id: string, segment: Segment, debugColors: boolean) {
-    const color = this.segmentColor(debugColors, segment)
+    const color = this.segmentColor(debugColors, segment.type)
     return new LineShape(id, color, new TransformablePoint(segment.begin), new TransformablePoint(segment.end))
   }
 
-  static fromPoints(id: string, type: ModelType, point1: Point, point2: Point) {
-    const color = modelColor(type)
+  static fromPoints(id: string, debugColors: boolean, type: ModelType, point1: Point, point2: Point) {
+    const color = this.segmentColor(debugColors, type)
     return new LineShape(id, color, new TransformablePoint(point1), new TransformablePoint(point2))
   }
 
-  private static segmentColor(debugColors: boolean, segment: Segment) {
-    return debugColors ? modelColor(segment.type) : segment.type == ModelType.Utility ? Colors.gray.darker : Colors.primary.middle
+  private static segmentColor(debugColors: boolean, type: ModelType) {
+    return debugColors ? modelColor(type) : type == ModelType.Utility ? Colors.gray.darker : Colors.primary.middle
   }
 }
