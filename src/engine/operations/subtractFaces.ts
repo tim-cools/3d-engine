@@ -66,31 +66,36 @@ function addIntersections(intersection: SpaceModelIntersectionResult, points: Po
 
 function partialFace(subtract: SpaceModel, masterTriangle: Triangle, intersection: SpaceModelIntersectionResult): Face[] | Nothing {
   const resultPolygon = new PathBuilder(ModelType.Secondary, false)
-  addTriangleSegment(masterTriangle.abSegment(), subtract, intersection, resultPolygon)
-  addTriangleSegment(masterTriangle.bcSegment(), subtract, intersection, resultPolygon)
-  addTriangleSegment(masterTriangle.caSegment(), subtract, intersection, resultPolygon)
+  addTriangleSegment(masterTriangle, masterTriangle.abSegment(), subtract, intersection, resultPolygon)
+  addTriangleSegment(masterTriangle, masterTriangle.bcSegment(), subtract, intersection, resultPolygon)
+  addTriangleSegment(masterTriangle, masterTriangle.caSegment(), subtract, intersection, resultPolygon)
   return resultPolygon.closePaths()
 }
 
-function addTriangleSegment(segment: Segment, subtract: SpaceModel, intersection: SpaceModelIntersectionResult, resultPolygon: PathBuilder) {
+function addTriangleSegment(masterTriangle: Triangle, segment: Segment, subtract: SpaceModel, intersection: SpaceModelIntersectionResult, resultPolygon: PathBuilder) {
 
   const segmentIntersection = intersection.segmentInteraction(segment)
   if (segmentIntersection == nothing || segmentIntersection.type == IntersectionType.None) {
     resultPolygon.addSegment(segment.begin, segment.end)
   } else if (segmentIntersection.type == IntersectionType.Point) {
-    addPolygonPartialByPoint(segment, subtract, segmentIntersection.point, resultPolygon)
+    addPolygonPartialByPoint(segment, subtract, segmentIntersection.point, intersection, resultPolygon)
   } else if (segmentIntersection.type == IntersectionType.Segment) {
-    addPolygonPartialSegment(segment, segmentIntersection, resultPolygon)
+    addPolygonPartialSegment(masterTriangle, segment, segmentIntersection, resultPolygon)
   } else {
     throw new Error("Not yet implemented")
   }
 }
 
-function addPolygonPartialByPoint(segment: Segment, subtract: SpaceModel, point: Point, resultPolygon: PathBuilder) {
-  resultPolygon.addSegment(segment.begin, segment.end)
+function addPolygonPartialByPoint(segment: Segment, subtract: SpaceModel, point: Point, intersection: SpaceModelIntersectionResult, resultPolygon: PathBuilder) {
+  if (point.equals(segment.begin) || point.equals(segment.end) || intersection.intersections.length == 1) {
+    resultPolygon.addSegment(segment.begin, segment.end)
+  } else {
+    resultPolygon.addSegment(segment.begin, point)
+    resultPolygon.addSegment(point, segment.end)
+  }
 }
 
-function addPolygonPartialSegment(segment: Segment, intersection: SegmentIntersection, resultPolygon: PathBuilder) {
+function addPolygonPartialSegment(masterTriangle: Triangle, segment: Segment, intersection: SegmentIntersection, resultPolygon: PathBuilder) {
 
   if (segment.equals(intersection.segment)) {
     resultPolygon.addSegment(segment.begin, segment.end)
@@ -100,9 +105,21 @@ function addPolygonPartialSegment(segment: Segment, intersection: SegmentInterse
   const {begin, end} = orderBeginAndEnd(segment, intersection.segment)
 
   if (segment.begin.equals(begin)) {
+    const inlet = intersection.sourceSegments.length == 2
+      ? intersection.sourceSegments[0].begin
+      : null
+    if (inlet != nothing && masterTriangle.pointLocation(inlet) >= 0) {
+      resultPolygon.addSegment(inlet, end)
+    }
     resultPolygon.addSegment(end, segment.end)
   } else if (segment.end.equals(end)) {
     resultPolygon.addSegment(segment.begin, begin)
+    const inlet = intersection.sourceSegments.length == 2
+      ? intersection.sourceSegments[0].end
+      : null
+    if (inlet != nothing && masterTriangle.pointLocation(inlet) >= 0) {
+      resultPolygon.addSegment(begin, inlet)
+    }
   } else {
     resultPolygon.addSegment(segment.begin, begin)
     const inlet = sharedPoint(intersection.sourceSegments)
@@ -154,21 +171,21 @@ function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: M
 
 function partialSubtractFace(subtract: SpaceModel, triangle: Triangle, intersection: SpaceModelIntersectionResult): Path[] | Nothing {
   const resultPolygon = new PathBuilder(ModelType.Disabled, true)
-  addSubtractTriangleSegment(triangle.abSegment(), subtract, intersection, resultPolygon)
-  addSubtractTriangleSegment(triangle.bcSegment(), subtract, intersection, resultPolygon)
-  addSubtractTriangleSegment(triangle.caSegment(), subtract, intersection, resultPolygon)
+  addSubtractTriangleSegment(triangle, triangle.abSegment(), subtract, intersection, resultPolygon)
+  addSubtractTriangleSegment(triangle, triangle.bcSegment(), subtract, intersection, resultPolygon)
+  addSubtractTriangleSegment(triangle, triangle.caSegment(), subtract, intersection, resultPolygon)
   return resultPolygon.closePaths()
 }
 
-function addSubtractTriangleSegment(segment: Segment, subtract: SpaceModel, intersection: SpaceModelIntersectionResult, resultPolygon: PathBuilder) {
+function addSubtractTriangleSegment(subtractTriangle: Triangle, segment: Segment, subtract: SpaceModel, intersection: SpaceModelIntersectionResult, resultPolygon: PathBuilder) {
 
   const segmentIntersection = intersection.segmentInteraction(segment)
   if (segmentIntersection == nothing || segmentIntersection.type == IntersectionType.None) {
     resultPolygon.addSegment(segment.begin, segment.end)
   } else if (segmentIntersection.type == IntersectionType.Point) {
-    addPolygonPartialByPoint(segment, subtract, segmentIntersection.point, resultPolygon)
+    addPolygonPartialByPoint(segment, subtract, segmentIntersection.point, intersection, resultPolygon)
   } else if (segmentIntersection.type == IntersectionType.Segment) {
-    addPolygonPartialSegment(segment, segmentIntersection, resultPolygon)
+    addPolygonPartialSegment(subtractTriangle, segment, segmentIntersection, resultPolygon)
   } else {
     throw new Error("Not yet implemented")
   }

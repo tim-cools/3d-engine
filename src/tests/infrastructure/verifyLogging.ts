@@ -21,16 +21,16 @@ export class VerifyLogging {
     this.stringBuilder.push(message)
   }
 
-  fail(message: string | null = null, title: string) {
+  fail(message: string | null = null, title: string | null) {
     if (this.indention > 0) {
       this.stringBuilder.push(' '.repeat(this.indention * 2))
     }
 
-    this.stringBuilder.push(title + message)
+    this.stringBuilder.push((title == null ? "" : title) + message)
     this.errorsValue++
   }
 
-  logAssert(valid: boolean, message: string | null = null, title: string) {
+  logAssert(valid: boolean, message: string | null = null, title: string | null = null) {
     if (valid) return
     this.fail(message, title)
   }

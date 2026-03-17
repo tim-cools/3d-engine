@@ -39,15 +39,13 @@ test('subtract faces 2 intersect 2 segment AC line', async () => {
 test('subtract faces 2 intersect 3 triangle 1 point 1', async () => {
   const result = subtractTriangleTestCases2.intersect3_segmentAC_corner()
   const points = [[
+    new Point(0.5, 0.5, 0),
     new Point(0.5, 0, 0),
     new Point(1, 0, 0),
-    new Point(0.5, .5, 0),
-    new Point(0.5, 0, 0),
-  ], [
     new Point(0.5, 0.5, 0),
     new Point(0, 1, 0),
-    new Point(0, .5, 0),
-    new Point(0.5, .5, 0),
+    new Point(0, 0.5, 0),
+    new Point(0.5, 0.5, 0),
   ]]
   verifyPath(result, points, 2)
 })
