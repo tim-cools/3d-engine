@@ -1,6 +1,9 @@
 # 3d-Graphic Try-out
 
-
+Todo: 
+- Finish addSegmentFaces
+- Finish subtractSegments
+- Improve mouse rotation
 
 ## Available Scripts
 
