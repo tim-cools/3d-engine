@@ -1,13 +1,13 @@
 import {Point, Segment} from "./primitives"
 import {Size} from "./size"
 import {invertSpace, Space, SpaceObject, translateSpace, translateSpaceTriangle} from "./transformations"
-import {CanContainPoint, Model} from "./model"
+import {CanContainPoint, Model, ModelBase} from "./model"
 import {Face} from "./face"
 import {Lazy} from "../../infrastructure/lazy"
 import {Boundaries} from "./boundaries"
 import {Triangle} from "./triangle"
 
-export class SpaceModel implements Space, SpaceObject, CanContainPoint {
+export class SpaceModel implements ModelBase, Space, SpaceObject, CanContainPoint {
 
   static empty: SpaceModel = new SpaceModel(Model.empty, Point.null, Size.default)
 

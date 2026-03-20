@@ -1,13 +1,14 @@
 import {equalsTolerance} from "./equals"
 import {Finite, ModelType, Plane, Point, Segment, Vector} from "./primitives"
 import {Boundaries} from "./boundaries"
-import {Lazy} from "../../infrastructure/lazy"
 import {Space} from "./transformations"
 import {FaceType} from "./faceType"
+import {ValuesCache} from "../../infrastructure/valuesCache"
+import {hashCode} from "../../infrastructure/stringFunctions"
 
 export class Triangle implements Finite {
 
-  private boundariesLazy: Lazy<Boundaries> = new Lazy<Boundaries>(() => this.createBoundaries())
+  private readonly cache: ValuesCache = new ValuesCache()
 
   readonly faceType = FaceType.Triangle;
 
@@ -17,8 +18,16 @@ export class Triangle implements Finite {
   readonly type: ModelType
   readonly debug: boolean
 
+  get hash(): number {
+    return this.cache.get("hash",
+      () => {
+        const key = `${this.point1.toString()}|${this.point2.toString()}|${this.point3.toString()}`
+        return hashCode(key)
+      })
+  }
+
   get boundaries(): Boundaries {
-    return this.boundariesLazy.value
+    return this.cache.get("boundaries", () => this.createBoundaries())
   }
 
   get points(): Point[] {
@@ -91,14 +100,14 @@ export class Triangle implements Finite {
       .cross(Vector.fromPoints(point, this.point2))
       .norm / (2 * area)
 
-    if (equalsTolerance(((alpha + beta + gamma) - 1.0) * (this.ab() + this.bc() + this.ac()) / 3, 0.0)) {
+    if (equalsTolerance(((alpha + beta + gamma) - 1.0) * (this.abLength() + this.bcLength() + this.caLength()) / 3, 0.0)) {
       return 1 // Point is strictly inside
     } else {
       return -1
     }
   }
 
-  ab() {
+  abLength() {
     return this.point1.distanceToPoint(this.point2)
   }
 
@@ -106,7 +115,7 @@ export class Triangle implements Finite {
     return new Segment(this.point1, this.point2)
   }
 
-  bc() {
+  bcLength() {
     return this.point2.distanceToPoint(this.point3)
   }
 
@@ -114,15 +123,11 @@ export class Triangle implements Finite {
     return new Segment(this.point2, this.point3)
   }
 
-  ac() {
-    return this.point1.distanceToPoint(this.point3)
-  }
-
   caSegment() {
     return new Segment(this.point3, this.point1)
   }
 
-  ca() {
+  caLength() {
     return this.point3.distanceToPoint(this.point1)
   }
 
@@ -131,7 +136,9 @@ export class Triangle implements Finite {
   }
 
   key() {
-    return `${this.point1}|${this.point2}|${this.point3}` // todo sort so it's always the same
+    const parts = [this.point1.toString(), this.point2.toString(), this.point3.toString()]
+    parts.sort((value1: string, value2: string) => value1 < value2 ? -1 : 1)
+    return parts.join('|')
   }
 
   disabled(debug: boolean) {
@@ -146,6 +153,14 @@ export class Triangle implements Finite {
     return new Triangle(this.point1, this.point2, this.point3, ModelType.Third, debug)
   }
 
+  highlight() {
+    return new Triangle(this.point1, this.point2, this.point3, ModelType.Highlight)
+  }
+
+  highlightMax() {
+    return new Triangle(this.point1, this.point2, this.point3, ModelType.HighlightMax)
+  }
+
   containsSegment(segment: Segment) {
     return this.abSegment().equals(segment)
         || this.bcSegment().equals(segment)
@@ -157,9 +172,9 @@ export class Triangle implements Finite {
   }
 
   equals(triangle: Triangle) {
-    return this.point1.equals(triangle.point1)
-        && this.point2.equals(triangle.point1)
-        && this.point3.equals(triangle.point1)
+    return (this.point1.equals(triangle.point1) || this.point1.equals(triangle.point2) || this.point1.equals(triangle.point3))
+        && (this.point2.equals(triangle.point1) || this.point2.equals(triangle.point2) || this.point2.equals(triangle.point3))
+        && (this.point3.equals(triangle.point1) || this.point3.equals(triangle.point2) || this.point3.equals(triangle.point3))
   }
 
   private createBoundaries() {

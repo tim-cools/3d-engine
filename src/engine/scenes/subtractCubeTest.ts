@@ -1,8 +1,9 @@
 import {Scene} from "./scenes"
-import {CubeModel, Point, Size, SpaceModel, SubtractModels} from "../models"
+import {CubeModel, Point, Size, SpaceModel} from "../models"
 import {Object} from "../objects"
 import {Lazy} from "../../infrastructure/lazy"
 import {SubtractModelObject} from "../objects/subtractModelObject"
+import {SubtractModels} from "../intersections/subtractModels"
 
 export function subtractCubeTest(): Scene {
 

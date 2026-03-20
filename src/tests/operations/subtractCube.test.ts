@@ -1,6 +1,7 @@
-import {CubeModel, Point, Size, SpaceModel, Subtract, SubtractModels} from "../../engine/models"
+import {CubeModel, Point, Size, SpaceModel, Subtract} from "../../engine/models"
 import {SegmentsContext, Verify} from "../infrastructure"
 import {createSegmentsLogger} from "./createSegmentsLogger"
+import {SubtractModels} from "../../engine/intersections"
 
 const segments = 4
 const segmentsHalf = 2
@@ -86,7 +87,8 @@ test('subtract segments cube in cube scaled', async () => {
   const subtractSquare = new SpaceModel(CubeModel.create(4), new Point(50, 50, 50), sizeSquare)
 
   const logger = createSegmentsLogger(size)
-  const result = Subtract.segments(new SubtractModels(cube, subtractSquare), logger)
+  const models = new SubtractModels(cube, subtractSquare)
+  const result = Subtract.segments(models, logger)
 
   Verify.model(result, context => context
     .collection(model => model.segments, context => new SegmentsContext(context, 100)

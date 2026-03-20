@@ -21,7 +21,7 @@ export function createSegmentsLogger(factor: number | null = null) {
   }
 
   function dump(logging: VerifyLogging) {
-    logging.appendLine(`------------------------------------------\nsubtraction log: \n${lines.join("\n")}\n------------------------------------------\n`)
+    logging.appendLine(toString())
   }
 
   function timestamp() {
@@ -34,9 +34,14 @@ export function createSegmentsLogger(factor: number | null = null) {
       + ("0" + now.getSeconds()).slice(-2);
   }
 
+  function toString() {
+    return `------------------------------------------\nsubtraction log: \n${lines.join("\n")}\n------------------------------------------\n`
+  }
+
   return {
     logLine: logLine,
     log: log,
-    dump: dump
+    dump: dump,
+    toString: toString
   }
 }

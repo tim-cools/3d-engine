@@ -1,4 +1,4 @@
-import {Point, Segment, SpaceModel, Triangle} from "../models"
+import {Model, ModelBase, Point, Segment, SpaceModel, Triangle} from "../models"
 import {intersectsTriangles} from "./intersectsTriangles"
 import {intersectionTriangleSegment} from "./intersectionTriangleSegment"
 import {
@@ -10,27 +10,38 @@ import {
 } from "./intersectionResult"
 import {nothing} from "../nothing"
 import {Logger} from "../models/logger"
+import {count} from "../../infrastructure"
 
 type TriangleSegmentEntry = {intersection: PointIntersection | SegmentIntersection, segment: Segment}
 
 export class SpaceModelIntersectionResult {
 
-  outsideModel: Boolean
-  intersections: TriangleSegmentIntersection[]
+  readonly outsideModel: Boolean
+  readonly intersections: TriangleSegmentIntersection[]
+  readonly triangle: Triangle
+
+  readonly segmentIntersections: number
+  readonly pointIntersections: number
 
   get hasIntersections(): boolean {
     return this.intersections.length > 0
   }
 
-  constructor(outsideModel: Boolean, intersections: TriangleSegmentIntersection[]) {
+  constructor(triangle: Triangle, outsideModel: Boolean, intersections: TriangleSegmentIntersection[]) {
+    this.triangle = triangle
     this.outsideModel = outsideModel
     this.intersections = intersections
+    this.segmentIntersections = count(intersections, intersection => intersection.intersection.type == IntersectionType.Segment)
+    this.pointIntersections = count(intersections, intersection => intersection.intersection.type == IntersectionType.Point)
   }
 
   segmentInteraction(segment: Segment): PointIntersection | SegmentIntersection | NoIntersection {
     let intersection: PointIntersection | SegmentIntersection | NoIntersection = noIntersection
     for (const triangleSegmentIntersection of this.intersections) {
       if (triangleSegmentIntersection.segment.equals(segment)) {
+        if (intersection != null) {
+          //throw new Error("Multiple intersections found, not yet supported")
+        }
         intersection = triangleSegmentIntersection.intersection
       }
     }
@@ -81,7 +92,7 @@ function middleOfModelToTriangleTetrahedron(middle: Point, subtractTriangle: Tri
   return faceToMiddle
 }
 
-export function intersectsTriangleModel(triangleInMaster: Triangle, model: SpaceModel, log: Logger): SpaceModelIntersectionResult {
+export function intersectsTriangleModel(triangleInMaster: Triangle, model: ModelBase, log: Logger): SpaceModelIntersectionResult {
 
   const middle = model.middle
   let outsideModel = true
@@ -108,7 +119,7 @@ export function intersectsTriangleModel(triangleInMaster: Triangle, model: Space
     }
   }
 
-  return new SpaceModelIntersectionResult(outsideModel, intersections)
+  return new SpaceModelIntersectionResult(triangleInMaster, outsideModel, intersections)
 }
 
 function addSegmentIntersections(subtractTriangle: Triangle, triangleInMaster: Triangle, intersections: TriangleSegmentIntersection[]) {

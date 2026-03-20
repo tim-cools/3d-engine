@@ -3,7 +3,7 @@ import {ModelType, Segment} from "../../engine/models"
 import {Point} from "../../engine/models"
 import {VerifyLogging} from "./verifyLogging"
 import {segments} from "../../engine/models/segments"
-import {IntersectionType} from "../../engine/operations/intersectionResult"
+import {IntersectionType} from "../../engine/intersections/intersectionResult"
 
 export class SegmentsContext {
 

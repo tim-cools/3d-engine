@@ -4,11 +4,16 @@ import {Size} from "./size"
 import {Colors} from "../colors"
 import {Lazy} from "../../infrastructure/lazy"
 import {Nothing} from "../nothing"
+import {hashCode} from "../../infrastructure/stringFunctions"
+import {ValuesCache} from "../../infrastructure/valuesCache"
+import {round} from "../../infrastructure/numberFunctions"
 
 export enum ModelType {
   Primary,
   Secondary,
   Third,
+  Highlight,
+  HighlightMax,
   Utility,
   UtilityLight,
   Disabled,
@@ -21,6 +26,10 @@ export function modelColor(modelType: ModelType) {
     return Colors.secondary.middle
   } else if (modelType == ModelType.Third) {
     return Colors.third.lighter
+  } else if (modelType == ModelType.Highlight) {
+    return Colors.highlight
+  } else if (modelType == ModelType.HighlightMax) {
+    return Colors.highlightMax
   } else if (modelType == ModelType.Utility) {
     return Colors.gray.darker
   } else if (modelType == ModelType.UtilityLight) {
@@ -46,7 +55,7 @@ export interface Coordinate {
   readonly z: number
 }
 
-function angleTo(obj1: Linear, obj2: Linear): number {
+export function angleTo(obj1: Linear, obj2: Linear): number {
 
   if (obj1.isOriented && obj2.isOriented) {
     const product = obj1.direction.dot(obj2.direction)
@@ -73,6 +82,8 @@ export class Point implements Coordinate {
   static middle: Point = new Point(.5, .5, .5)
   static one: Point = new Point(1, 1, 1)
 
+  private readonly cache: ValuesCache = new ValuesCache()
+
   private xValue: number
   private yValue: number
   private zValue: number
@@ -87,6 +98,14 @@ export class Point implements Coordinate {
 
   get z(): number {
     return this.zValue
+  }
+
+  get hash(): number {
+    return this.cache.get("hash",
+      () => {
+        const key = this.toString()
+        return hashCode(key)
+      })
   }
 
   readonly type: ModelType
@@ -106,7 +125,7 @@ export class Point implements Coordinate {
   }
 
   toString(): string {
-    return `x: ${this.x.toFixed(5)}, y: ${this.y.toFixed(5)}, z: ${this.z.toFixed(5)}`
+    return `x: ${round(this.x, 5).toFixed(5)}, y: ${round(this.y, 5).toFixed(5)}, z: ${round(this.z, 5).toFixed(5)}`
   }
 
   vector() {
@@ -552,12 +571,31 @@ export interface SegmentBase {
   equals(segment: SegmentBase): boolean
 }
 
-export class Segment implements Finite, SegmentBase {
+export class Segment implements Finite, SegmentBase, Linear {
 
+  private readonly cache: ValuesCache = new ValuesCache()
+
+  readonly isOriented: boolean = false
   readonly begin: Point
   readonly end: Point
   readonly type: ModelType
   readonly debug: boolean
+
+  get length(): number {
+    return this.cache.get("length", () => this.begin.distanceToPoint(this.end));
+  }
+
+  get direction(): Vector {
+    return this.vector.direction;
+  }
+
+  get vector() {
+    return this.cache.get("vector", () => Vector.fromPoints(this.begin, this.end));
+  }
+
+  get line() {
+    return Line.fromPoints(this.begin, this.end)
+  }
 
   constructor(begin: Point, end: Point, type: ModelType = ModelType.Primary, debug: boolean = false) {
     if (begin.equals(end)) {
@@ -573,25 +611,13 @@ export class Segment implements Finite, SegmentBase {
     return `begin (${this.begin}) end (${this.end}) [${ModelType[this.type]}${this.debug ? " debug" : ""}]`
   }
 
-  line() {
-    return Line.fromPoints(this.begin, this.end)
-  }
-
-  vector() {
-    return Vector.fromPoints(this.begin, this.end)
-  }
-
   pointLocation(point: Point) {
-    const projection = point.projectionToLine(this.line())
+    const projection = point.projectionToLine(this.line)
     if (equalsTolerance(point.distanceToPoint(projection),0)) {
       return this.axialPointLocation(point)
     } else {
       return -1 // Point is outside
     }
-  }
-
-  length(): number {
-    return this.begin.distanceToPoint(this.end)
   }
 
   equals(segment: SegmentBase) {
@@ -632,14 +658,13 @@ export class Segment implements Finite, SegmentBase {
       return 0
     }
 
-    const length = this.length()
-    let pointStrictlyInside = distanceBegin <= length && distanceEnd <= length
+    let pointStrictlyInside = distanceBegin <= this.length && distanceEnd <= this.length
     if (pointStrictlyInside) {
       return 1 // // Point is strictly inside
     }
 
     if (distanceBegin < distanceEnd) {
-      return -1 // Point is outside of the P1
+      return -1 // Point is outside of the P1 // todo make enum
     } else {
       return -2 // Point is outside of the P2
     }

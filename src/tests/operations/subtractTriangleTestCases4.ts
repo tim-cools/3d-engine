@@ -1,5 +1,6 @@
-import {ModelType, Point, Size, SpaceModel, SubtractModels, Triangle} from "../../engine/models"
+import {ModelType, Point, Size, SpaceModel, Triangle} from "../../engine/models"
 import {TriangleModel} from "../../engine/models/triangleModel"
+import {SubtractModels} from "../../engine/intersections"
 
 const flatTriangle = new Triangle(Point.null, new Point(1, 0, .5), new Point(1, 0, -.5))
 

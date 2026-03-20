@@ -13,7 +13,7 @@ import {coplanarIntersectionWith} from "./coplanarIntersectionWith"
 
 export function intersectionTriangleSegment(triangle: Triangle, lineSegment: Segment): PointIntersection | SegmentIntersection | NoIntersection {
 
-  const intersection = intersectionTriangleLine(triangle, lineSegment.line())
+  const intersection = intersectionTriangleLine(triangle, lineSegment.line)
   if (intersection.type == IntersectionType.Point) {
     return intersection.point.belongsTo(lineSegment)
       ? intersection

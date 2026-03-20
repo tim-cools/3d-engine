@@ -5,7 +5,7 @@ import {Triangle} from "./triangle"
 
 export class TriangleModel extends Model {
 
-  private constructor(segments: readonly Segment[], triangles: Triangle[]) {
+  public constructor(segments: readonly Segment[], triangles: Triangle[]) {
     super([], segments, triangles, TriangleModel.contains(triangles), TriangleModel.onBoundary(segments))
   }
 

@@ -1,5 +1,6 @@
-import {Point, Size, SubtractModels} from "../../engine/models"
+import {Point, Size} from "../../engine/models"
 import {SphereModel} from "../../engine/models/sphereModel"
+import {SubtractModels} from "../../engine/intersections"
 
 const sizeSubtract = Size.half
 const subtractPosition = new Point(-.32, .32, -.32)

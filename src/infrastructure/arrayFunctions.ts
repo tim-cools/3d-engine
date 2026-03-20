@@ -23,6 +23,7 @@ export function firstOrDefault<TItem>(array: ReadonlyArray<TItem>, where: ((valu
   return null
 }
 
+
 export function singleOrDefault<TItem>(array: ReadonlyArray<TItem>, where: ((value: TItem) => boolean) | null = null): TItem | null {
   if (where == null) {
     if (array.length > 1) throw new Error("More as one element found in array.")
@@ -97,10 +98,10 @@ export function count<TItem>(array: ReadonlyArray<TItem>, predicate: (value: TIt
   return results
 }
 
-export function sum<TItem>(array: ReadonlyArray<TItem>, predicate: (value: TItem) => number): number {
+export function sum<TItem>(array: ReadonlyArray<TItem>, valueGetter: (value: TItem) => number): number {
   let results = 0
   for (const item of array) {
-    const value = predicate(item)
+    const value = valueGetter(item)
     results += value
   }
   return results

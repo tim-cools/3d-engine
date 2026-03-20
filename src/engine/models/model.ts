@@ -7,7 +7,13 @@ export interface CanContainPoint {
   contains(coordinate: Point): boolean
 }
 
-export class Model implements CanContainPoint {
+export interface ModelBase {
+  readonly middle: Point
+  readonly segments: readonly Segment[]
+  readonly faces: readonly Face[]
+}
+
+export class Model implements ModelBase, CanContainPoint {
 
   static empty: Model = new Model([], [], [], coordinate => false, coordinate => false)
 

@@ -5,8 +5,7 @@ import {Triangle} from "./triangle"
 import {Space} from "./transformations"
 import {FaceType} from "./faceType"
 import {pushMany} from "../../infrastructure"
-import {intersectionTriangleSegment} from "../operations/intersectionTriangleSegment"
-import {IntersectionType} from "../operations/intersectionResult"
+import {intersectionTriangleSegment, IntersectionType} from "../intersections"
 
 class SegmentChainBuilder {
 
@@ -307,7 +306,8 @@ export class Path implements Finite {
       }
     }
     if (!found) {
-      throw new Error("No valid triangles found")
+      console.log("No valid triangles found")
+      //throw new Error("No valid triangles found")
     }
     return triangles
   }

@@ -14,18 +14,18 @@ export function intersectionSegments(lineSegment1: Segment, lineSegment2: Segmen
     return new SegmentIntersection(lineSegment1,[lineSegment1])
   }
 
-  const line1 = lineSegment1.line()
-  const line2 = lineSegment2.line()
+  const line1 = lineSegment1.line
+  const line2 = lineSegment2.line
 
   if (lineSegment1.belongsToLine(line2) || lineSegment2.belongsToLine(line1)) {
 
     // Segments are collinear
 
     // Create local CS with X-axis along segment 's'
-    const v2 = lineSegment2.vector().orthogonalVector()
-    const cs = new CoordinateSystem(lineSegment2.begin, lineSegment2.vector(), v2)
+    const v2 = lineSegment2.vector.orthogonalVector()
+    const cs = new CoordinateSystem(lineSegment2.begin, lineSegment2.vector, v2)
     const x1 = 0.0
-    const x2 = lineSegment2.length()
+    const x2 = lineSegment2.length
 
     const t3 = cs.convert(lineSegment1.begin).x
     const t4 = cs.convert(lineSegment1.end).x
@@ -72,7 +72,7 @@ export function intersectionSegmentLine(segment: Segment, line: Line): PointInte
     return new SegmentIntersection(segment, [])
   }
 
-  const point = line.perpendicularTo(segment.line());
+  const point = line.perpendicularTo(segment.line);
   if (point != null && point.belongsTo(segment) && point.belongsToLine(line)) {
     return new PointIntersection(point)
   } else {

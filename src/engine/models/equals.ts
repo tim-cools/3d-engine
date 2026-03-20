@@ -8,7 +8,7 @@ export function equalsTolerance(value1: number, value2: number) {
 }
 
 export function betweenTolerance(value: number, loweBoundInclusive: number, upperBoundInclusive: number) {
-  return greaterTolerance(value, loweBoundInclusive) && smallerTolerance(value, upperBoundInclusive)
+  return (value - loweBoundInclusive) >= -tolerance && (value - upperBoundInclusive) <= tolerance
 }
 
 export function equalsTolerancePoint(point1: Point, point2: Point) {

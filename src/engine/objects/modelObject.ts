@@ -14,7 +14,6 @@ import {BaseObject3D} from "./object"
 import {Transformer} from "../models"
 import {Nothing, nothing} from "../nothing"
 import {Colors} from "../colors"
-import {pushMany} from "../../infrastructure"
 import {HasRenderStyle, RenderStyle} from "./renderStyle"
 
 export class ModelObject extends BaseObject3D implements HasRenderStyle {
@@ -131,6 +130,7 @@ export class ModelObject extends BaseObject3D implements HasRenderStyle {
   }
 
   private addFacesWireframe(debug: boolean, result: UpdatableShape[]) {
+    if (this.model.segments.length > 0 && !debug) return
     const added: Map<string, any> = new Map()
     for (let index = 0 ; index < this.model.faces.length ; index++) {
       const face = this.model.faces[index]

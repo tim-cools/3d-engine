@@ -14,12 +14,15 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
   // Check intersection with first two sides
   const abSegment = new Segment(triangle.point1, triangle.point2)
   const bcSegment = new Segment(triangle.point2, triangle.point3)
+  const acSegment = new Segment(triangle.point1, triangle.point3)
 
-  const onAB = line.perpendicularTo(abSegment.line())
-  const onBC = line.perpendicularTo(bcSegment.line())
+  const onAB = line.perpendicularTo(abSegment.line)
+  const onBC = line.perpendicularTo(bcSegment.line)
+  const onAC = line.perpendicularTo(acSegment.line)
 
-  const ab = triangle.ab()
-  const bc = triangle.bc()
+  const ab = triangle.abLength()
+  const bc = triangle.bcLength()
+  const ac = triangle.caLength()
 
   if (onAB != null && onBC != null) {
 
@@ -30,6 +33,18 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
 
     if (positionOnAB >= 1 - tolerance && positionOnAB <= 1 + tolerance
       && positionOnBC >= -tolerance && positionOnBC <= tolerance) {
+
+      // Check intersection with AC
+      // todo finish subtract faces algorithm
+      const onAC = line.perpendicularTo(acSegment.line)
+      if (onAC != null) {
+        const positionOnAC = Vector.fromPoints(triangle.point1, onAC)
+          .dot(Vector.fromPoints(triangle.point1, triangle.point3)) / (ac * ac)
+        if (positionOnAC > -tolerance && positionOnAC <= 1 + tolerance) {
+          return new SegmentIntersection(new Segment(triangle.point2, onAC), [abSegment, bcSegment, acSegment])
+        }
+      }
+
       return new PointIntersection(triangle.point2)
     }
 
@@ -39,11 +54,6 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
     }
   }
 
-  const ac = triangle.ac()
-
-  //Check intersection with third side
-  const acSegment = new Segment(triangle.point1, triangle.point3)
-  const onAC = line.perpendicularTo(acSegment.line())
 
   if (onAB != null && onAC != null) {
 
@@ -54,6 +64,18 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
 
     if (positionOnAB >= -tolerance && positionOnAB <= tolerance
       && positionOnAC >= -tolerance && positionOnAC <= tolerance) {
+
+      // Check intersection with AC
+      // todo finish subtract faces algorithm
+      const onBC = line.perpendicularTo(bcSegment.line)
+      if (onBC != null) {
+        const positionOnBC = Vector.fromPoints(triangle.point2, onBC)
+          .dot(Vector.fromPoints(triangle.point2, triangle.point3)) / (ac * ac)
+        if (positionOnBC > -tolerance && positionOnBC <= 1 + tolerance) {
+          return new SegmentIntersection(new Segment(triangle.point1, onBC), [abSegment, acSegment, bcSegment])
+        }
+      }
+
       return new PointIntersection(triangle.point1)
     }
 
@@ -72,6 +94,17 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
 
     if (positionOnBC >= 1 - tolerance && positionOnBC <= 1 + tolerance
       && positionOnAC >= 1 - tolerance && positionOnAC <= 1 + tolerance) {
+
+      // Check intersection with AB
+      // todo finish subtract faces algorithm
+      if (onAB != null) {
+        const positionOnAB = Vector.fromPoints(triangle.point1, onBC)
+          .dot(Vector.fromPoints(triangle.point1, triangle.point2)) / (ac * ac)
+        if (positionOnBC > -tolerance && positionOnBC <= 1 + tolerance) {
+          return new SegmentIntersection(new Segment(triangle.point3, onAB), [bcSegment, acSegment, abSegment])
+        }
+      }
+
       return new PointIntersection(triangle.point3)
     } else if (positionOnBC >= -tolerance && positionOnBC < 1 - tolerance
       && positionOnAC >= -tolerance && positionOnAC < 1 - tolerance) {

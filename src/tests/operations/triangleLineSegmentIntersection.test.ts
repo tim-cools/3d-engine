@@ -1,8 +1,7 @@
 import {Segment, Triangle} from "../../engine/models"
 import {Point} from "../../engine/models"
 import {equalsTolerancePoint} from "../../engine/models/equals"
-import {intersectionTriangleSegment} from "../../engine/operations/intersectionTriangleSegment"
-import {IntersectionType} from "../../engine/operations/intersectionResult"
+import {intersectionTriangleSegment, IntersectionType} from "../../engine/intersections"
 
 describe("triangle line segment intersection", () => {
 
@@ -99,5 +98,20 @@ describe("triangle line segment intersection", () => {
     if (intersection.type != IntersectionType.Segment) throw new Error("intersection.type != IntersectionType.Segment: " + IntersectionType[intersection.type])
     expect(equalsTolerancePoint(intersection.segment.begin, new Point(0, 1.5, 0)))
     expect(equalsTolerancePoint(intersection.segment.end, new Point(.2, 1.8, 0)))
+  })
+
+  test('segment AB / BC crossing', async () => {
+
+    const lineSegment = new Segment(new Point(1, 0, 0), new Point(0, 1, 0))
+    const triangle = new Triangle(
+      new Point(0.25, -0.25, 0),
+      new Point(1.25, -0.25, 0),
+      new Point(1.25, 0.75, 0))
+
+    const intersection = intersectionTriangleSegment(triangle, lineSegment)
+
+    if (intersection.type != IntersectionType.Segment) throw new Error("intersection.type != IntersectionType.Segment: " + IntersectionType[intersection.type])
+    expect(equalsTolerancePoint(intersection.segment.begin, new Point(1, 1, 0)))
+    expect(equalsTolerancePoint(intersection.segment.end, new Point(.75, .75, 0)))
   })
 })

@@ -2,13 +2,15 @@ export type Color = string
 
 export class Colors {
 
-  static readonly red: string = "red"
-  static readonly yellow: string = "yellow"
-  static readonly green: string = "green"
-  static readonly blue: string = "blue"
-  static readonly white: string = "white"
-  static readonly lightGray: string = "lightgray"
-  static readonly darkGray: string = "darkgray"
+  static readonly red = "red"
+  static readonly yellow = "yellow"
+  static readonly green = "green"
+  static readonly blue = "blue"
+  static readonly white = "white"
+  static readonly lightGray = "lightgray"
+  static readonly darkGray = "darkgray"
+  static readonly highlight = "yellow"
+  static readonly highlightMax = "red"
 
   static primary = {
     dark: "#001333",

@@ -32,7 +32,7 @@ export class Controller {
     return [
       {key: "Shift", handler: () => this.shiftDown = true},
       {key: "ArrowDown", handler: () => this.view.moveCamera(null, null, -100)},
-      {key: "ArrowUp", handler: () => this.view.moveCamera(null, null, -100)},
+      {key: "ArrowUp", handler: () => this.view.moveCamera(null, null, 100)},
       {key: "r", handler: () => this.world.switchRenderStyle()},
       {key: "a", handler: () => this.world.switchAlgorithm()},
       {key: "x", handler: () => this.world.toggleAxis()},

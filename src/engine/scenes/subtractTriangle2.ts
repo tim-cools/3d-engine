@@ -1,9 +1,10 @@
 import {Scene} from "./scenes"
-import {Model, Point, Size, SubtractModels} from "../models"
+import {Point, Size} from "../models"
 import {subtractTriangleTestCases2} from "../../tests/operations/subtractTriangleTestCases2"
 import {Object} from "../objects"
 import {Lazy} from "../../infrastructure/lazy"
 import {SubtractModelObject} from "../objects/subtractModelObject"
+import {SubtractModels} from "../intersections/subtractModels"
 
 export function subtractTriangle2(): Scene {
 
