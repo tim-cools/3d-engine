@@ -28,13 +28,9 @@ function intersects(face: Triangle, segment: Segment) {
 
 function triangleIntersects(triangle: Triangle, faces: Face[]) {
 
-  return false
-
-  //todo fix this :)
-  /*
-  const segment1 = triangle.abSegment()
-  const segment2 = triangle.bcSegment()
-  const segment3 = triangle.caSegment()
+  const segment1 = triangle.abSegment
+  const segment2 = triangle.bcSegment
+  const segment3 = triangle.caSegment
 
   for (const face of faces) {
     if (face.faceType != FaceType.Triangle) throw new Error("Not supported")
@@ -46,7 +42,6 @@ function triangleIntersects(triangle: Triangle, faces: Face[]) {
   }
 
   return false
-   */
 }
 
 function addSegmentFaces(pointNode: SegmentNode, nodes: Map<string, SegmentNode>, faces: Face[], trianglesAdded: Map<string, Triangle>) {

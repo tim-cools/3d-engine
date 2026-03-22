@@ -19,11 +19,10 @@ export class Triangle implements Finite {
   readonly debug: boolean
 
   get hash(): number {
-    return this.cache.get("hash",
-      () => {
-        const key = `${this.point1.toString()}|${this.point2.toString()}|${this.point3.toString()}`
-        return hashCode(key)
-      })
+    return this.cache.get("hash", () => {
+      const key = `${this.point1.toString()}|${this.point2.toString()}|${this.point3.toString()}`
+      return hashCode(key)
+    })
   }
 
   get boundaries(): Boundaries {
@@ -31,11 +30,52 @@ export class Triangle implements Finite {
   }
 
   get points(): Point[] {
-    return [this.point1, this.point2, this.point3]
+    return this.cache.get("points", () => [this.point1, this.point2, this.point3])
   }
 
   get triangles(): readonly Triangle[] {
     return [this]
+  }
+
+  get direction() {
+    return this.cache.get("direction", () => Vector.fromPoints(this.point1, this.point2)
+      .cross(Vector.fromPoints(this.point1, this.point3))
+      .direction)
+  }
+
+  get plane() {
+    return this.cache.get("plane", () => new Plane(this.point1, this.direction))
+  }
+
+  get abLength() {
+    return this.cache.get("abLength", () => this.point1.distanceToPoint(this.point2))
+  }
+
+  get abSegment() {
+    return this.cache.get("abSegment", () => new Segment(this.point1, this.point2))
+  }
+
+  get bcLength() {
+    return this.cache.get("bcLength", () => this.point2.distanceToPoint(this.point3))
+  }
+
+  get bcSegment() {
+    return this.cache.get("bcSegment", () => new Segment(this.point2, this.point3))
+  }
+
+  get caLength() {
+    return this.cache.get("caLength", () => this.point3.distanceToPoint(this.point1))
+  }
+
+  get caSegment() {
+    return this.cache.get("caSegment", () => new Segment(this.point3, this.point1))
+  }
+
+  get key() {
+
+    const parts = [this.point1.toString(), this.point2.toString(), this.point3.toString()]
+    parts.sort((value1: string, value2: string) => value1 < value2 ? -1 : 1)
+    return parts.join('|')
   }
 
   constructor(point1: Point, point2: Point, point3: Point, type: ModelType = ModelType.Primary, debug: boolean = false) {
@@ -56,18 +96,8 @@ export class Triangle implements Finite {
     return new Triangle(spacePoint1, spacePoint2, spacePoint3, this.type, this.debug)
   }
 
-  direction() {
-    return Vector.fromPoints(this.point1, this.point2)
-      .cross(Vector.fromPoints(this.point1, this.point3))
-      .direction
-  }
-
-  plane() {
-    return new Plane(this.point1, this.direction())
-  }
-
   pointLocation(point: Point): number {
-    const projection = point.projectionToPlane(this.plane())
+    const projection = point.projectionToPlane(this.plane)
     if (equalsTolerance(point.distanceToPoint(projection), 0)) {
       return this.inPlanePointLocation(projection)
     } else {
@@ -100,45 +130,11 @@ export class Triangle implements Finite {
       .cross(Vector.fromPoints(point, this.point2))
       .norm / (2 * area)
 
-    if (equalsTolerance(((alpha + beta + gamma) - 1.0) * (this.abLength() + this.bcLength() + this.caLength()) / 3, 0.0)) {
+    if (equalsTolerance(((alpha + beta + gamma) - 1.0) * (this.abLength + this.bcLength + this.caLength) / 3, 0.0)) {
       return 1 // Point is strictly inside
     } else {
       return -1
     }
-  }
-
-  abLength() {
-    return this.point1.distanceToPoint(this.point2)
-  }
-
-  abSegment() {
-    return new Segment(this.point1, this.point2)
-  }
-
-  bcLength() {
-    return this.point2.distanceToPoint(this.point3)
-  }
-
-  bcSegment() {
-    return new Segment(this.point2, this.point3)
-  }
-
-  caSegment() {
-    return new Segment(this.point3, this.point1)
-  }
-
-  caLength() {
-    return this.point3.distanceToPoint(this.point1)
-  }
-
-  toString() {
-    return `triangle (${this.point1} - ${this.point2} - ${this.point3})`
-  }
-
-  key() {
-    const parts = [this.point1.toString(), this.point2.toString(), this.point3.toString()]
-    parts.sort((value1: string, value2: string) => value1 < value2 ? -1 : 1)
-    return parts.join('|')
   }
 
   disabled(debug: boolean) {
@@ -161,20 +157,24 @@ export class Triangle implements Finite {
     return new Triangle(this.point1, this.point2, this.point3, ModelType.HighlightMax)
   }
 
-  containsSegment(segment: Segment) {
-    return this.abSegment().equals(segment)
-        || this.bcSegment().equals(segment)
-        || this.caSegment().equals(segment)
+  hasSegment(segment: Segment) {
+    return this.abSegment.equals(segment)
+        || this.bcSegment.equals(segment)
+        || this.caSegment.equals(segment)
   }
 
   isCoplanarTo(triangle2: Triangle) {
-    return this.plane().equals(triangle2.plane())
+    return this.plane.equals(triangle2.plane)
   }
 
   equals(triangle: Triangle) {
     return (this.point1.equals(triangle.point1) || this.point1.equals(triangle.point2) || this.point1.equals(triangle.point3))
         && (this.point2.equals(triangle.point1) || this.point2.equals(triangle.point2) || this.point2.equals(triangle.point3))
         && (this.point3.equals(triangle.point1) || this.point3.equals(triangle.point2) || this.point3.equals(triangle.point3))
+  }
+
+  toString() {
+    return `triangle (${this.point1} - ${this.point2} - ${this.point3})`
   }
 
   private createBoundaries() {

@@ -1,10 +1,10 @@
 import {Point, rotateX, rotateZ, Size} from "../models"
 import {LineShape, Shape, UpdatableShape} from "../shapes"
-import {BaseObject3D} from "./object"
+import {Object3DBase} from "./object"
 import {RenderStyle} from "./renderStyle"
 import {PathShape} from "../shapes"
 
-export class Rectangle extends BaseObject3D {
+export class Rectangle extends Object3DBase {
 
   private static plus = 0.5
   private static min = -0.5

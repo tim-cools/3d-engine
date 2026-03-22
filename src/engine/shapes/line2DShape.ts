@@ -1,6 +1,6 @@
-import {Point2D, Space2D} from "../models"
-import {View2D} from "../view"
-import {Shape2D} from "./shape"
+import {Point2D} from "../models"
+import {RenderShape2DContext, Shape2D} from "./shape"
+import {SelectableSegment} from "./selectableSegment"
 
 export class Line2DShape implements Shape2D {
 
@@ -22,16 +22,19 @@ export class Line2DShape implements Shape2D {
     return new Line2DShape(id, color, begin, end)
   }
 
-  render(space: Space2D, view: View2D, context: CanvasRenderingContext2D) {
-    //console.log(`drawLine: ${this.point1.x}, ${this.point1.y}, ${this.end.x}, ${this.end.y}`)
+  render(context: RenderShape2DContext) {
 
+    const {space, canvas} = context
     const begin = space.translate(this.begin)
     const end = space.translate(this.end)
-    context.strokeStyle = this.color
-    context.lineWidth = 20
-    context.beginPath()
-    context.moveTo(begin.x, begin.y)
-    context.lineTo(end.x, end.y)
-    context.stroke()
+
+    canvas.strokeStyle = this.color
+    canvas.lineWidth = 4
+    canvas.beginPath()
+    canvas.moveTo(begin.x, begin.y)
+    canvas.lineTo(end.x, end.y)
+    canvas.stroke()
+
+    context.rendered(new SelectableSegment(this.id + ".selectable", begin, end))
   }
 }

@@ -1,8 +1,8 @@
 import {Colors} from ".."
 import {Line2DShape, Shape, Shape2D} from "../shapes"
-import {BaseObject2D} from "./object"
+import {Object2DBase} from "./object"
 
-export class Overlay extends BaseObject2D {
+export class Overlay extends Object2DBase {
 
   readonly id: string
 
@@ -18,8 +18,8 @@ export class Overlay extends BaseObject2D {
     const widthMiddle = 0.5
     const heightMiddle = 0.5
 
-    const horizontal = Line2DShape.new(this.id + ".h", Colors.white, 0, heightMiddle, width, heightMiddle)
-    const vertical = Line2DShape.new(this.id + ".v", Colors.white, widthMiddle, 0, widthMiddle, height)
+    const horizontal = Line2DShape.new(this.id + ".h", Colors.gray.darker, 0, heightMiddle, width, heightMiddle)
+    const vertical = Line2DShape.new(this.id + ".v", Colors.gray.darker, widthMiddle, 0, widthMiddle, height)
 
     return [horizontal, vertical]
   }

@@ -1,6 +1,7 @@
 import {View} from "./view"
 import {World} from "./world"
 import {firstOrDefault} from "../infrastructure"
+import {Point2D} from "./models"
 
 type KeyHandler = { key: string, handler: () => void }
 
@@ -71,6 +72,8 @@ export class Controller {
 
   private mouseMove(event: MouseEvent): any {
 
+    this.world.selectAt(new Point2D(event.x, event.y))
+
     if (!this.mouseIsDown) return
 
     const offsetX = this.mouseX - event.x
@@ -82,5 +85,6 @@ export class Controller {
     }
     this.mouseX = event.x
     this.mouseY = event.y
+    this.world.clearSelection()
   }
 }

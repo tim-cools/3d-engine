@@ -1,4 +1,4 @@
-import {Shape} from "."
+import {RenderShapeContext, Shape} from "."
 import {
   TransformablePoint,
   Transformer,
@@ -6,20 +6,23 @@ import {
   Space,
   Point,
   Triangle,
-  modelColor, Path, ModelType
+  modelColor, Path, ModelType, Point2D
 } from "../models"
-import {colorLuminance, Colors, View2D} from ".."
+import {colorLuminance, Colors} from ".."
+import {SelectablePath} from "./selectablePath"
 
 export class PathShape implements Shape {
 
   readonly color: string
   readonly points: readonly TransformablePoint[]
   readonly id: string
+  readonly solid: boolean
 
-  constructor(id: string, color: string, points: readonly Point[]) {
+  constructor(id: string, color: string, points: readonly Point[], solid: boolean = true) {
     this.id = id
     this.color = color
     this.points = points.map(point => new TransformablePoint(point))
+    this.solid = solid
   }
 
   boundaries(space: Space): Boundaries {
@@ -27,24 +30,45 @@ export class PathShape implements Shape {
     return Boundaries.fromArray(points)
   }
 
-  render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
+  render(context: RenderShapeContext) {
 
     if (this.points.length == 0) return;
 
-    //console.log(`drawLine: (${this.point1.x}, ${this.point1.y}, ${this.point1.z}) (${this.end.x}, ${this.end.y}, ${this.end.z})`)
+    const {space, view, canvas} = context
     const points = this.transform(space)
     const pointsView = view.translateMany(points)
-    //console.log(`drawLine: ${point1.x}, ${point1.y}, ${end.x}, ${end.y}`)
+
     const z = this.zAverage(points)
-    const colorFactor = .4 * z
-    context.fillStyle = colorLuminance(this.color, colorFactor)
-    context.lineWidth = 3
-    context.beginPath()
-    context.moveTo(pointsView[pointsView.length - 1].x, pointsView[pointsView.length - 1].y)
-    for (let index = 0; index < pointsView.length; index ++) {
-      context.lineTo(pointsView[index].x, pointsView[index].y)
+    const colorFactor = (.6 * z) - .2
+
+    this.setStyle(canvas, colorFactor)
+    this.addPath(canvas, pointsView)
+
+    context.rendered(new SelectablePath(this.id + ".selectable", pointsView, this.solid))
+  }
+
+  private setStyle(canvas: CanvasRenderingContext2D, colorFactor: number) {
+    if (this.solid) {
+      canvas.fillStyle = colorLuminance(this.color, colorFactor)   //todo poor man's 3d coloring
+    } else {
+      canvas.strokeStyle = colorLuminance(this.color, colorFactor)   //todo poor man's 3d coloring
     }
-    context.fill()
+    canvas.lineWidth = 1
+  }
+
+  private addPath(canvas: CanvasRenderingContext2D, pointsView: readonly Point2D[]) {
+
+    canvas.beginPath()
+    canvas.moveTo(pointsView[pointsView.length - 1].x, pointsView[pointsView.length - 1].y)
+    for (let index = 0; index < pointsView.length; index++) {
+      canvas.lineTo(pointsView[index].x, pointsView[index].y)
+    }
+
+    if (this.solid) {
+      canvas.fill()
+    } else {
+      canvas.stroke()
+    }
   }
 
   update(transformers: readonly Transformer[]) {
@@ -65,14 +89,14 @@ export class PathShape implements Shape {
     return sum / points.length
   }
 
-  static fromTriangle(id: string, debugColors: boolean, triangle: Triangle) {
+  static fromTriangle(id: string, debugColors: boolean, triangle: Triangle, solid: boolean = true) {
     const color = this.segmentColor(debugColors, triangle.type)
-    return new PathShape(id, color, [triangle.point1, triangle.point2, triangle.point3])
+    return new PathShape(id, color, [triangle.point1, triangle.point2, triangle.point3], solid)
   }
 
-  static fromPolygon(id: string, debugColors: boolean, path: Path) {
+  static fromPolygon(id: string, debugColors: boolean, path: Path, solid: boolean = true) {
     const color = this.segmentColor(debugColors, path.type)
-    return new PathShape(id, color, path.points)
+    return new PathShape(id, color, path.points, solid)
   }
 
   private static segmentColor(debugColors: boolean, type: ModelType) {

@@ -9,12 +9,6 @@ test('create cube with faces', async () => {
 
   const result = Subtract.segments(models)
 
-  const log: string[] = ["\n"]
-  for (const face of result.faces) {
-    log.push("new Triangle(" + face.toString())
-  }
-  throw new Error(log.join("\n"))
-
   expect(result.faces.length).toEqual(12)
 })
 
@@ -25,5 +19,5 @@ test('create sphere with faces', async () => {
 
   const result = Subtract.segments(models)
 
-  expect(result.faces.length).toEqual(12)
+  expect(result.faces.length).toEqual(92)
 })

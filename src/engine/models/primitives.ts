@@ -101,11 +101,10 @@ export class Point implements Coordinate {
   }
 
   get hash(): number {
-    return this.cache.get("hash",
-      () => {
-        const key = this.toString()
-        return hashCode(key)
-      })
+    return this.cache.get("hash", () => {
+      const key = this.toString()
+      return hashCode(key)
+    })
   }
 
   readonly type: ModelType
@@ -206,7 +205,7 @@ export class Point implements Coordinate {
 
   }
 
-  dot(vector: Vector): number {
+  dot(vector: Coordinate): number {
     return this.x * vector.x + this.y * vector.y + this.z * vector.z
   }
 
@@ -280,7 +279,6 @@ export class TransformablePoint extends Point {
 }
 
 export class Point2D {
-
   readonly x: number
   readonly y: number
 
@@ -289,12 +287,16 @@ export class Point2D {
     this.y = y
   }
 
-  translate(coordinate: Point) {
-    return new Point2D(this.x + coordinate.x, this.y + coordinate.y)
+  to3D(): Point {
+    return new Point(this.x, this.y, 0)
   }
 
   add(x: number, y: number) {
     return new Point2D(this.x + x, this.y + y)
+  }
+
+  equals(point: Point2D) {
+    return equalsTolerance(this.x, point.x) && equalsTolerance(this.y, point.y)
   }
 }
 

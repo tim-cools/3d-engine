@@ -1,7 +1,7 @@
-import {Shape} from "."
+import {RenderShapeContext, Shape} from "."
 import {Boundaries, modelColor, ModelType, Point, Segment, Space, TransformablePoint, Transformer} from "../models"
-import {View2D} from "../view"
 import {Colors} from "../colors"
+import {SelectableSegment} from "./selectableSegment"
 
 export class LineShape implements Shape {
 
@@ -28,19 +28,22 @@ export class LineShape implements Shape {
     return Boundaries.fromItems(begin, end)
   }
 
-  render(space: Space, view: View2D, context: CanvasRenderingContext2D) {
-    //console.log(`drawLine: (${this.point1.x}, ${this.point1.y}, ${this.point1.z}) (${this.end.x}, ${this.end.y}, ${this.end.z})`)
+  render(context: RenderShapeContext) {
+
+    const {space, view, canvas} = context
     const {begin, end} = this.transform(space)
     const beginView = view.translate(begin)
     const endView = view.translate(end)
-    //console.log(`drawLine: ${point1.x}, ${point1.y}, ${end.x}, ${end.y}`)
-    context.fillStyle = "#000"
-    context.strokeStyle = this.color
-    context.lineWidth = 3
-    context.beginPath()
-    context.moveTo(beginView.x, beginView.y)
-    context.lineTo(endView.x, endView.y)
-    context.stroke()
+
+    canvas.fillStyle = "#000"
+    canvas.strokeStyle = this.color
+    canvas.lineWidth = 3
+    canvas.beginPath()
+    canvas.moveTo(beginView.x, beginView.y)
+    canvas.lineTo(endView.x, endView.y)
+    canvas.stroke()
+
+    context.rendered(new SelectableSegment(this.id + ".selectable", beginView, endView))
   }
 
   update(transformers: readonly Transformer[]) {

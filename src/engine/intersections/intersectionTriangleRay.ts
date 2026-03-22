@@ -27,7 +27,7 @@ export function intersectionTriangleRay(triangle: Triangle, ray: Ray): PointInte
 
     // The ray is parallel to the triangle
     // Check if the ray is in the plane of the triangle
-    const plane: Plane = triangle.plane();
+    const plane: Plane = triangle.plane;
     if (Math.abs(plane.direction.dot(ray.direction)) < tolerance && ray.point.belongsToPlane(plane)) {
       
       // Ray in the plane of the triangle: intersection = segment (portion of the ray inside the triangle)

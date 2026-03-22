@@ -1,4 +1,4 @@
-import {Path, PathBuilder, Point} from "../../engine/models"
+import {Path, PathBuilder, Point, Point2D} from "../../engine/models"
 import {Verify, VerifyLogging, VerifyModelContext} from "../infrastructure"
 import {Assert} from "../../infrastructure"
 import {Nothing} from "../../engine/nothing"
@@ -21,7 +21,7 @@ class PathContext {
   }
 
   triangles(number: number) {
-    this.context.logging.logAssert(this.model.triangles.length == number, number + " expected", `triangles: ${this.model.triangles} - `)
+    this.context.logging.logAssert(this.model.triangles.length == number, number + " expected", `triangles: ${this.model.triangles.length} - `)
     return this
   }
 
@@ -216,6 +216,27 @@ describe('build paths', () => {
 
         .triangleAt(0, new Point(0.5, 0.5, 0), new Point(0.5, 0, 0), new Point(1, 0, 0))
         .triangleAt(1, new Point(0.5, 0.5, 0), new Point(0, 1, 0), new Point(0, .5, 0))
+      ))
+  })
+
+  test('6 segments', async () => {
+    const builder = new PathBuilder()
+    builder.addSegment(new Point(2, 2, 0), new Point(2, 3, 0))
+    builder.addSegment(new Point(2, 3, 0), new Point(7, 8, 0))
+    builder.addSegment(new Point(7, 8, 0), new Point(8, 8, 0))
+    builder.addSegment(new Point(8, 7, 0), new Point(3, 2, 0))
+    builder.addSegment(new Point(3, 2, 0), new Point(2, 2, 0))
+
+    const paths = Assert.notNull(builder.closePaths(), "path")
+    Verify.collection(paths, pathsContext => pathsContext
+      .length(1, "paths")
+      .valueModel(0, context => new PathContext(context)
+        .segments(6)
+        .triangles(4)
+        .triangleAt(0, new Point(8, 7, 0), new Point(3, 2, 0), new Point(2, 2, 0))
+        .triangleAt(1, new Point(8, 7, 0), new Point(2, 2, 0), new Point(2, 3, 0))
+        .triangleAt(2, new Point(8, 7, 0), new Point(2, 3, 0), new Point(7, 8, 0))
+        .triangleAt(3, new Point(8, 7, 0), new Point(7, 8, 0), new Point(8, 8, 0))
       ))
   })
 })

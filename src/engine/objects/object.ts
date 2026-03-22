@@ -24,7 +24,7 @@ export interface Object3D extends SpaceObject {
   update(timeMilliseconds: number): void
 }
 
-export abstract class BaseObject2D {
+export abstract class Object2DBase {
 
   readonly is3D = false
   readonly id: string
@@ -36,7 +36,7 @@ export abstract class BaseObject2D {
   abstract shapes(): readonly Shape2D[]
 }
 
-export abstract class BaseObject3D {
+export abstract class Object3DBase {
 
   protected transformablePosition: TransformablePoint
 

@@ -13,7 +13,7 @@ import {intersectionPlanes} from "./intersectionPlanes"
 
 export function intersectionTrianglePlane(triangle: Triangle, plane: Plane): PlaneIntersection | TriangleIntersection | PointIntersection | SegmentIntersection | NoIntersection {
 
-  const st = new Plane(triangle.point1, triangle.direction());
+  const st = new Plane(triangle.point1, triangle.direction);
 
   if (plane.isParallelTo(st)) {
     if (triangle.point1.belongsToPlane(plane)) {

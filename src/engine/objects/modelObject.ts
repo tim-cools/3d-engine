@@ -3,20 +3,20 @@ import {
   FaceType,
   modelColor,
   ModelType,
-  Point,
   Path,
+  Point,
   SpaceModel,
+  Transformer,
   translateSpace,
   Triangle
 } from "../models"
 import {LineShape, PathShape, PointShape, Shape, UpdatableShape} from "../shapes"
-import {BaseObject3D} from "./object"
-import {Transformer} from "../models"
+import {Object3DBase} from "./object"
 import {Nothing, nothing} from "../nothing"
 import {Colors} from "../colors"
 import {HasRenderStyle, RenderStyle} from "./renderStyle"
 
-export class ModelObject extends BaseObject3D implements HasRenderStyle {
+export class ModelObject extends Object3DBase implements HasRenderStyle {
 
   protected model: SpaceModel
 
@@ -131,26 +131,23 @@ export class ModelObject extends BaseObject3D implements HasRenderStyle {
 
   private addFacesWireframe(debug: boolean, result: UpdatableShape[]) {
     if (this.model.segments.length > 0 && !debug) return
-    const added: Map<string, any> = new Map()
-    for (let index = 0 ; index < this.model.faces.length ; index++) {
-      const face = this.model.faces[index]
-      if (debug || !face.debug) {
-        this.addFaceWireframeTriangles(face, debug, added, result, index)
-      }
+    for (const face of this.model.faces) {
+      this.addFaceWireframeTriangles(face, debug, result)
     }
   }
 
-  private addFaceWireframeTriangles(face: Triangle | Path, debug: boolean, added: Map<string, any>, result: UpdatableShape[], index: number) {
-    for (const triangle of face.triangles) {
+  private addFaceWireframeTriangles(face: Triangle | Path, debug: boolean, result: UpdatableShape[]) {
 
-      const key = triangle.key()
-      if (added.has(key)) continue
+    if (face.faceType == FaceType.Triangle) {
+      result.push(PathShape.fromTriangle(this.id + ".triangle." + face.hash, debug, face, false))
+      return
+    }
 
-      result.push(LineShape.fromPoints(this.id + ".line." + index, debug, triangle.type, triangle.point1, triangle.point2))
-      result.push(LineShape.fromPoints(this.id + ".line." + index, debug, triangle.type, triangle.point2, triangle.point3))
-      result.push(LineShape.fromPoints(this.id + ".line." + index, debug, triangle.type, triangle.point3, triangle.point1))
-
-      added.set(key, {})
+    if (debug || !face.debug) {
+      for (const triangle of face.triangles) {
+        result.push(PathShape.fromTriangle(this.id + ".triangle." + triangle.hash, debug, triangle, false))
+      }
+      result.push(PathShape.fromPolygon(this.id + ".polygon." + face.hash, debug, face, false))
     }
   }
 }

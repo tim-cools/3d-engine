@@ -1,9 +1,9 @@
 import {LineShape, Shape} from "../shapes"
 import {Colors} from ".."
 import {Size, Point, rotateY, rotateZ} from "../models"
-import {BaseObject3D} from "./object"
+import {Object3DBase} from "./object"
 
-export class Sphere extends BaseObject3D {
+export class Sphere extends Object3DBase {
 
   private readonly shapesValue: LineShape[]
 
@@ -74,7 +74,7 @@ export class Sphere extends BaseObject3D {
 
   private createShapes() {
     return [
-      ...this.lines(Colors.red),
+      ...this.lines(Colors.primary.darker),
     ]
   }
 }

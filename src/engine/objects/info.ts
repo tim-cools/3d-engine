@@ -1,11 +1,10 @@
 import {Shape2D} from "../shapes"
-import {BaseObject2D, HasSceneName} from "./object"
-import {Colors} from "../colors"
+import {Object2DBase, HasSceneName} from "./object"
 import {InfoShape2D} from "../shapes/infoShape2D"
 import {HasRenderStyle, RenderStyle} from "./renderStyle"
 import {Algorithm, HasAlgorithm} from "./algorithm"
 
-export class Info extends BaseObject2D implements HasRenderStyle, HasAlgorithm, HasSceneName {
+export class Info extends Object2DBase implements HasRenderStyle, HasAlgorithm, HasSceneName {
 
   private scene: string = ""
   private renderStyle: RenderStyle = RenderStyle.Wireframe
@@ -22,7 +21,7 @@ export class Info extends BaseObject2D implements HasRenderStyle, HasAlgorithm, 
       algorithm: Algorithm[this.algorithm]
     }
     return [
-      new InfoShape2D(`${this.id}.border`, Colors.primary.middle, Colors.primary.light, info)
+      new InfoShape2D(`${this.id}.border`, info)
     ]
   }
 

@@ -17,7 +17,7 @@ export class DebugInfo {
     this.highlightTriangleAndIntersectionsHashCodes = highlightTrianglesForDebugging ?? []
   }
 
-  containsTriangle(hash: number): Boolean {
+  highlightTriangle(hash: number): Boolean {
     return any(this.highlightTriangleAndIntersectionsHashCodes, value => value == hash)
   }
 }
@@ -49,14 +49,17 @@ function addMasterFaces(master: Model, subtract: SpaceModel, log: Logger, faces:
 
 function addMasterTriangle(subtract: SpaceModel, triangle: Triangle, log: Logger, faces: Face[], points: Point[], segments: Segment[], debugInfo: DebugInfo) {
 
+  if (debugInfo.highlightTriangle(triangle.hash)) {
+    faces.push(triangle.highlightMax())
+    return
+  }
+
   const intersection = intersectsTriangleModel(triangle, subtract, log)
   log.logLine("intersectsTriangleModel")
 
   //console.log(`----- addMasterTriangle - outside model: ${intersection.outsideModel} - hasIntersections: ${intersection.hasIntersections}`)
 
-  if (debugInfo.containsTriangle(triangle.hash)) {
-    faces.push(triangle.highlightMax())
-  } else if (intersection.outsideModel) {
+  if (intersection.outsideModel) {
     faces.push(triangle)
   } else if (!intersection.hasIntersections) {
     faces.push(triangle.disabled(true))
@@ -85,9 +88,9 @@ function addIntersections(intersection: SpaceModelIntersectionResult, points: Po
 
 function partialFace(subtract: SpaceModel, masterTriangle: Triangle, intersection: SpaceModelIntersectionResult): Face[] | Nothing {
   const resultPolygon = new PathBuilder(ModelType.Secondary, false)
-  addTriangleSegment(masterTriangle, masterTriangle.abSegment(), subtract, intersection, resultPolygon)
-  addTriangleSegment(masterTriangle, masterTriangle.bcSegment(), subtract, intersection, resultPolygon)
-  addTriangleSegment(masterTriangle, masterTriangle.caSegment(), subtract, intersection, resultPolygon)
+  addTriangleSegment(masterTriangle, masterTriangle.abSegment, subtract, intersection, resultPolygon)
+  addTriangleSegment(masterTriangle, masterTriangle.bcSegment, subtract, intersection, resultPolygon)
+  addTriangleSegment(masterTriangle, masterTriangle.caSegment, subtract, intersection, resultPolygon)
   return resultPolygon.closePaths()
 }
 
@@ -191,7 +194,7 @@ function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: M
   //addIntersections(intersection, points, segments)
 
   //console.log(`----- addMasterTriangle - outside model: ${intersection.outsideModel} - hasIntersections: ${intersection.hasIntersections}`)
-  if (debugInfo.containsTriangle(triangle.hash)) {
+  if (debugInfo.highlightTriangle(triangle.hash)) {
     faces.push(triangle.highlightMax())
     highlightIntersectionTriangles(triangle, faces, intersection)
   } else if (intersection.outsideModel) {
@@ -214,9 +217,9 @@ function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: M
 
 function partialSubtractFace(subtract: SpaceModel, triangle: Triangle, intersection: SpaceModelIntersectionResult): Path[] | Nothing {
   const resultPolygon = new PathBuilder(ModelType.Disabled, true)
-  addSubtractTriangleSegment(triangle, triangle.abSegment(), subtract, intersection, resultPolygon)
-  addSubtractTriangleSegment(triangle, triangle.bcSegment(), subtract, intersection, resultPolygon)
-  addSubtractTriangleSegment(triangle, triangle.caSegment(), subtract, intersection, resultPolygon)
+  addSubtractTriangleSegment(triangle, triangle.abSegment, subtract, intersection, resultPolygon)
+  addSubtractTriangleSegment(triangle, triangle.bcSegment, subtract, intersection, resultPolygon)
+  addSubtractTriangleSegment(triangle, triangle.caSegment, subtract, intersection, resultPolygon)
   return resultPolygon.closePaths()
 }
 

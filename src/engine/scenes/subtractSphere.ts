@@ -1,5 +1,5 @@
 import {Scene} from "./scenes"
-import {subtractSphereTestModelAkaDeathStar} from "../../tests/operations/subtractSphereTestModelAkaDeathStar"
+import {subtractSphereTestModelAkaDeathStar} from "../../tests/intersections/subtractSphereTestModelAkaDeathStar"
 import {ModelObject, Object} from "../objects"
 import {Lazy} from "../../infrastructure/lazy"
 import {SubtractModelObject} from "../objects/subtractModelObject"

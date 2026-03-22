@@ -1,9 +1,9 @@
 import {PointShape, Shape} from "../shapes"
 import {Colors} from "../colors"
 import {Point, Size} from "../models"
-import {BaseObject3D} from "./object"
+import {Object3DBase} from "./object"
 
-export class Raster extends BaseObject3D {
+export class Raster extends Object3DBase {
 
   private readonly size: number
   private readonly step: number
@@ -23,7 +23,7 @@ export class Raster extends BaseObject3D {
       for (let y = -half; y <= half; y += this.step) {
         for (let z = -half; z <= half; z += this.step) {
           const position = new Point(x, y, z)
-          const pointShape = new PointShape(`${this.id}.point.${x}.${y}.${z}`, Colors.darkGray, position, 2)
+          const pointShape = new PointShape(`${this.id}.point.${x}.${y}.${z}`, Colors.gray.darker, position, 2)
           result.push(pointShape)
         }
       }

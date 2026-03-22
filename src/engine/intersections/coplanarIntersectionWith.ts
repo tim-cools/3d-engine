@@ -20,9 +20,9 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
   const onBC = line.perpendicularTo(bcSegment.line)
   const onAC = line.perpendicularTo(acSegment.line)
 
-  const ab = triangle.abLength()
-  const bc = triangle.bcLength()
-  const ac = triangle.caLength()
+  const ab = triangle.abLength
+  const bc = triangle.bcLength
+  const ac = triangle.caLength
 
   if (onAB != null && onBC != null) {
 
@@ -96,11 +96,10 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
       && positionOnAC >= 1 - tolerance && positionOnAC <= 1 + tolerance) {
 
       // Check intersection with AB
-      // todo finish subtract faces algorithm
       if (onAB != null) {
-        const positionOnAB = Vector.fromPoints(triangle.point1, onBC)
-          .dot(Vector.fromPoints(triangle.point1, triangle.point2)) / (ac * ac)
-        if (positionOnBC > -tolerance && positionOnBC <= 1 + tolerance) {
+        const positionOnAB = Vector.fromPoints(triangle.point1, onAB)
+          .dot(Vector.fromPoints(triangle.point1, triangle.point2)) / (ab * ab)
+        if (positionOnAB > -tolerance && positionOnAB <= 1 + tolerance) {
           return new SegmentIntersection(new Segment(triangle.point3, onAB), [bcSegment, acSegment, abSegment])
         }
       }

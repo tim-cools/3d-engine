@@ -125,9 +125,9 @@ export function intersectsTriangleModel(triangleInMaster: Triangle, model: Model
 function addSegmentIntersections(subtractTriangle: Triangle, triangleInMaster: Triangle, intersections: TriangleSegmentIntersection[]) {
 
   const entries: TriangleSegmentEntry[] = []
-  addSegmentIntersection(subtractTriangle, triangleInMaster.abSegment(), entries)
-  addSegmentIntersection(subtractTriangle, triangleInMaster.bcSegment(), entries)
-  addSegmentIntersection(subtractTriangle, triangleInMaster.caSegment(), entries)
+  addSegmentIntersection(subtractTriangle, triangleInMaster.abSegment, entries)
+  addSegmentIntersection(subtractTriangle, triangleInMaster.bcSegment, entries)
+  addSegmentIntersection(subtractTriangle, triangleInMaster.caSegment, entries)
 
   if (entries.length == 0) {
     return nothing

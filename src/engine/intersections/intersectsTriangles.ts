@@ -25,7 +25,7 @@ export function intersectsTriangles(triangle1: Triangle, triangle2: Triangle): b
     if (segment3Intersection.type != IntersectionType.None) return true
   }
 
-  const intersection = intersectionTrianglePlane(triangle1, triangle2.plane());
+  const intersection = intersectionTrianglePlane(triangle1, triangle2.plane);
   if (intersection.type == IntersectionType.Plane) {
 
     if (triangle1.point1.belongsTo(triangle2)) return true;

@@ -1,10 +1,10 @@
 import {AxisModel} from "../models/axisModel"
 import {Boundaries, Model, Point, Size} from "../models"
-import {BaseObject3D} from "./object"
+import {Object3DBase} from "./object"
 import {nothing, Nothing} from "../nothing"
 import {LineShape, Shape, UpdatableShape} from "../shapes"
 
-class AxisObject extends BaseObject3D {
+class AxisObject extends Object3DBase {
 
   private readonly model: Model
 

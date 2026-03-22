@@ -1,8 +1,8 @@
 import {Point} from "../models"
 import {PointShape, Shape} from "../shapes"
-import {BaseObject3D} from "./object"
+import {Object3DBase} from "./object"
 
-export class PointObject extends BaseObject3D {
+export class PointObject extends Object3DBase {
 
   private readonly color: string
 

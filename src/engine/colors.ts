@@ -2,15 +2,9 @@ export type Color = string
 
 export class Colors {
 
-  static readonly red = "red"
-  static readonly yellow = "yellow"
-  static readonly green = "green"
-  static readonly blue = "blue"
-  static readonly white = "white"
-  static readonly lightGray = "lightgray"
-  static readonly darkGray = "darkgray"
-  static readonly highlight = "yellow"
-  static readonly highlightMax = "red"
+  static readonly highlight = "#fafe14"
+  static readonly highlightMax = "#d35e61"
+  static readonly highlightSecondary = "#d7955b"
 
   static primary = {
     dark: "#001333",
@@ -42,6 +36,19 @@ export class Colors {
     middle: "#999",
     lighter: "#CCC",
     light: "#EEE",
+  }
+
+  static ui = {
+    background: "#444",
+    text: "#abaca9",
+    textHighlight: "#eeeeee",
+    textInactive: "#8d8d8d",
+    border: "#363636",
+    tabBackground: "#494949",
+    tabBackgroundInactive: "#343434",
+    titleBackground: "#5d5d5d",
+    titleText: "#a9a9a9",
+    itemSelected: "#5485a7"
   }
 }
 

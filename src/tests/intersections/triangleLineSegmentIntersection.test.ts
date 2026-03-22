@@ -114,4 +114,18 @@ describe("triangle line segment intersection", () => {
     expect(equalsTolerancePoint(intersection.segment.begin, new Point(1, 1, 0)))
     expect(equalsTolerancePoint(intersection.segment.end, new Point(.75, .75, 0)))
   })
+
+  test('point 3', async () => {
+
+    const lineSegment = new Segment(new Point(7, 8, 0), new Point(8, 8, 0))
+    const triangle = new Triangle(
+      new Point(8, 7, 0),
+      new Point(2, 3, 0),
+      new Point(7, 8, 0))
+
+    const intersection = intersectionTriangleSegment(triangle, lineSegment)
+
+    if (intersection.type != IntersectionType.Point) throw new Error("intersection.type != IntersectionType.Segment: " + IntersectionType[intersection.type])
+    expect(equalsTolerancePoint(intersection.point, new Point(7, 8, 0)))
+  })
 })

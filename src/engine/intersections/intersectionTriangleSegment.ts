@@ -26,7 +26,7 @@ export function intersectionTriangleSegment(triangle: Triangle, lineSegment: Seg
 
 function intersectionTriangleLine(triangle: Triangle, line: Line): PointIntersection | SegmentIntersection | NoIntersection {
 
-  const plane = new Plane(triangle.point1, triangle.direction())
+  const plane = new Plane(triangle.point1, triangle.direction)
 
   const intersection = intersectionPlaneLine(plane, line)
   if (intersection.type == IntersectionType.Line) {

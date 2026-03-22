@@ -6,6 +6,8 @@ import {Space} from "./transformations"
 import {FaceType} from "./faceType"
 import {pushMany} from "../../infrastructure"
 import {intersectionTriangleSegment, IntersectionType} from "../intersections"
+import {hashCode} from "../../infrastructure/stringFunctions"
+import {ValuesCache} from "../../infrastructure/valuesCache"
 
 class SegmentChainBuilder {
 
@@ -245,7 +247,7 @@ export class PathSegment implements SegmentBase {
 
 export class Path implements Finite {
 
-  private trianglesLazy: Lazy<readonly Triangle[]> = new Lazy<readonly Triangle[]>(() => this.getTriangles())
+  private readonly cache: ValuesCache = new ValuesCache()
   private segmentsValue: PathSegment[]
 
   readonly points: readonly Point[]
@@ -253,12 +255,20 @@ export class Path implements Finite {
   readonly type: ModelType
   readonly debug: boolean = false
 
+  get hash(): number {
+    return this.cache.get("hash", () => {
+        const key: string[] = []
+        this.points.map(point => point.toString())
+        return hashCode(key.join("|"))
+      })
+  }
+
   get segments(): readonly PathSegment[] {
     return this.segmentsValue
   }
 
   get triangles(): readonly Triangle[] {
-    return this.trianglesLazy.value
+    return this.getTriangles() // this.trianglesLazy.value
   }
 
   constructor(segments: PathSegment[], type: ModelType = ModelType.Primary, debug: boolean = false) {
@@ -269,7 +279,7 @@ export class Path implements Finite {
   }
 
   pointLocation(point: Point): number {
-    return 0;
+    throw new Error("Not yet implemented")
   }
 
   toSpace(space: Space) {
@@ -323,7 +333,7 @@ export class Path implements Finite {
         if (Path.overlapsOutside(points, triangle)) {
           return nothing;
         }
-        result.push(  triangle)
+        result.push(triangle)
       }
     }
     return result
@@ -335,7 +345,7 @@ export class Path implements Finite {
       const point = points[index]
       const segment = new Segment(start, point)
       const intersection = intersectionTriangleSegment(triangle, segment)
-      if (intersection.type == IntersectionType.Segment && !triangle.containsSegment(intersection.segment)) {
+      if (intersection.type == IntersectionType.Segment && !triangle.hasSegment(intersection.segment)) {
         return true
       }
       start = point;

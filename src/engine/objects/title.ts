@@ -1,8 +1,8 @@
 import {Point2D} from "../models"
 import {Shape2D, TextShape2D} from "../shapes"
-import {BaseObject2D} from "./object"
+import {Object2DBase} from "./object"
 
-export class Title extends BaseObject2D {
+export class Title extends Object2DBase {
 
   private readonly color: string
   private readonly position: Point2D

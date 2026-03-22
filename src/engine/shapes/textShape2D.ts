@@ -1,6 +1,5 @@
-import {Shape2D} from "./shape"
-import {Point2D, Space2D} from "../models"
-import {View2D} from "../view"
+import {RenderShape2DContext, Shape2D} from "./shape"
+import {Point2D} from "../models"
 
 export class TextShape2D implements Shape2D {
 
@@ -18,11 +17,14 @@ export class TextShape2D implements Shape2D {
     this.text = text
   }
 
-  render(space: Space2D, view: View2D, context: CanvasRenderingContext2D) {
-    context.fillStyle = this.color
-    context.font = this.fontSize + "px sans-serif"
+  render(context: RenderShape2DContext) {
+
+    const {space, canvas} = context
+
+    canvas.fillStyle = this.color
+    canvas.font = this.fontSize + "px sans-serif"
 
     const point2D = space.translate(this.position)
-    context.fillText(this.text, point2D.x, point2D.y)
+    canvas.fillText(this.text, point2D.x, point2D.y)
   }
 }
