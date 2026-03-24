@@ -35,7 +35,7 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
       && positionOnBC >= -tolerance && positionOnBC <= tolerance) {
 
       // Check intersection with AC
-      // todo finish subtract faces algorithm
+      // todo finish subtract faces value
       const onAC = line.perpendicularTo(acSegment.line)
       if (onAC != null) {
         const positionOnAC = Vector.fromPoints(triangle.point1, onAC)
@@ -66,7 +66,7 @@ export function coplanarIntersectionWith(triangle: Triangle, line: Line): PointI
       && positionOnAC >= -tolerance && positionOnAC <= tolerance) {
 
       // Check intersection with AC
-      // todo finish subtract faces algorithm
+      // todo finish subtract faces value
       const onBC = line.perpendicularTo(bcSegment.line)
       if (onBC != null) {
         const positionOnBC = Vector.fromPoints(triangle.point2, onBC)

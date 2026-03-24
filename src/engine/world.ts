@@ -1,30 +1,27 @@
 import {View} from "./view"
 import {
-  Boundaries,
-  Space2D,
-  Space,
   Point,
-  translateSpace,
+  Point2D,
+  Space,
+  Space2D,
   SpaceObject,
-  Triangle,
-  translateSpaceTriangle, Point2D
+  translateSpace,
+  translateSpaceTriangle,
+  Triangle
 } from "./models"
 import {RenderShape2DContext, RenderShapeContext, Shape, Shape2D} from "./shapes"
 import {Scene, scenes} from "./scenes"
-import {
-  Object2D,
-  Object3D,
-  axis,
-  info,
-  HasRenderStyle,
-  RenderStyle,
-  Algorithm,
-  HasAlgorithm,
-  HasSceneName,
-  Object
-} from "./objects"
+import {axis, Object, Object3D} from "./objects"
 import {Selectable, SelectableObject} from "./shapes/selectable"
 import {nothing, Nothing} from "./nothing"
+import {UIRenderContext, UI} from "./ui"
+import {Update} from "./events/update"
+import {RenderStyle} from "./state/renderStyle"
+import {Algorithm} from "./state/algorithm"
+import {GlobalContext} from "./scenes/currentSceneContext"
+import {Colors} from "./colors"
+import {Object2D} from "./objects/object2D"
+import {ElementArea} from "./ui/elementArea"
 
 type ShapeRender = {
   z: number
@@ -51,43 +48,52 @@ class RenderContextFactory {
   create2D(space: Space2D): RenderShape2DContext {
     return new RenderShape2DContext(space, this.view, this.selectables, this.canvasContext)
   }
+
+  createUI(): UIRenderContext {
+    return new UIRenderContext(this.canvasContext)
+  }
 }
 
 export class World {
 
   private readonly logEnabled = false
 
+  private readonly ui: UI;
   private readonly axis = axis();
-  private readonly info = info();
   private readonly lastZ: Map<string, number> = new Map()
   private readonly scenes: readonly Scene[] = []
   private readonly view: View
 
-  private axisVisible: boolean = false
-  private showBoundaries: boolean = false
-  private renderStyle: RenderStyle = RenderStyle.Wireframe
-  private algorithm: Algorithm = Algorithm.SubtractFaces
   private scene: Scene
   private objects: Object[] = []
   private selectables: SelectableObject[] = []
   private selected: SelectableObject | Nothing = nothing
+  private globalContext = new GlobalContext()
+  private sceneObjects: Object[] = []
+
+  private get sceneState() {
+    return this.globalContext.scene.value
+  }
 
   constructor(view: View) {
     this.view = view
     this.scenes = scenes()
     this.scene = this.scenes[0]
+    this.ui = new UI(this.globalContext)
     this.setScene(0)
   }
 
   update(difference: number) {
-    for (const object of this.scene.objects.value) {
-      object.update(difference)
-    }
+    this.globalContext.events.publish(Update, new Update(difference))
   }
 
   render(canvas: HTMLCanvasElement, canvasContext: CanvasRenderingContext2D) {
 
-    canvasContext.fillStyle = "#fff";
+    const gradient = canvasContext.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, Colors.white)
+    gradient.addColorStop(1, Colors.primary.lightest)
+
+    canvasContext.fillStyle = gradient
     canvasContext.fillRect(0, 0, canvas.width, canvas.height)
 
     const shapes = this.updateShapes()
@@ -97,6 +103,12 @@ export class World {
     for (const objectShape of shapes) {
       objectShape.render(context)
     }
+    this.renderUI(context)
+  }
+
+  private renderUI(context: RenderContextFactory) {
+    const area = new ElementArea(0, 0, this.view.width, this.view.height)
+    this.ui.render(area, context.createUI())
   }
 
   clearSelection() {
@@ -107,12 +119,15 @@ export class World {
     if (number < 0 || number >= this.scenes.length) {
       return
     }
+
     this.scene = this.scenes[number]
+
+    this.globalContext.scene.update(state => ({...state, name: this.scene.title}))
+
+    const context = this.globalContext.setScene()
+    this.sceneObjects = this.scene.objects(context)
     this.clearSelection()
     this.updateShapes()
-    this.setRenderStyle()
-    this.setAlgorithm()
-    this.setSceneName()
   }
 
   selectAt(point: Point2D) {
@@ -127,29 +142,45 @@ export class World {
   }
 
   switchRenderStyle() {
-    this.renderStyle = (this.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
-    console.log("switchRenderStyle: " + RenderStyle[this.renderStyle])
-    this.setRenderStyle()
+    this.globalContext.scene.update(state => {
+      const value = (state.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
+      console.log("switchRenderStyle: " + value)
+      return {
+        ...state,
+        renderStyle: value,
+        renderStyleCaption: RenderStyle[value]
+      }
+    })
   }
 
   switchAlgorithm() {
-    this.algorithm = (this.algorithm + 1) % (Algorithm.SubtractFaces + 1)
-    console.log("switchSAlgorithm: " + Algorithm[this.algorithm])
-    this.setAlgorithm()
+    this.globalContext.algorithm.update(state => {
+      const value = (state.value + 1) % (Algorithm.SubtractFaces + 1)
+      console.log("switchSAlgorithm: " + value)
+      return {
+        ...state,
+        value: value,
+        caption: RenderStyle[value]
+      }
+    })
   }
 
   toggleAxis() {
-    this.axisVisible = !this.axisVisible;
+    this.globalContext.scene.update(state => {
+      return {
+        ...state,
+        axisVisible: !state.axisVisible
+      }
+    })
   }
 
   toggleShowBoundaries() {
-    this.showBoundaries = !this.showBoundaries
-    for (const object of this.objects) {
-      const hasObjectStyle = object as any as HasRenderStyle
-      if (hasObjectStyle.setShowBoundaries != undefined) {
-        hasObjectStyle.setShowBoundaries(this.showBoundaries)
+    this.globalContext.scene.update(state => {
+      return {
+        ...state,
+        showBoundaries: !state.showBoundaries
       }
-    }
+    })
   }
 
   logShapes() {
@@ -161,45 +192,16 @@ export class World {
     console.log("Shapes End ----------------------------------------------------------------------")
   }
 
-  private setRenderStyle() {
-    for (const object of this.objects) {
-      const hasObjectStyle = object as any as HasRenderStyle
-      if (hasObjectStyle.setStyle != undefined) {
-        hasObjectStyle.setStyle(this.renderStyle)
-      }
-    }
-  }
-
-  private setAlgorithm() {
-    for (const object of this.objects) {
-      const hasObjectStyle = object as any as HasAlgorithm
-      if (hasObjectStyle.setAlgorithm != undefined) {
-        hasObjectStyle.setAlgorithm(this.algorithm)
-      }
-    }
-  }
-
-  private setSceneName() {
-    for (const object of this.objects) {
-      const hasSceneName = object as any as HasSceneName
-      if (hasSceneName.setSceneName != undefined) {
-        hasSceneName.setSceneName(this.scene.title)
-      }
-    }
-  }
-
   private updateShapes(): ShapeRender[] {
 
     const space2D = this.view.space2D()
 
-    this.objects = this.axisVisible
-      ? [this.axis, ...this.scene.objects.value, this.info]
-      : [...this.scene.objects.value, this.info]
+    this.objects = this.sceneState.axisVisible
+      ? [this.axis, ...this.sceneObjects]
+      : [...this.sceneObjects]
 
     const result = this.shapesRenderers(space2D)
-    result.sort((first, second) => {
-      return first.z > second.z ? -1 : 1
-    })
+    result.sort((first, second) => first.z > second.z ? -1 : 1)
 
     if (this.selected) {
       this.renderShape2D(this.selected, space2D, result)
@@ -231,9 +233,8 @@ export class World {
 
     const boundaries = shape.boundaries(space)
     const z = this.view.toViewCoordinateZ(boundaries.averageZ)
-    const view = this.view
 
-    this.logZ(shape, z, boundaries)
+    this.logZ(shape, z)
 
     result.push({
       z: z,
@@ -255,14 +256,14 @@ export class World {
   }
 
   private renderObject2D(object: Object2D, space2D: Space2D, result: ShapeRender[]) {
-    for (const shape of object.shapes()) {
+    for (const shape of object.shapes) {
       this.renderShape2D(shape, space2D, result)
     }
   }
 
   private renderShape2D(shape: Shape2D, space: Space2D, result: ShapeRender[]) {
     result.push({
-      z: 0,
+      z: shape.z,
       shape: shape,
       render(contextFactory: RenderContextFactory) {
         shape.render(contextFactory.create2D(space))
@@ -270,7 +271,7 @@ export class World {
     })
   }
 
-  private logZ(shape: Shape, z: number, boundaries: Boundaries) {
+  private logZ(shape: Shape, z: number) {
     if (!this.logEnabled) return
     if (!this.lastZ.has(shape.id) || this.lastZ.get(shape.id) != z) {
       this.lastZ.set(shape.id, z)

@@ -1,8 +1,8 @@
-import {Point, rotateX, rotateZ, Size} from "../models"
-import {LineShape, Shape, UpdatableShape} from "../shapes"
+import {Point, Size} from "../models"
+import {LineShape, Shape} from "../shapes"
 import {Object3DBase} from "./object"
-import {RenderStyle} from "./renderStyle"
 import {PathShape} from "../shapes"
+import {RenderStyle} from "../state/renderStyle"
 
 export class Rectangle extends Object3DBase {
 
@@ -14,7 +14,7 @@ export class Rectangle extends Object3DBase {
   private static rightTop    = new Point(Rectangle.plus, Rectangle.plus, 0)
 
   private readonly color: string
-  private readonly shapesValue: UpdatableShape[]
+  private readonly shapesValue: Shape[]
   private readonly style: RenderStyle
 
   constructor(id: string, color: string, position: Point, size: Size, style: RenderStyle = RenderStyle.Wireframe) {
@@ -28,17 +28,6 @@ export class Rectangle extends Object3DBase {
     return this.shapesValue
   }
 
-  update(timeMilliseconds: number): void {
-    const offset = timeMilliseconds / 3600
-    for (const shape of this.shapesValue) {
-      shape.update([
-        //rotateZ(offset),
-        //rotateX(offset),
-        //rotateY(offset),
-      ])
-    }
-  }
-
   private createShapes() {
     return this.style == RenderStyle.Wireframe
       ? this.wireframe()
@@ -49,8 +38,8 @@ export class Rectangle extends Object3DBase {
     return [
       ...this.segments(this.color, Rectangle.leftBottom, Rectangle.rightBottom),
       ...this.segments(this.color, Rectangle.leftBottom, Rectangle.leftTop),
+      ...this.segments(this.color, Rectangle.rightBottom, Rectangle.rightBottom),
       ...this.segments(this.color, Rectangle.rightBottom, Rectangle.rightTop),
-      ...this.segments(this.color, Rectangle.leftTop, Rectangle.rightTop),
     ]
   }
 

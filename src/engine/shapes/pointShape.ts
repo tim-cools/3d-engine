@@ -1,8 +1,8 @@
 import {TransformablePoint, Boundaries, Space, Point, Transformer} from "../models"
-import {RenderShapeContext, UpdatableShape} from "."
+import {RenderShapeContext} from "."
 import {SelectablePoint} from "./selectablePoint"
 
-export class PointShape implements UpdatableShape {
+export class PointShape {
 
   readonly id: string
   readonly color: string
@@ -14,9 +14,6 @@ export class PointShape implements UpdatableShape {
     this.color = color
     this.size = size
     this.position = new TransformablePoint(position)
-  }
-
-  update(transformers: readonly Transformer[]): void {
   }
 
   boundaries(space: Space): Boundaries {

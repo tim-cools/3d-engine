@@ -1,8 +1,8 @@
 import {Scene} from "./scenes"
 import {Point2D} from "../models"
-import {Title, Object} from "../objects"
+import {Title} from "../objects"
 import {Colors} from "../colors"
-import {Lazy} from "../../infrastructure/lazy"
+import {SceneContext} from "./sceneContext"
 
 export function intro(scenes: readonly Scene[]): Scene {
 
@@ -22,7 +22,7 @@ export function intro(scenes: readonly Scene[]): Scene {
     text("x: toggle axis"),
     text("b: toggle boundaries"),
     text("r: change render style (wireframe, faces, debug, faces wires, ...)"),
-    text("a: change algorithm (subtract segment (not complete), subtract triangles)"),
+    text("a: change value (subtract segment (not complete), subtract triangles)"),
     text(""),
     text("0: intro"),
   ]
@@ -32,5 +32,5 @@ export function intro(scenes: readonly Scene[]): Scene {
     texts.push(text(`${(index + 1).toString()}: ${scene.title}`))
   }
 
-  return new Scene("Intro", new Lazy<Object[]>(() => texts))
+  return new Scene("Intro", (context: SceneContext) => texts)
 }

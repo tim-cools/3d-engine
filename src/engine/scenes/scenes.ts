@@ -12,14 +12,16 @@ import {layers} from "./layers"
 import {cube} from "./cube"
 import {sphere} from "./sphere"
 import {cubesAndSphere} from "./cubesAndSphere"
-import {Lazy} from "../../infrastructure/lazy"
+import {SceneContext} from "./sceneContext"
+
+export type SceneFactory = (context: SceneContext) => Object[]
 
 export class Scene {
 
   readonly title: Text
-  readonly objects: Lazy<Object[]>
+  readonly objects: SceneFactory
 
-  constructor(title: Text, objects: Lazy<Object[]>) {
+  constructor(title: Text, objects: SceneFactory) {
     this.title = title
     this.objects = objects
   }

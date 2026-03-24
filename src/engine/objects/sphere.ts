@@ -16,17 +16,6 @@ export class Sphere extends Object3DBase {
     return this.shapesValue
   }
 
-  update(timeMilliseconds: number): void {
-    const offset = timeMilliseconds / 3600
-    for (const shape of this.shapesValue) {
-      shape.update([
-        //rotateZ(offset),
-        //rotateX(offset),
-        //rotateY(offset),
-      ])
-    }
-  }
-
   private lines(color: string) {
 
     const segmentsNumber = 8

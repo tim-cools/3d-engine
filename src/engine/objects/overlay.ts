@@ -1,17 +1,14 @@
 import {Colors} from ".."
-import {Line2DShape, Shape, Shape2D} from "../shapes"
-import {Object2DBase} from "./object"
+import {Line2DShape, Shape2D} from "../shapes"
+import {Object2DBase} from "./object2D"
 
 export class Overlay extends Object2DBase {
 
-  readonly id: string
-
   constructor(id: string) {
     super(id)
-    this.id = id
   }
 
-  shapes(): readonly Shape2D[] {
+  protected createShapes(): readonly Shape2D[] {
 
     const width = 1
     const height = 1
@@ -22,8 +19,5 @@ export class Overlay extends Object2DBase {
     const vertical = Line2DShape.new(this.id + ".v", Colors.gray.darker, widthMiddle, 0, widthMiddle, height)
 
     return [horizontal, vertical]
-  }
-
-  update(timeMilliseconds: number): void {
   }
 }

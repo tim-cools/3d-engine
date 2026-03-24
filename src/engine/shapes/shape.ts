@@ -1,10 +1,9 @@
-import {Boundaries, Space, Space2D, Transformer} from "../models"
+import {Boundaries, Point2D, Space, Space2D} from "../models"
 import {View2D} from "../view"
 import {Selectable} from "./selectable"
+import {Colors} from "../colors"
 
-export interface UpdatableShape extends Shape {
-  update(transformers: readonly Transformer[]): void
-}
+export const FrontShape2D = -999
 
 export class RenderShape2DContext {
 
@@ -24,10 +23,12 @@ export class RenderShape2DContext {
   rendered(selectable: Selectable): void {
     this.selectables.push(selectable)
   }
+
 }
 
 export interface Shape2D {
   readonly id: string
+  readonly z: number
   render(context: RenderShape2DContext): void
 }
 

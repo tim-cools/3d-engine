@@ -1,7 +1,6 @@
-export type Color = string
-
 export class Colors {
 
+  static readonly white = "#fff"
   static readonly highlight = "#fafe14"
   static readonly highlightMax = "#d35e61"
   static readonly highlightSecondary = "#d7955b"
@@ -12,6 +11,7 @@ export class Colors {
     middle: "#556992",
     lighter: "#90a3cf",
     light: "#cee1ff",
+    lightest: "#f0f6ff",
   }
 
   static secondary = {

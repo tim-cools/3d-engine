@@ -1,23 +1,25 @@
 import {Scene} from "./scenes"
 import {CubeModel, Point, Size, SpaceModel} from "../models"
-import {Object} from "../objects"
-import {Lazy} from "../../infrastructure/lazy"
 import {SubtractModelObject} from "../objects/subtractModelObject"
-import {SubtractModels} from "../intersections/subtractModels"
+import {SubtractModels} from "../intersections"
+import {SceneContext} from "./sceneContext"
 
 export function subtractCube(): Scene {
 
-  function subtractCube() {
-    const subtractPosition = new Point(.5, .5, .5)
-    const master = CubeModel.create(1)
-    const subtract = new SpaceModel(CubeModel.create(4), subtractPosition, Size.default)
+  return new Scene("subtract cube", (context: SceneContext) => {
 
-    const size = new Size(.5, .5, .5)
-    const position = size.half().negate()
-    return new SubtractModelObject("subtract", new SubtractModels(master, subtract), position, size)
-  }
+    function subtractCube() {
+      const subtractPosition = new Point(.5, .5, .5)
+      const master = CubeModel.create(1)
+      const subtract = new SpaceModel(CubeModel.create(4), subtractPosition, Size.default)
 
-  return new Scene("subtract cube", new Lazy<Object[]>(() => [
-    subtractCube()
-  ]))
+      const size = new Size(.5, .5, .5)
+      const position = size.half().negate()
+      return new SubtractModelObject(context, "subtract", new SubtractModels(master, subtract), position, size)
+    }
+
+    return [
+      subtractCube()
+    ]
+  })
 }

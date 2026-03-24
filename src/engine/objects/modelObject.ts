@@ -10,60 +10,52 @@ import {
   translateSpace,
   Triangle
 } from "../models"
-import {LineShape, PathShape, PointShape, Shape, UpdatableShape} from "../shapes"
+import {LineShape, PathShape, PointShape, Shape} from "../shapes"
 import {Object3DBase} from "./object"
 import {Nothing, nothing} from "../nothing"
 import {Colors} from "../colors"
-import {HasRenderStyle, RenderStyle} from "./renderStyle"
+import {RenderStyle} from "../state/renderStyle"
+import {SceneContext} from "../scenes/sceneContext"
 
-export class ModelObject extends Object3DBase implements HasRenderStyle {
+export class ModelObject extends Object3DBase {
+
+  private context: SceneContext
+  private debugShapes: ((translate: Transformer) => readonly Shape[]) | Nothing
 
   protected model: SpaceModel
+  protected shapesValue: readonly Shape[]
 
-  private showBoundaries: boolean = false
-  private debugShapes: ((translate: Transformer) => readonly UpdatableShape[]) | Nothing
-  private style: RenderStyle = RenderStyle.Wireframe
-
-  protected shapesValue: readonly UpdatableShape[]
-
-  constructor(id: string, spaceModel: SpaceModel, debugShape: ((translate: Transformer) => readonly UpdatableShape[]) | Nothing = nothing) {
+  constructor(context: SceneContext, id: string, spaceModel: SpaceModel, debugShape: ((translate: Transformer) => readonly Shape[]) | Nothing = nothing) {
     super(id, Point.null)
     this.model = spaceModel
     this.debugShapes = debugShape
+    this.context = context
     this.shapesValue = this.createShapes()
-  }
-
-  setShowBoundaries(showBoundaries: boolean) {
-    this.showBoundaries = showBoundaries
-    this.shapesValue = this.createShapes()
-  }
-
-  setStyle(style: RenderStyle) {
-    this.style = style
-    this.shapesValue = this.createShapes()
-  }
-
-  update(timeMilliseconds: number): void {
+    context.scene.onUpdate(() => this.updateShapes())
   }
 
   shapes(): readonly Shape[] {
     return this.shapesValue
   }
 
-  protected createShapes(): readonly UpdatableShape[] {
-    if (this.style == RenderStyle.Wireframe) {
+  protected updateShapes() {
+    this.shapesValue = this.createShapes()
+  }
+
+  private createShapes(): readonly Shape[] {
+    const style = this.context.scene.value.renderStyle
+    if (style == RenderStyle.Wireframe) {
       return this.wireframe(false)
-    } else if (this.style == RenderStyle.WireframeDebug) {
+    } else if (style == RenderStyle.WireframeDebug) {
       return this.wireframe(true)
-    } else if (this.style == RenderStyle.Solid) {
+    } else if (style == RenderStyle.Solid) {
       return this.solid()
     }
-    throw new Error(`Invalid style: ${RenderStyle[this.style]}`)
+    throw new Error(`Invalid style: ${RenderStyle[style]}`)
   }
 
   private wireframe(debug: boolean) {
-
-    const result: UpdatableShape[] = []
+    const result: Shape[] = []
     this.addFacesWireframe(debug, result)
     this.addBoundaries(debug, result)
     this.addSegments(debug, result)
@@ -72,7 +64,7 @@ export class ModelObject extends Object3DBase implements HasRenderStyle {
     return result
   }
 
-  private addSegments(debug: boolean, result: UpdatableShape[]) {
+  private addSegments(debug: boolean, result: Shape[]) {
     for (let index = 0; index < this.model.segments.length; index++) {
       const segment = this.model.segments[index]
       if (debug || !segment.debug) {
@@ -81,7 +73,7 @@ export class ModelObject extends Object3DBase implements HasRenderStyle {
     }
   }
 
-  private addPoints(debug: boolean, result: UpdatableShape[]) {
+  private addPoints(debug: boolean, result: Shape[]) {
     for (let index = 0; index < this.model.points.length; index++) {
       const point = this.model.points[index]
       if (debug || !point.debug) {
@@ -91,7 +83,7 @@ export class ModelObject extends Object3DBase implements HasRenderStyle {
     }
   }
 
-  private addDebugShapes(result: UpdatableShape[]) {
+  private addDebugShapes(result: Shape[]) {
     if (this.debugShapes == nothing) return
     let debugShapes = this.debugShapes(point => translateSpace(point, this.model))
     for (const debugShape of debugShapes) {
@@ -99,8 +91,8 @@ export class ModelObject extends Object3DBase implements HasRenderStyle {
     }
   }
 
-  private addBoundaries(showBoundaries: boolean, result: UpdatableShape[]) {
-    if (!this.showBoundaries) return
+  private addBoundaries(debug: boolean, result: Shape[]) {
+    if (!this.context.scene.value.showBoundaries) return
 
     const boundaries = this.model.boundaries
     const cubeModel = CubeModel.create(1, boundaries.min, boundaries.max, ModelType.UtilityLight)
@@ -112,7 +104,7 @@ export class ModelObject extends Object3DBase implements HasRenderStyle {
   }
 
   private solid() {
-    const result: UpdatableShape[] = []
+    const result: Shape[] = []
     for (let index = 0; index < this.model.faces.length; index++) {
       const face = this.model.faces[index]
       this.addFace(face, result, index)
@@ -120,7 +112,7 @@ export class ModelObject extends Object3DBase implements HasRenderStyle {
     return result
   }
 
-  private addFace(face: Triangle | Path, result: UpdatableShape[], index: number) {
+  private addFace(face: Triangle | Path, result: Shape[], index: number) {
     if (face.debug) return
     if (face.faceType == FaceType.Triangle) {
       result.push(PathShape.fromTriangle(this.id + ".triangle." + index, false, face))
@@ -129,14 +121,14 @@ export class ModelObject extends Object3DBase implements HasRenderStyle {
     }
   }
 
-  private addFacesWireframe(debug: boolean, result: UpdatableShape[]) {
+  private addFacesWireframe(debug: boolean, result: Shape[]) {
     if (this.model.segments.length > 0 && !debug) return
     for (const face of this.model.faces) {
       this.addFaceWireframeTriangles(face, debug, result)
     }
   }
 
-  private addFaceWireframeTriangles(face: Triangle | Path, debug: boolean, result: UpdatableShape[]) {
+  private addFaceWireframeTriangles(face: Triangle | Path, debug: boolean, result: Shape[]) {
 
     if (face.faceType == FaceType.Triangle) {
       result.push(PathShape.fromTriangle(this.id + ".triangle." + face.hash, debug, face, false))

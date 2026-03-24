@@ -1,5 +1,5 @@
 import {Point2D} from "../models"
-import {RenderShape2DContext, Shape2D} from "./shape"
+import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
 import {SelectableSegment} from "./selectableSegment"
 
 export class Line2DShape implements Shape2D {
@@ -8,6 +8,7 @@ export class Line2DShape implements Shape2D {
   readonly begin: Point2D
   readonly end: Point2D
   readonly id: string
+  readonly z: number = 0
 
   constructor(id: string, color: string, begin: Point2D, end: Point2D) {
     this.id = id

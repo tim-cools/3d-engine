@@ -1,4 +1,4 @@
-import {RenderShape2DContext, Shape2D} from "./shape"
+import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
 import {Point2D} from "../models"
 import {Colors} from "../colors"
 import {Selectable} from "./selectable"
@@ -10,6 +10,7 @@ export class SelectablePoint implements Shape2D, Selectable {
   private readonly radius: number
 
   readonly id: string
+  readonly z: number = FrontShape2D
 
   constructor(id: string, point: Point2D, size: number) {
     this.id = id
