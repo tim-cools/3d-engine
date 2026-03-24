@@ -17,7 +17,7 @@ export class Canvas extends UIElement {
     super(context)
   }
 
-  render(area: ElementArea, context: UIRenderContext): ElementArea {
+  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
     this.renderElements(area, context)
     return area
   }

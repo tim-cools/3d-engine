@@ -2,6 +2,8 @@ import {SceneContext} from "../../scenes/sceneContext"
 import {ElementSizeValue} from "../elementSizeValue"
 import {Row, Stack, Text} from "../controls"
 import {ContentElement} from "../layout/contentElement"
+import {Link} from "../controls/link"
+import {SwitchAlgorithm, SwitchRenderModel, SwitchRenderStyle} from "../../events/update"
 
 export class SceneInfo extends ContentElement {
 
@@ -18,9 +20,9 @@ export class SceneInfo extends ContentElement {
 
     this.setContent(
       new Stack(context, [
-        SceneInfo.row(context, "Render styles: ", this.textRenderStyle),
-        SceneInfo.row(context, "Render model: ", this.textRenderModel),
-        SceneInfo.row(context, "Algorithm: ", this.textAlgorithm)
+        SceneInfo.row(context, "Render styles", this.textRenderStyle, () => this.switchRenderStyle()),
+        SceneInfo.row(context, "Model (todo)", this.textRenderModel, () => this.switchRenderModel()),
+        SceneInfo.row(context, "Algorithm", this.textAlgorithm, () => this.switchAlgorithm()),
       ])
     )
 
@@ -35,13 +37,26 @@ export class SceneInfo extends ContentElement {
   }
 
   private static caption(context: SceneContext, caption: string) {
-    return new Text(context, new ElementSizeValue(100, true), caption)
+    return new Text(context, new ElementSizeValue(135), caption)
   }
 
-  private static row(context: SceneContext, title: string, caption: Text) {
+  private static row(context: SceneContext, title: string, caption: Text, onClick: (() => void)) {
     return new Row(context, [
-      new Text(context, new ElementSizeValue(150), title),
-      caption
+      new Text(context, new ElementSizeValue(120), title),
+      caption,
+      new Link(context, new ElementSizeValue(75), "🔁", onClick)
     ])
+  }
+
+  private switchAlgorithm() {
+    this.context.events.publish(SwitchAlgorithm, new SwitchAlgorithm())
+  }
+
+  private switchRenderModel() {
+    this.context.events.publish(SwitchRenderModel, new SwitchRenderModel())
+  }
+
+  private switchRenderStyle() {
+    this.context.events.publish(SwitchRenderStyle, new SwitchRenderStyle())
   }
 }

@@ -37,7 +37,7 @@ export class LineShape implements Shape {
 
     canvas.fillStyle = "#000"
     canvas.strokeStyle = this.color
-    canvas.lineWidth = 3
+    canvas.lineWidth = 2
     canvas.beginPath()
     canvas.moveTo(beginView.x, beginView.y)
     canvas.lineTo(endView.x, endView.y)

@@ -19,7 +19,7 @@ export class ContentElement extends UIElement {
     this.contentValue = content ?? new EmptyElement(context)
   }
 
-  render(area: ElementArea, context: UIRenderContext): ElementArea {
+  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
     this.content.render(area, context)
     return area
   }

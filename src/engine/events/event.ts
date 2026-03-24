@@ -1,3 +1,3 @@
-import {Update} from "./update"
+import {EventType} from "./eventType"
 
-export type Event = Update
+export type Event = { eventType: EventType }

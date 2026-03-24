@@ -61,6 +61,7 @@ export class Controller {
   }
 
   private mouseDown(event: MouseEvent) {
+    this.world.mouseDown(new Point2D(event.x, event.y))
     this.mouseIsDown = true
     this.mouseX = event.x
     this.mouseY = event.y
@@ -72,10 +73,17 @@ export class Controller {
 
   private mouseMove(event: MouseEvent): any {
 
-    this.world.selectAt(new Point2D(event.x, event.y))
+    this.world.mouseMove(new Point2D(event.x, event.y))
 
     if (!this.mouseIsDown) return
 
+    this.moveCamera(event)
+    this.mouseX = event.x
+    this.mouseY = event.y
+    this.world.clearSelection()
+  }
+
+  private moveCamera(event: MouseEvent) {
     const offsetX = this.mouseX - event.x
     const offsetY = this.mouseY - event.y
     if (this.shiftDown) {
@@ -83,8 +91,5 @@ export class Controller {
     } else {
       this.view.rotate(-offsetY / 100, offsetX / 100)
     }
-    this.mouseX = event.x
-    this.mouseY = event.y
-    this.world.clearSelection()
   }
 }

@@ -1,6 +1,5 @@
 import {Object} from "../objects"
 import {Text} from "../nothing"
-import {intro} from "./intro"
 import {subtractTriangle1} from "./subtractTriangle1"
 import {subtractTriangle2} from "./subtractTriangle2"
 import {subtractTriangle3} from "./subtractTriangle3"
@@ -28,8 +27,7 @@ export class Scene {
 }
 
 export function scenes(): readonly Scene[] {
-
-  const scenes = [
+  return [
     layers(),
     cube(),
     sphere(),
@@ -42,6 +40,4 @@ export function scenes(): readonly Scene[] {
     subtractTriangle4(),
     subtractTriangle5(),
   ]
-
-  return [intro(scenes), ...scenes]
 }

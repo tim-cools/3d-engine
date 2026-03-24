@@ -1,3 +1,11 @@
 export enum EventType {
-  Update
+  Update,
+  MouseEnter,
+  MouseLeave,
+  MouseOver,
+  MouseDown,
+  SelectScene,
+  SwitchAlgorithm,
+  SwitchRenderModel,
+  SwitchRenderStyle
 }

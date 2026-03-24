@@ -6,13 +6,24 @@ import {UIRenderContext} from "./uiRenderContext"
 
 export abstract class UIElement {
 
+  private lastAreaValue: ElementArea = ElementArea.single(0)
+
   readonly context: SceneContext
+
+  get lastArea(): ElementArea {
+    return this.lastAreaValue
+  }
 
   protected constructor(context: SceneContext) {
     this.context = context
   }
 
   render(area: ElementArea, context: UIRenderContext): ElementArea {
+    this.lastAreaValue = this.renderElement(area, context)
+    return area
+  }
+
+  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
     return area
   }
 

@@ -15,7 +15,7 @@ export class PanelContent extends UIElement {
     super(context)
   }
 
-  render(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: UIRenderContext) {
 
     const size = this.calculateSize()
     const elementArea = area.resize(size)

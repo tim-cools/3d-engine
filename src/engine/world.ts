@@ -15,13 +15,14 @@ import {axis, Object, Object3D} from "./objects"
 import {Selectable, SelectableObject} from "./shapes/selectable"
 import {nothing, Nothing} from "./nothing"
 import {UIRenderContext, UI} from "./ui"
-import {Update} from "./events/update"
+import {SelectScene, SwitchAlgorithm, SwitchRenderModel, SwitchRenderStyle, Update} from "./events/update"
 import {RenderStyle} from "./state/renderStyle"
 import {Algorithm} from "./state/algorithm"
 import {GlobalContext} from "./scenes/currentSceneContext"
 import {Colors} from "./colors"
 import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
+import {RenderModel} from "./state/renderModel"
 
 type ShapeRender = {
   z: number
@@ -68,7 +69,7 @@ export class World {
   private objects: Object[] = []
   private selectables: SelectableObject[] = []
   private selected: SelectableObject | Nothing = nothing
-  private globalContext = new GlobalContext()
+  private globalContext: GlobalContext
   private sceneObjects: Object[] = []
 
   private get sceneState() {
@@ -79,8 +80,10 @@ export class World {
     this.view = view
     this.scenes = scenes()
     this.scene = this.scenes[0]
+    this.globalContext = new GlobalContext(this.scenes)
     this.ui = new UI(this.globalContext)
     this.setScene(0)
+    this.subscribeEvents()
   }
 
   update(difference: number) {
@@ -130,21 +133,19 @@ export class World {
     this.updateShapes()
   }
 
-  selectAt(point: Point2D) {
-    for (let index = this.selectables.length - 1; index >= 0; index--){
-      const selectable = this.selectables[index]
-      if (selectable.includes(point)) {
-        this.selected = selectable
-        return
-      }
-    }
-    this.selected = nothing
+  mouseMove(point: Point2D) {
+    this.selectAt(point)
+    this.globalContext.events.moveMouse(point)
+  }
+
+  mouseDown(point: Point2D) {
+    this.globalContext.events.mouseDown(point)
   }
 
   switchRenderStyle() {
     this.globalContext.scene.update(state => {
       const value = (state.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
-      console.log("switchRenderStyle: " + value)
+      console.log("switchRenderStyle: " + RenderStyle[value])
       return {
         ...state,
         renderStyle: value,
@@ -153,14 +154,26 @@ export class World {
     })
   }
 
+  switchRenderModel() {
+    this.globalContext.scene.update(state => {
+      const value = (state.renderModel + 1) % (RenderModel.Second + 1)
+      console.log("switchRenderModel: " + RenderModel[value])
+      return {
+        ...state,
+        renderModel: value,
+        renderModelCaption: RenderModel[value]
+      }
+    })
+  }
+
   switchAlgorithm() {
     this.globalContext.algorithm.update(state => {
       const value = (state.value + 1) % (Algorithm.SubtractFaces + 1)
-      console.log("switchSAlgorithm: " + value)
+      console.log("switchSAlgorithm: " + Algorithm[value])
       return {
         ...state,
         value: value,
-        caption: RenderStyle[value]
+        caption: Algorithm[value]
       }
     })
   }
@@ -190,6 +203,13 @@ export class World {
       console.log("-- " + objectShape.shape.toString())
     }
     console.log("Shapes End ----------------------------------------------------------------------")
+  }
+
+  private subscribeEvents() {
+    this.globalContext.events.subscribe<SelectScene>(SelectScene, nothing, event => this.setScene(event.index))
+    this.globalContext.events.subscribe<SwitchAlgorithm>(SwitchAlgorithm, nothing, event => this.switchAlgorithm())
+    this.globalContext.events.subscribe<SwitchRenderModel>(SwitchRenderModel, nothing, event => this.switchRenderModel())
+    this.globalContext.events.subscribe<SwitchRenderStyle>(SwitchRenderStyle, nothing, event => this.switchRenderStyle())
   }
 
   private updateShapes(): ShapeRender[] {
@@ -276,5 +296,16 @@ export class World {
     if (!this.lastZ.has(shape.id) || this.lastZ.get(shape.id) != z) {
       this.lastZ.set(shape.id, z)
     }
+  }
+
+  private selectAt(point: Point2D) {
+    for (let index = this.selectables.length - 1; index >= 0; index--) {
+      const selectable = this.selectables[index]
+      if (selectable.includes(point)) {
+        this.selected = selectable
+        return
+      }
+    }
+    this.selected = nothing
   }
 }

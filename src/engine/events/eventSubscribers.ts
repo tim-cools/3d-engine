@@ -1,21 +1,26 @@
 import {Event} from "./event"
 import {EventType} from "./eventType"
+import {UIElement} from "../ui/uiElement"
+import {Nothing} from "../nothing"
 
 type EventHandler = (event: any) => void
 
 export class EventSubscription {
 
-  private handlerValue: WeakRef<EventHandler>
+  private handlerValue: EventHandler
 
-  type: EventType
+  readonly type: EventType
+  readonly element: UIElement | Nothing
 
   get handler(): EventHandler | undefined {
-    return this.handlerValue.deref()
+    return this.handlerValue
   }
 
-  constructor(type: EventType, handlerValue: EventHandler) {
+  constructor(type: EventType, element: UIElement | Nothing, handlerValue: EventHandler) {
     this.type = type
-    this.handlerValue = new WeakRef<EventHandler>(handlerValue)
+    this.element = element
+//    this.handlerValue = new WeakRef<EventHandler>(handlerValue)
+    this.handlerValue = handlerValue
   }
 }
 
@@ -23,8 +28,8 @@ export class EventSubscribers {
 
   private subscribers: EventSubscription[] = []
 
-  add<TEvent extends Event>(type: EventType, handler: (event: TEvent) => void): void {
-    const subscription = new EventSubscription(type, value => handler(value as TEvent))
+  add<TEvent extends Event>(type: EventType, element: UIElement | Nothing, handler: (event: TEvent) => void): void {
+    const subscription = new EventSubscription(type, element, value => handler(value as TEvent))
     this.subscribers.push(subscription)
   }
 
@@ -41,6 +46,17 @@ export class EventSubscribers {
       } else {
         index++
       }
+    }
+  }
+
+  get(eventType: EventType) {
+    return this.subscribers.filter(value => value.type == eventType)
+  }
+
+  remove(subscriber: EventSubscription) {
+    const index = this.subscribers.indexOf(subscriber)
+    if (index >= 0) {
+      this.subscribers.splice(index, 1)
     }
   }
 }

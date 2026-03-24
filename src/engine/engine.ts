@@ -9,6 +9,7 @@ export class Engine {
   private readonly world: World
   private readonly canvas: HTMLCanvasElement
   private context: CanvasRenderingContext2D
+  private stopped: boolean = false
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
@@ -20,16 +21,22 @@ export class Engine {
 
   start() {
     window.addEventListener("resize", this.resize.bind(this))
+    window.addEventListener("unload", this.stop.bind(this))
     window.requestAnimationFrame(this.update.bind(this))
   }
 
+  private stop() {
+    this.stopped = true
+  }
+
   private update(time: number) {
+    if (this.stopped) return
     this.world.update(time)
     this.world.render(this.canvas, this.context)
     window.requestAnimationFrame(this.update.bind(this))
   }
 
-  private resize(event: any) {
+  private resize() {
     console.log("resize")
 
     const canvas = document.getElementById("canvas") as HTMLCanvasElement

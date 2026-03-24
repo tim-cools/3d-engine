@@ -4,7 +4,6 @@ import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
-import {ElementPosition} from "../elementPosition"
 
 export class Stack extends UIElement {
 
@@ -15,7 +14,7 @@ export class Stack extends UIElement {
     this.spacing = spacing
   }
 
-  render(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: UIRenderContext) {
 
     const stackSize = this.stackSize()
     const ratioHeight = stackSize.totalPercentage > 0 ? area.height / stackSize.totalPercentage : 0
@@ -38,6 +37,10 @@ export class Stack extends UIElement {
 
   calculateSize(): ElementSize {
     return this.stackSize().value
+  }
+
+  protected setChildren(children: readonly UIElement[]) {
+    this.children = children
   }
 
   private stackSize() {
@@ -70,4 +73,3 @@ export class Stack extends UIElement {
     return {totalPercentage: heightPercentage, value: new ElementSize(elementWidth, elementHeight)}
   }
 }
-

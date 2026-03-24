@@ -15,7 +15,7 @@ export class Row extends UIElement {
     this.spacing = spacing
   }
 
-  render(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: UIRenderContext) {
 
     const rowSize = this.rowSize()
     const ratioWidth = rowSize.totalPercentage > 0 ? area.width / rowSize.totalPercentage : 0

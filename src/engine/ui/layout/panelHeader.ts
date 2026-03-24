@@ -27,7 +27,7 @@ export class PanelHeader extends UIElement {
     this.titleValue = title
   }
 
-  render(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: UIRenderContext) {
     const elementArea = area.resize(this.size)
     context.fillPath(Colors.ui.titleBackground, elementArea.toPath())
     context.text(Colors.ui.titleText, elementArea.pad(this.padding), this.titleValue)

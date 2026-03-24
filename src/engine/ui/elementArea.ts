@@ -66,4 +66,15 @@ export class ElementArea {
   add(left: number, top: number) {
     return new ElementArea(this.left + left, this.top + top, this.width - left, this.height - top)
   }
+
+  static single(value: number) {
+    return new ElementArea(value, value, value,value)
+  }
+
+  contains(point: Point2D) {
+    return point.x >= this.left
+        && point.x <= this.left + this.width
+        && point.y >= this.top
+        && point.y <= this.top + this.height
+  }
 }

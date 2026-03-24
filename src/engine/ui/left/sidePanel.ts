@@ -17,10 +17,10 @@ export class SidePanel extends ContentElement {
   readonly padding = Padding.single(16)
 
   constructor(context: SceneContext, private location: SidePanelLocation, children: UIElement[]) {
-    super(context, new Stack(context, children))
+    super(context, new Stack(context, children, 16))
   }
 
-  render(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: UIRenderContext) {
 
     const position = this.location == SidePanelLocation.Right
       ? new ElementPosition(area.width - this.size.width.value, -1)

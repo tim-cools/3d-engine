@@ -3,6 +3,7 @@ import {EventType} from "./eventType"
 import {EventDispatcher} from "./eventDispatcher"
 import {GlobalEventDispatcher} from "./globalEventDispatcher"
 import {EventSubscribers} from "./eventSubscribers"
+import {UIElement} from "../ui/uiElement"
 
 export class SceneEventDispatcher implements EventDispatcher {
 
@@ -13,9 +14,8 @@ export class SceneEventDispatcher implements EventDispatcher {
     this.globalEventDispatcher = globalEventDispatcher
   }
 
-  subscribe<TEvent extends Event>(type : new () => TEvent, handler: (event: TEvent) => void): void {
-    const eventType = new type().eventType
-    this.subscribers.add(eventType, handler)
+  subscribe<TEvent extends Event>(type : new () => TEvent, element: UIElement, handler: (event: TEvent) => void): void {
+    this.globalEventDispatcher.subscribe(type, element, handler)
   }
 
   publish<TEvent extends Event>(type : new () => TEvent, event: TEvent): void {
