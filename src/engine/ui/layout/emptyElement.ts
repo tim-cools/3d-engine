@@ -1,8 +1,17 @@
 import {UIElement} from "../uiElement"
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
+import {UIElementType} from "../uiElementType"
+import {Identifier} from "../../../infrastructure/nothing"
 
 export class EmptyElement extends UIElement {
-  constructor(context: SceneContext) {
-    super(context)
+
+  readonly elementType: UIElementType = UIElementType.EmptyElement
+
+  get children(): readonly UIElement[] {
+    return []
+  }
+
+  constructor(context: ApplicationContext, id: Identifier = "empty") {
+    super(context, id)
   }
 }

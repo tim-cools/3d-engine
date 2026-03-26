@@ -18,8 +18,8 @@ export class SceneEventDispatcher implements EventDispatcher {
     this.globalEventDispatcher.subscribe(type, element, handler)
   }
 
-  publish<TEvent extends Event>(type : new () => TEvent, event: TEvent): void {
-    const eventType = new type().eventType
+  publish<TEvent extends Event>(event: TEvent): void {
+    const eventType = event.eventType
     this.globalEventDispatcher.publishGlobal(eventType, event)
     this.publishForScene(eventType, event)
   }

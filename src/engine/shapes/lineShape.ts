@@ -1,6 +1,6 @@
 import {RenderShapeContext, Shape} from "."
 import {Boundaries, modelColor, ModelType, Point, Segment, Space, TransformablePoint, Transformer} from "../models"
-import {Colors} from "../colors"
+import {Colors} from "../../infrastructure/colors"
 import {SelectableSegment} from "./selectableSegment"
 
 export class LineShape implements Shape {

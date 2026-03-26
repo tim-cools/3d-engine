@@ -1,16 +1,20 @@
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
 import {UIElement} from "../uiElement"
 import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
+import {UIElementType} from "../uiElementType"
+import {Identifier} from "../../../infrastructure/nothing"
 
 export class Stack extends UIElement {
 
   private readonly spacing: number
 
-  constructor(context: SceneContext, private children: readonly UIElement[], spacing: number = 4) {
-    super(context)
+  readonly elementType: UIElementType = UIElementType.Stack
+
+  constructor(context: ApplicationContext, id: Identifier, public children: readonly UIElement[], spacing: number = 4) {
+    super(context, id)
     this.spacing = spacing
   }
 

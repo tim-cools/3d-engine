@@ -2,7 +2,7 @@ import {ModelPropertyHandler, VerifyModelContext} from "./verifyModelContext"
 import {VerifyLogging} from "./verifyLogging"
 import {any, Assert, count} from "../../infrastructure"
 import {compileExpression} from "./compileExpression"
-import {Nothing} from "../../engine/nothing"
+import {Nothing} from "../../infrastructure/nothing"
 
 export class VerifyCollectionContext<TItem> {
 

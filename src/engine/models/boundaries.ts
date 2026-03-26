@@ -1,5 +1,5 @@
 import {Point} from "./primitives"
-import {nothing, Nothing} from "../nothing"
+import {nothing, Nothing} from "../../infrastructure/nothing"
 import {betweenTolerance, equalsTolerance} from "./equals"
 import {Lazy} from "../../infrastructure/lazy"
 import {Space} from "./transformations"

@@ -1,7 +1,7 @@
-import {Path, PathBuilder, Point, Point2D} from "../../engine/models"
+import {Path, PathBuilder, Point} from "../../engine/models"
 import {Verify, VerifyLogging, VerifyModelContext} from "../infrastructure"
 import {Assert} from "../../infrastructure"
-import {Nothing} from "../../engine/nothing"
+import {Nothing} from "../../infrastructure/nothing"
 
 class PathContext {
 

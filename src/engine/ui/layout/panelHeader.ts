@@ -1,11 +1,13 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {Padding} from "../padding"
 import {ElementSize} from "../elementSize"
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
-import {Colors} from "../../colors"
+import {Colors} from "../../../infrastructure/colors"
 import {UIElement} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
+import {UIElementType} from "../uiElementType"
+import {Identifier} from "../../../infrastructure/nothing"
 
 export class PanelHeader extends UIElement {
 
@@ -13,6 +15,7 @@ export class PanelHeader extends UIElement {
 
   readonly padding = Padding.both(12, 6)
   readonly size: ElementSize = new ElementSize(new ElementSizeValue(100, true), new ElementSizeValue(25))
+  readonly elementType: UIElementType = UIElementType.PanelHeader
 
   get title(): string {
     return this.titleValue
@@ -22,8 +25,12 @@ export class PanelHeader extends UIElement {
     this.titleValue = value
   }
 
-  constructor(context: SceneContext, title: string) {
-    super(context)
+  get children(): readonly UIElement[] {
+    return []
+  }
+
+  constructor(context: ApplicationContext, title: string) {
+    super(context, "header")
     this.titleValue = title
   }
 

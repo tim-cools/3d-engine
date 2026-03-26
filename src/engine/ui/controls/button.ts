@@ -1,10 +1,12 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
-import {Colors} from "../../colors"
+import {Colors} from "../../../infrastructure/colors"
 import {UIElement} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
+import {UIElementType} from "../uiElementType"
+import {Identifier} from "../../../infrastructure/nothing"
 
 const defaultHeight = 32
 
@@ -13,6 +15,7 @@ export class Button extends UIElement {
   private titleValue: string
 
   readonly width: ElementSizeValue
+  readonly elementType: UIElementType = UIElementType.Button
 
   get title(): string {
     return this.titleValue
@@ -22,8 +25,12 @@ export class Button extends UIElement {
     this.titleValue = value
   }
 
-  constructor(context: SceneContext, width: ElementSizeValue, title: string) {
-    super(context)
+  get children(): readonly UIElement[] {
+    return []
+  }
+
+  constructor(context: ApplicationContext, id: Identifier, width: ElementSizeValue, title: string) {
+    super(context, id)
     this.width = width;
     this.titleValue = title
   }

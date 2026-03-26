@@ -1,4 +1,3 @@
-
 export class SceneName {
 
   readonly index: number
@@ -8,8 +7,4 @@ export class SceneName {
     this.index = index
     this.name = name
   }
-}
-
-export interface ScenesState {
-  readonly scenes: SceneName[]
 }

@@ -1,4 +1,4 @@
-import {Colors} from ".."
+import {Colors} from "../../infrastructure/colors"
 import {Line2DShape, Shape2D} from "../shapes"
 import {Object2DBase} from "./object2D"
 

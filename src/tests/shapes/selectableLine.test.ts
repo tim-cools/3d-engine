@@ -36,7 +36,7 @@ describe('selectable line', () => {
   ])("include line '%s'", verifyInclude);
 
   function verifyInclude(assert: AssertInclude) {
-    const selectable = new SelectableSegment("id", begin, end)
+    const selectable = new SelectableSegment("id", begin, end, 1)
     const point2D = new Point2D(assert.x, assert.y)
     const result = selectable.includes(point2D)
     expect(result).toBe(assert.result)

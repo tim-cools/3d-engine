@@ -1,17 +1,21 @@
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
 import {UIElement} from "../uiElement"
 import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementPosition} from "../elementPosition"
+import {UIElementType} from "../uiElementType"
+import {Identifier} from "../../../infrastructure/nothing"
 
 export class Row extends UIElement {
 
   private readonly spacing: number = 8
 
-  constructor(context: SceneContext, private children: readonly UIElement[], spacing: number = 8) {
-    super(context)
+  readonly elementType: UIElementType = UIElementType.Row
+
+  constructor(context: ApplicationContext, id: Identifier, public children: readonly UIElement[], spacing: number = 8) {
+    super(context, id)
     this.spacing = spacing
   }
 

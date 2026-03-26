@@ -71,3 +71,8 @@ export function colorLuminance(hex: string, lum: number) {
 
   return rgb;
 }
+
+export function darker(hex: string) {
+  return colorLuminance(hex, -.3);
+}
+

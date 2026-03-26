@@ -9,5 +9,5 @@ export interface Selectable {
   includes(point: Point2D): Boolean
 }
 
-export const SelectableMargin = 20
+export const SelectableMargin = 7
 

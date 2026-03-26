@@ -12,26 +12,30 @@ import {
 } from "../models"
 import {LineShape, PathShape, PointShape, Shape} from "../shapes"
 import {Object3DBase} from "./object"
-import {Nothing, nothing} from "../nothing"
-import {Colors} from "../colors"
+import {Nothing, nothing} from "../../infrastructure/nothing"
+import {Colors} from "../../infrastructure/colors"
 import {RenderStyle} from "../state/renderStyle"
-import {SceneContext} from "../scenes/sceneContext"
+import {ApplicationContext} from "../applicationContext"
+import {SceneState, SceneStateIdentifier} from "../state/sceneState"
+import {State} from "../state/state"
 
 export class ModelObject extends Object3DBase {
 
-  private context: SceneContext
-  private debugShapes: ((translate: Transformer) => readonly Shape[]) | Nothing
+  private readonly debugShapes: ((translate: Transformer) => readonly Shape[]) | Nothing
+  private readonly scene: State<SceneState>
+  private readonly context: ApplicationContext
 
   protected model: SpaceModel
   protected shapesValue: readonly Shape[]
 
-  constructor(context: SceneContext, id: string, spaceModel: SpaceModel, debugShape: ((translate: Transformer) => readonly Shape[]) | Nothing = nothing) {
+  constructor(context: ApplicationContext, id: string, spaceModel: SpaceModel, debugShape: ((translate: Transformer) => readonly Shape[]) | Nothing = nothing) {
     super(id, Point.null)
     this.model = spaceModel
     this.debugShapes = debugShape
     this.context = context
+    this.scene = context.state(SceneStateIdentifier)
+    this.scene.onUpdate(() => this.updateShapes())
     this.shapesValue = this.createShapes()
-    context.scene.onUpdate(() => this.updateShapes())
   }
 
   shapes(): readonly Shape[] {
@@ -43,7 +47,7 @@ export class ModelObject extends Object3DBase {
   }
 
   private createShapes(): readonly Shape[] {
-    const style = this.context.scene.value.renderStyle
+    const style = this.scene.current.renderStyle
     if (style == RenderStyle.Wireframe) {
       return this.wireframe(false)
     } else if (style == RenderStyle.WireframeDebug) {
@@ -92,7 +96,7 @@ export class ModelObject extends Object3DBase {
   }
 
   private addBoundaries(debug: boolean, result: Shape[]) {
-    if (!this.context.scene.value.showBoundaries) return
+    if (!this.scene.current.showBoundaries) return
 
     const boundaries = this.model.boundaries
     const cubeModel = CubeModel.create(1, boundaries.min, boundaries.max, ModelType.UtilityLight)

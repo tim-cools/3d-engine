@@ -1,5 +1,4 @@
 import {Object} from "../objects"
-import {Text} from "../nothing"
 import {subtractTriangle1} from "./subtractTriangle1"
 import {subtractTriangle2} from "./subtractTriangle2"
 import {subtractTriangle3} from "./subtractTriangle3"
@@ -11,22 +10,9 @@ import {layers} from "./layers"
 import {cube} from "./cube"
 import {sphere} from "./sphere"
 import {cubesAndSphere} from "./cubesAndSphere"
-import {SceneContext} from "./sceneContext"
+import {Scene} from "./scene"
 
-export type SceneFactory = (context: SceneContext) => Object[]
-
-export class Scene {
-
-  readonly title: Text
-  readonly objects: SceneFactory
-
-  constructor(title: Text, objects: SceneFactory) {
-    this.title = title
-    this.objects = objects
-  }
-}
-
-export function scenes(): readonly Scene[] {
+export function createScenes(): readonly Scene[] {
   return [
     layers(),
     cube(),

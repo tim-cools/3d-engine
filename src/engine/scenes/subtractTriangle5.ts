@@ -1,13 +1,13 @@
-import {Scene} from "./scenes"
 import {Point, Size} from "../models"
 import {subtractTriangleTestCases5} from "../../tests/intersections/subtractTriangleTestCases5"
 import {SubtractModelObject} from "../objects/subtractModelObject"
 import {SubtractModels} from "../intersections"
-import {SceneContext} from "./sceneContext"
+import {ApplicationContext} from "../applicationContext"
+import {Scene} from "./scene"
 
 export function subtractTriangle5(): Scene {
 
-  return new Scene("subtract triangles 2", (context: SceneContext) => {
+  return new Scene("Subtract triangles 5", (context: ApplicationContext) => {
 
     let count = 0;
 

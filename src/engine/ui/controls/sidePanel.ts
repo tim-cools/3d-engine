@@ -2,22 +2,29 @@ import {UIElement} from "../uiElement"
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
 import {Padding} from "../padding"
-import {SceneContext} from "../../scenes/sceneContext"
 import {ElementArea} from "../elementArea"
 import {ElementPosition} from "../elementPosition"
-import {Colors} from "../../colors"
+import {Colors} from "../../../infrastructure/colors"
 import {UIRenderContext} from "../uiRenderContext"
-import {Stack} from "../controls"
+import {Stack} from "./stack"
 import {ContentElement} from "../layout/contentElement"
-import {SidePanelLocation} from "./sidePanelLocation"
+import {ApplicationContext} from "../../applicationContext"
+import {UIElementType} from "../uiElementType"
+import {Identifier} from "../../../infrastructure/nothing"
+
+export enum SidePanelLocation {
+  Left,
+  Right
+}
 
 export class SidePanel extends ContentElement {
 
   readonly size = new ElementSize(new ElementSizeValue(350), new ElementSizeValue(100, true))
   readonly padding = Padding.single(16)
+  readonly elementType: UIElementType = UIElementType.SidePanel
 
-  constructor(context: SceneContext, private location: SidePanelLocation, children: UIElement[]) {
-    super(context, new Stack(context, children, 16))
+  constructor(context: ApplicationContext, id: Identifier, private location: SidePanelLocation, children: UIElement[]) {
+    super(context, id, new Stack(context, id + ".stack", children, 16))
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

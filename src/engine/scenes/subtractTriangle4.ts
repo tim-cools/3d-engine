@@ -1,14 +1,14 @@
-import {Scene} from "./scenes"
 import {Model, Point, Size, SpaceModel, Triangle} from "../models"
 import {subtractTriangleTestCases4} from "../../tests/intersections/subtractTriangleTestCases4"
 import {ModelObject} from "../objects"
 import {SubtractModelObject} from "../objects/subtractModelObject"
 import {SubtractModels} from "../intersections"
-import {SceneContext} from "./sceneContext"
+import {ApplicationContext} from "../applicationContext"
+import {Scene} from "./scene"
 
 export function subtractTriangle4(): Scene {
 
-  return new Scene("subtract triangles 2", (context: SceneContext) => {
+  return new Scene("Subtract triangles 4", (context: ApplicationContext) => {
 
     let count = 0;
 

@@ -1,15 +1,15 @@
-import {Scene} from "./scenes"
 import {subtractSphereTestModelAkaDeathStar} from "../../tests/intersections/subtractSphereTestModelAkaDeathStar"
 import {ModelObject} from "../objects"
 import {SubtractModelObject} from "../objects/subtractModelObject"
 import {ModelType, Point, Size, SpaceModel, Triangle} from "../models"
 import {TriangleModel} from "../models/triangleModel"
 import {DebugInfo} from "../intersections"
-import {SceneContext} from "./sceneContext"
+import {ApplicationContext} from "../applicationContext"
+import {Scene} from "./scene"
 
 export function subtractSphere(): Scene {
 
-  return new Scene("death star", (context: SceneContext) => {
+  return new Scene("Death star", (context: ApplicationContext) => {
 
     function subtractSphere() {
       const models = subtractSphereTestModelAkaDeathStar(10, 7)

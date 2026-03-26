@@ -1,11 +1,11 @@
 import {CubeModel, Point, Size, SpaceModel} from "../models"
 import {ModelObject} from "./modelObject"
 import {RenderStyle} from "../state/renderStyle"
-import {SceneContext} from "../scenes/sceneContext"
+import {ApplicationContext} from "../applicationContext"
 
 export class Cube extends ModelObject {
 
-  constructor(context: SceneContext, id: string, position: Point, size: Size, style: RenderStyle = RenderStyle.Wireframe) {
+  constructor(context: ApplicationContext, id: string, position: Point, size: Size, style: RenderStyle = RenderStyle.Wireframe) {
     super(context, id, Cube.createModel(position, size, style))
   }
 

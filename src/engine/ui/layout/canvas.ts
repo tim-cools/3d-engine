@@ -1,20 +1,28 @@
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElement} from "../uiElement"
+import {UIElementType} from "../uiElementType"
+import {Identifier} from "../../../infrastructure/nothing"
 
 export class Canvas extends UIElement {
 
   private elementsValue: readonly UIElement[] = []
 
+  readonly elementType: UIElementType = UIElementType.Canvas
+
   get elements(): readonly UIElement[] {
     return this.elementsValue
   }
 
-  constructor(context: SceneContext) {
-    super(context)
+  get children(): readonly UIElement[] {
+    return this.elementsValue
+  }
+
+  constructor(context: ApplicationContext, id: Identifier) {
+    super(context, id)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {

@@ -1,12 +1,13 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
-import {Colors} from "../../colors"
+import {Colors} from "../../../infrastructure/colors"
 import {UIElement} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
-import {MouseDown, MouseEnter, MouseLeave} from "../../events/update"
-import {Nothing, nothing} from "../../nothing"
+import {Identifier, Nothing, nothing} from "../../../infrastructure/nothing"
+import {MouseDown, MouseEnter, MouseLeave} from "../../events"
+import {UIElementType} from "../uiElementType"
 
 const rowHeight = 18
 
@@ -17,6 +18,7 @@ export class Link extends UIElement {
   private onClick: (() => void) | Nothing
 
   readonly width: ElementSizeValue
+  readonly elementType: UIElementType = UIElementType.Link
 
   get title(): string {
     return this.titleValue
@@ -26,8 +28,12 @@ export class Link extends UIElement {
     this.titleValue = value
   }
 
-  constructor(context: SceneContext, width: ElementSizeValue, title: string, onClick: (() => void) | Nothing = nothing) {
-    super(context)
+  get children(): readonly UIElement[] {
+    return []
+  }
+
+  constructor(context: ApplicationContext, id: Identifier, width: ElementSizeValue, title: string, onClick: (() => void) | Nothing = nothing) {
+    super(context, id)
     this.width = width;
     this.titleValue = title
     this.onClick = onClick
@@ -38,6 +44,10 @@ export class Link extends UIElement {
 
   calculateSize(): ElementSize {
     return new ElementSize(this.width, new ElementSizeValue(rowHeight))
+  }
+
+  toString() {
+    return this.titleValue
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

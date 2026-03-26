@@ -1,6 +1,6 @@
 import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
 import {Path, PathSegment, Point2D, Segment2D, Triangle} from "../models"
-import {Colors} from "../colors"
+import {Colors} from "../../infrastructure/colors"
 import {Selectable, SelectableMargin} from "./selectable"
 import {any} from "../../infrastructure"
 

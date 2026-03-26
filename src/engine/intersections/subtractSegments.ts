@@ -1,5 +1,5 @@
 import {CanContainPoint, Face, Model, ModelType, Point, Segment, SpaceModel} from "../models"
-import {Nothing, nothing} from "../nothing"
+import {Nothing, nothing} from "../../infrastructure/nothing"
 import {intersectionTriangleSegment} from "./intersectionTriangleSegment"
 import {IntersectionType} from "./intersectionResult"
 import {Logger} from "../models/logger"

@@ -1,12 +1,12 @@
 import {CubeModel, Point, Size, SpaceModel} from "../models"
-import {Scene} from "./scenes"
 import {SubtractModels} from "../intersections"
 import {SubtractModelObject} from "../objects/subtractModelObject"
-import {SceneContext} from "./sceneContext"
+import {ApplicationContext} from "../applicationContext"
+import {Scene} from "./scene"
 
 export function cube() {
 
-  return new Scene("cube", (context: SceneContext) => {
+  return new Scene("Cube", (context: ApplicationContext) => {
 
     function cube() {
       const position = Point.middle.negate()

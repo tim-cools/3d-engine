@@ -2,6 +2,8 @@ import {View} from "./view"
 import {World} from "./world"
 import {firstOrDefault} from "../infrastructure"
 import {Point2D} from "./models"
+import {Context} from "./scenes/sceneContext"
+import {KeyDown} from "./events/keyEvents"
 
 type KeyHandler = { key: string, handler: () => void }
 
@@ -16,10 +18,12 @@ export class Controller {
 
   private world: World
   private view: View
+  private globalContext: Context
 
-  constructor(view: View, world: World, canvas: HTMLCanvasElement) {
+  constructor(view: View, world: World, canvas: HTMLCanvasElement, globalContext: Context) {
     this.world = world
     this.view = view
+    this.globalContext = globalContext
     canvas.addEventListener('mousemove', this.mouseMove.bind(this))
     canvas.addEventListener('mouseup', this.mouseUp.bind(this))
     canvas.addEventListener('mousedown', this.mouseDown.bind(this))
@@ -34,11 +38,13 @@ export class Controller {
       {key: "Shift", handler: () => this.shiftDown = true},
       {key: "ArrowDown", handler: () => this.view.moveCamera(null, null, -100)},
       {key: "ArrowUp", handler: () => this.view.moveCamera(null, null, 100)},
-      {key: "r", handler: () => this.world.switchRenderStyle()},
-      {key: "a", handler: () => this.world.switchAlgorithm()},
+      /*
+      {key: "r", handler: () => this.scene.switchRenderStyle()},
+      {key: "a", handler: () => this.algorith.switchAlgorithm()},
       {key: "x", handler: () => this.world.toggleAxis()},
       {key: "l", handler: () => this.world.logShapes()},
       {key: "b", handler: () => this.world.toggleShowBoundaries()}
+      */
     ]
   }
 
@@ -58,10 +64,11 @@ export class Controller {
   private keyDown(event: KeyboardEvent) {
     const keyHandler = firstOrDefault(this.keyHandlers, where => where.key == event.key)
     keyHandler?.handler.bind(this)()
+    this.globalContext.events.publish(new KeyDown(event.key))
   }
 
   private mouseDown(event: MouseEvent) {
-    this.world.mouseDown(new Point2D(event.x, event.y))
+    this.globalContext.events.mouse.down(new Point2D(event.x, event.y))
     this.mouseIsDown = true
     this.mouseX = event.x
     this.mouseY = event.y
@@ -73,7 +80,10 @@ export class Controller {
 
   private mouseMove(event: MouseEvent): any {
 
-    this.world.mouseMove(new Point2D(event.x, event.y))
+    const point = new Point2D(event.x, event.y)
+
+    this.world.mouseMove(point)
+    this.globalContext.events.mouse.move(point)
 
     if (!this.mouseIsDown) return
 

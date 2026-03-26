@@ -1,6 +1,6 @@
 import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
 import {Point2D} from "../models"
-import {Colors} from "../colors"
+import {Colors} from "../../infrastructure/colors"
 import {Selectable} from "./selectable"
 
 export class SelectablePoint implements Shape2D, Selectable {

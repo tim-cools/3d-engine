@@ -1,6 +1,6 @@
 import {Point} from "./primitives"
 import {Model} from "./model"
-import {nothing, Nothing,} from "../nothing"
+import {nothing, Nothing,} from "../../infrastructure/nothing"
 import {DebugInfo, subtractFaces, subtractSegments, SubtractModels} from "../intersections"
 import {Logger, noLogger} from "./logger"
 

@@ -1,7 +1,7 @@
 import {Boundaries, Point2D, Space, Space2D} from "../models"
 import {View2D} from "../view"
 import {Selectable} from "./selectable"
-import {Colors} from "../colors"
+import {Colors} from "../../infrastructure/colors"
 
 export const FrontShape2D = -999
 

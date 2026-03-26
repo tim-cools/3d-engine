@@ -1,4 +1,4 @@
-import {nothing, Nothing} from "../engine/nothing"
+import {nothing, Nothing} from "../infrastructure/nothing"
 
 export class Lazy<T> {
 

@@ -1,13 +1,12 @@
 import {Transformer, rotateX, rotateY, rotateZ, transform} from "./transformations"
 import {Point} from "./primitives"
-import {pi} from "../nothing"
 
 export class Rotation {
 
-  static full = pi * 2
-  static half = pi
-  static quarter = pi * .5
-  static eight = pi * .25
+  static full = Math.PI * 2
+  static half = Math.PI
+  static quarter = Math.PI * .5
+  static eight = Math.PI * .25
 
   static default = new Rotation()
 

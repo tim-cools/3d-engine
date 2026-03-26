@@ -8,7 +8,7 @@ import {
   PointIntersection,
   SegmentIntersection
 } from "./intersectionResult"
-import {nothing} from "../nothing"
+import {nothing} from "../../infrastructure/nothing"
 import {Logger} from "../models/logger"
 import {count} from "../../infrastructure"
 

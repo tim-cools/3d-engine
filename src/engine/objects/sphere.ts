@@ -1,5 +1,5 @@
 import {LineShape, Shape} from "../shapes"
-import {Colors} from ".."
+import {Colors} from "../../infrastructure/colors"
 import {Size, Point, rotateY, rotateZ} from "../models"
 import {Object3DBase} from "./object"
 

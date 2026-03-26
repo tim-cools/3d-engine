@@ -1,5 +1,5 @@
 import {Finite, ModelType, Point, Segment, SegmentBase} from "./primitives"
-import {Nothing, nothing} from "../nothing"
+import {Nothing, nothing} from "../../infrastructure/nothing"
 import {Lazy} from "../../infrastructure/lazy"
 import {Triangle} from "./triangle"
 import {Space} from "./transformations"

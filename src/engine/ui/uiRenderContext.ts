@@ -1,6 +1,6 @@
 import {Point2D} from "../models"
 import {ElementArea} from "./elementArea"
-import {nothing, Nothing} from "../nothing"
+import {nothing, Nothing} from "../../infrastructure/nothing"
 
 export interface TextStyle {
   underline: boolean

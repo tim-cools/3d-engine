@@ -8,7 +8,7 @@ import {
   Triangle,
   modelColor, Path, ModelType, Point2D
 } from "../models"
-import {colorLuminance, Colors} from ".."
+import {colorLuminance, Colors} from "../../infrastructure/colors"
 import {SelectablePath} from "./selectablePath"
 
 export class PathShape implements Shape {

@@ -1,21 +1,28 @@
 import {UIElement} from "../uiElement"
-import {SceneContext} from "../../scenes/sceneContext"
+import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {EmptyElement} from "./emptyElement"
-import {nothing, Nothing} from "../../nothing"
+import {Identifier, nothing, Nothing} from "../../../infrastructure/nothing"
+import {UIElementType} from "../uiElementType"
 
 export class ContentElement extends UIElement {
 
   private contentValue: UIElement
 
+  readonly elementType: UIElementType = UIElementType.ContentElement
+
   get content(): UIElement {
     return this.contentValue
   }
 
-  constructor(context: SceneContext, content: UIElement | Nothing = nothing) {
-    super(context)
+  get children(): readonly UIElement[] {
+    return [this.contentValue]
+  }
+
+  constructor(context: ApplicationContext, id: Identifier, content: UIElement | Nothing = nothing) {
+    super(context, id)
     this.contentValue = content ?? new EmptyElement(context)
   }
 

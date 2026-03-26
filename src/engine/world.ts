@@ -10,19 +10,17 @@ import {
   Triangle
 } from "./models"
 import {RenderShape2DContext, RenderShapeContext, Shape, Shape2D} from "./shapes"
-import {Scene, scenes} from "./scenes"
+import {Scene} from "./scenes"
 import {axis, Object, Object3D} from "./objects"
 import {Selectable, SelectableObject} from "./shapes/selectable"
-import {nothing, Nothing} from "./nothing"
+import {nothing, Nothing} from "../infrastructure/nothing"
 import {UIRenderContext, UI} from "./ui"
-import {SelectScene, SwitchAlgorithm, SwitchRenderModel, SwitchRenderStyle, Update} from "./events/update"
-import {RenderStyle} from "./state/renderStyle"
-import {Algorithm} from "./state/algorithm"
-import {GlobalContext} from "./scenes/currentSceneContext"
-import {Colors} from "./colors"
+import {Context} from "./scenes/sceneContext"
+import {Colors} from "../infrastructure/colors"
 import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
-import {RenderModel} from "./state/renderModel"
+import {Update} from "./events"
+import {SceneStateIdentifier} from "./state/sceneState"
 
 type ShapeRender = {
   z: number
@@ -64,30 +62,29 @@ export class World {
   private readonly lastZ: Map<string, number> = new Map()
   private readonly scenes: readonly Scene[] = []
   private readonly view: View
+  private readonly context: Context
 
   private scene: Scene
   private objects: Object[] = []
   private selectables: SelectableObject[] = []
   private selected: SelectableObject | Nothing = nothing
-  private globalContext: GlobalContext
   private sceneObjects: Object[] = []
 
-  private get sceneState() {
-    return this.globalContext.scene.value
-  }
 
-  constructor(view: View) {
+  constructor(view: View, scenes: readonly Scene[], globalContext: Context) {
+
     this.view = view
-    this.scenes = scenes()
+    this.scenes = scenes
     this.scene = this.scenes[0]
-    this.globalContext = new GlobalContext(this.scenes)
-    this.ui = new UI(this.globalContext)
+    this.context = globalContext
+    this.ui = new UI(this.context)
     this.setScene(0)
-    this.subscribeEvents()
+    const sceneState = this.context.state(SceneStateIdentifier)
+    sceneState.onUpdate(state => this.setScene(state.index))
   }
 
   update(difference: number) {
-    this.globalContext.events.publish(Update, new Update(difference))
+    this.context.events.publish(new Update(difference))
   }
 
   render(canvas: HTMLCanvasElement, canvasContext: CanvasRenderingContext2D) {
@@ -118,16 +115,14 @@ export class World {
     this.selected = nothing
   }
 
-  setScene(number: number) {
-    if (number < 0 || number >= this.scenes.length) {
+  setScene(index: number) {
+    if (index < 0 || index >= this.scenes.length) {
       return
     }
 
-    this.scene = this.scenes[number]
+    this.scene = this.scenes[index]
 
-    this.globalContext.scene.update(state => ({...state, name: this.scene.title}))
-
-    const context = this.globalContext.setScene()
+    const context = this.context.newScene()
     this.sceneObjects = this.scene.objects(context)
     this.clearSelection()
     this.updateShapes()
@@ -135,65 +130,6 @@ export class World {
 
   mouseMove(point: Point2D) {
     this.selectAt(point)
-    this.globalContext.events.moveMouse(point)
-  }
-
-  mouseDown(point: Point2D) {
-    this.globalContext.events.mouseDown(point)
-  }
-
-  switchRenderStyle() {
-    this.globalContext.scene.update(state => {
-      const value = (state.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
-      console.log("switchRenderStyle: " + RenderStyle[value])
-      return {
-        ...state,
-        renderStyle: value,
-        renderStyleCaption: RenderStyle[value]
-      }
-    })
-  }
-
-  switchRenderModel() {
-    this.globalContext.scene.update(state => {
-      const value = (state.renderModel + 1) % (RenderModel.Second + 1)
-      console.log("switchRenderModel: " + RenderModel[value])
-      return {
-        ...state,
-        renderModel: value,
-        renderModelCaption: RenderModel[value]
-      }
-    })
-  }
-
-  switchAlgorithm() {
-    this.globalContext.algorithm.update(state => {
-      const value = (state.value + 1) % (Algorithm.SubtractFaces + 1)
-      console.log("switchSAlgorithm: " + Algorithm[value])
-      return {
-        ...state,
-        value: value,
-        caption: Algorithm[value]
-      }
-    })
-  }
-
-  toggleAxis() {
-    this.globalContext.scene.update(state => {
-      return {
-        ...state,
-        axisVisible: !state.axisVisible
-      }
-    })
-  }
-
-  toggleShowBoundaries() {
-    this.globalContext.scene.update(state => {
-      return {
-        ...state,
-        showBoundaries: !state.showBoundaries
-      }
-    })
   }
 
   logShapes() {
@@ -205,18 +141,12 @@ export class World {
     console.log("Shapes End ----------------------------------------------------------------------")
   }
 
-  private subscribeEvents() {
-    this.globalContext.events.subscribe<SelectScene>(SelectScene, nothing, event => this.setScene(event.index))
-    this.globalContext.events.subscribe<SwitchAlgorithm>(SwitchAlgorithm, nothing, event => this.switchAlgorithm())
-    this.globalContext.events.subscribe<SwitchRenderModel>(SwitchRenderModel, nothing, event => this.switchRenderModel())
-    this.globalContext.events.subscribe<SwitchRenderStyle>(SwitchRenderStyle, nothing, event => this.switchRenderStyle())
-  }
-
   private updateShapes(): ShapeRender[] {
 
     const space2D = this.view.space2D()
 
-    this.objects = this.sceneState.axisVisible
+    const sceneState = this.context.state(SceneStateIdentifier).current
+    this.objects = sceneState.axisVisible
       ? [this.axis, ...this.sceneObjects]
       : [...this.sceneObjects]
 

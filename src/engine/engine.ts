@@ -1,6 +1,8 @@
 import {World} from "./world"
 import {Controller} from "./controller"
 import {View} from "./view"
+import {Context} from "./scenes/sceneContext"
+import {createScenes} from "./scenes"
 
 export class Engine {
 
@@ -15,8 +17,12 @@ export class Engine {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
     this.view = new View(canvas)
-    this.world = new World(this.view)
-    this.controller = new Controller(this.view, this.world, canvas)
+
+    const scenes = createScenes()
+    const globalContext = new Context(scenes)
+
+    this.world = new World(this.view, scenes, globalContext)
+    this.controller = new Controller(this.view, this.world, canvas, globalContext)
   }
 
   start() {

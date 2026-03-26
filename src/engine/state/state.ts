@@ -1,25 +1,39 @@
-export class State<T> {
 
-  private readonly handlers: ((state: T) => void)[] = []
+export class StateIdentifier<TScene> {
 
-  private stateValue: T
+  readonly type: string
 
-  get value(): T {
+  constructor(type: string) {
+    this.type = type
+  }
+}
+
+export class State<TState> {
+
+  private readonly updateSubscribers: ((state: TState) => void)[] = []
+
+  private stateValue: TState
+
+  get current(): TState {
     return this.stateValue
   }
 
-  constructor(value: T) {
-    this.stateValue = value
+  constructor(state: TState) {
+    this.stateValue = state
   }
 
-  update(update: (state: T) => T) {
+  update(update: (state: TState) => TState) {
     this.stateValue = update(this.stateValue)
-    for (const handler of this.handlers) {
+    setTimeout(() => this.notifySubscribers(), 0)
+  }
+
+  private notifySubscribers() {
+    for (const handler of this.updateSubscribers) {
       handler(this.stateValue)
     }
   }
 
-  onUpdate(handler: (state: T) => void) {
-    this.handlers.push(handler)
+  onUpdate(handler: (state: TState) => void) {
+    this.updateSubscribers.push(handler)
   }
 }

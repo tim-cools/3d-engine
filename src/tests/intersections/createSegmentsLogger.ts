@@ -1,4 +1,4 @@
-import {Text} from "../../engine/nothing"
+import {Text} from "../../infrastructure/nothing"
 import {Segment} from "../../engine/models"
 import {VerifyLogging} from "../infrastructure"
 import {differenceInMilliseconds, padNumber} from "../../infrastructure/date"

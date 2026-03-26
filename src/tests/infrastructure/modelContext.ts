@@ -9,7 +9,7 @@ import {
   SegmentBase,
   Triangle
 } from "../../engine/models"
-import {nothing} from "../../engine/nothing"
+import {nothing} from "../../infrastructure/nothing"
 import {VerifyModelContext} from "./verifyModelContext"
 import {any, firstOrDefault, selectMany} from "../../infrastructure"
 

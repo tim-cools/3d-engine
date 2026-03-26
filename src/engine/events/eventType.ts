@@ -4,8 +4,5 @@ export enum EventType {
   MouseLeave,
   MouseOver,
   MouseDown,
-  SelectScene,
-  SwitchAlgorithm,
-  SwitchRenderModel,
-  SwitchRenderStyle
+  KeyDown
 }

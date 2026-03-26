@@ -1,21 +1,17 @@
-import {SceneContext} from "../scenes/sceneContext"
-import {SidePanelLeft} from "./left/sidePanelLeft"
-import {SidePanelRight} from "./left/sidePanelRight"
+import {ApplicationContext} from "../applicationContext"
+import {SidePanelRight} from "./content/sidePanelRight"
 import {Canvas} from "./layout/canvas"
-import {Point2D} from "../models"
+import {UIElementType} from "./uiElementType"
 
 export class UI extends Canvas {
 
+  readonly elementType: UIElementType = UIElementType.UI
 
-  constructor(context: SceneContext) {
-    super(context)
+  constructor(context: ApplicationContext) {
+    super(context, "UI")
     this.setElements([
       //new SidePanelLeft(context),
       new SidePanelRight(context)
     ])
-  }
-
-  moveMouse(point: Point2D) {
-
   }
 }

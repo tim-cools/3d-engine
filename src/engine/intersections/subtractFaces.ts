@@ -1,5 +1,5 @@
 import {Face, FaceType, Model, ModelType, Path, PathBuilder, Point, Segment, SpaceModel, Triangle} from "../models"
-import {Nothing, nothing} from "../nothing"
+import {Nothing, nothing} from "../../infrastructure/nothing"
 import {IntersectionType, SegmentIntersection} from "./intersectionResult"
 import {equalsTolerancePoint} from "../models/equals"
 import {intersectsTriangleModel, SpaceModelIntersectionResult} from "./intersectsTriangleModel"

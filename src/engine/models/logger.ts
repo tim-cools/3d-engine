@@ -1,5 +1,5 @@
 import {Segment} from "./primitives"
-import {Text} from "../nothing"
+import {Text} from "../../infrastructure/nothing"
 
 export interface Logger {
   logLine(message: Text): void

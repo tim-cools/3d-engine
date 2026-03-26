@@ -1,11 +1,11 @@
-import {Scene} from "./scenes"
 import {Cube, Overlay, Raster, Sphere} from "../objects"
 import {Point, Size} from "../models"
-import {SceneContext} from "./sceneContext"
+import {ApplicationContext} from "../applicationContext"
 import {RenderStyle} from "../state/renderStyle"
+import {Scene} from "./scene"
 
 export function cubesAndSphere(): Scene {
-  return new Scene("cubes and sphere", (context: SceneContext) => [
+  return new Scene("Cubes and sphere", (context: ApplicationContext) => [
     new Sphere("sphere", new Point(0, 0, 0), new Size(.5, .5, .5)),
     new Cube(context, "cube.0", new Point(.5, 0, 0), new Size(.2, .2, .2), RenderStyle.Solid),
     new Cube(context, "cube.1", new Point(-.5, 0, 0), new Size(.2, .2, .2)),

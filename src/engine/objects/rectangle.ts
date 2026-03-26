@@ -3,6 +3,7 @@ import {LineShape, Shape} from "../shapes"
 import {Object3DBase} from "./object"
 import {PathShape} from "../shapes"
 import {RenderStyle} from "../state/renderStyle"
+import {darker} from "../../infrastructure/colors"
 
 export class Rectangle extends Object3DBase {
 
@@ -78,11 +79,12 @@ export class Rectangle extends Object3DBase {
   }
 
   private rectangle(color: string, leftBottom: Point, leftTop: Point, rightBottom: Point, rightTop: Point) {
+    const borderColor = darker(color)
     return [
-      new LineShape(`${this.id}.line.left`, "black", leftBottom, leftTop),
-      new LineShape(`${this.id}.line.top`, "black", leftTop, rightTop),
-      new LineShape(`${this.id}.line.right`, "black", rightTop, rightBottom),
-      new LineShape(`${this.id}.line.bottom`, "black", rightBottom, leftBottom),
+      new LineShape(`${this.id}.line.left`, borderColor, leftBottom, leftTop),
+      new LineShape(`${this.id}.line.top`, borderColor, leftTop, rightTop),
+      new LineShape(`${this.id}.line.right`, borderColor, rightTop, rightBottom),
+      new LineShape(`${this.id}.line.bottom`, borderColor, rightBottom, leftBottom),
       new PathShape(`${this.id}.rect`, color, [leftBottom, leftTop, rightTop, rightBottom]),
     ]
   }

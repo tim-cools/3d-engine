@@ -1,3 +1,4 @@
+export * from "./modelObject"
 export * from './object'
 export * from './cube'
 export * from './overlay'
@@ -5,5 +6,4 @@ export * from './raster'
 export * from './rectangle'
 export * from './sphere'
 export * from './title'
-export * from "./modelObject"
 export * from "./axis"

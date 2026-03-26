@@ -1,13 +1,13 @@
 import {Event} from "./event"
 import {EventType} from "./eventType"
 import {UIElement} from "../ui/uiElement"
-import {Nothing} from "../nothing"
+import {Nothing} from "../../infrastructure/nothing"
 
 type EventHandler = (event: any) => void
 
 export class EventSubscription {
 
-  private handlerValue: EventHandler
+  private readonly handlerValue: EventHandler
 
   readonly type: EventType
   readonly element: UIElement | Nothing
@@ -19,7 +19,8 @@ export class EventSubscription {
   constructor(type: EventType, element: UIElement | Nothing, handlerValue: EventHandler) {
     this.type = type
     this.element = element
-//    this.handlerValue = new WeakRef<EventHandler>(handlerValue)
+    //this.element = new WeakRef<EventHandler>(handlerValue)      // todo WeakRef.deref hangs on osx chrome when page is unloaded
+    //this.handlerValue = new WeakRef<EventHandler>(handlerValue) // todo did
     this.handlerValue = handlerValue
   }
 }
@@ -41,6 +42,24 @@ export class EventSubscribers {
           this.subscribers.splice(index, 1)
         } else {
           subscriber.handler(event)
+          index++
+        }
+      } else {
+        index++
+      }
+    }
+  }
+
+  publishWhen(type: EventType, event: Event, when: (subscriber: EventSubscription) => boolean) {
+    for (let index = 0; index < this.subscribers.length; ){
+      const subscriber = this.subscribers[index]
+      if (subscriber.type == type) {
+        if (subscriber.handler == undefined) {
+          this.subscribers.splice(index, 1)
+        } else {
+          if (when(subscriber)) {
+            subscriber.handler(event)
+          }
           index++
         }
       } else {

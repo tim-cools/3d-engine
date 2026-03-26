@@ -1,11 +1,11 @@
 import {Point, Size, SpaceModel, Subtract, Transformer,} from "../models"
 import {Shape} from "../shapes"
-import {Nothing, nothing} from "../nothing"
+import {Nothing, nothing} from "../../infrastructure/nothing"
 import {ModelObject} from "./modelObject"
 import {DebugInfo, SubtractModels} from "../intersections"
-import {SceneContext} from "../scenes/sceneContext"
+import {ApplicationContext} from "../applicationContext"
 import {Algorithm} from "../state/algorithm"
-import {AlgorithmState} from "../state/algorithmState"
+import {AlgorithmStateIdentifier, AlgorithmState} from "../state/algorithmState"
 import {State} from "../state/state"
 
 export class SubtractModelObject extends ModelObject {
@@ -16,7 +16,7 @@ export class SubtractModelObject extends ModelObject {
   private readonly debugInfo: DebugInfo | Nothing
   private readonly algorithmState: State<AlgorithmState>
 
-  constructor(context: SceneContext,
+  constructor(context: ApplicationContext,
               id: string,
               models: SubtractModels,
               subtractPosition: Point,
@@ -28,13 +28,13 @@ export class SubtractModelObject extends ModelObject {
     this.subtractPosition = subtractPosition
     this.subtractSize = subtractSize
     this.debugInfo = debugInfo
-    this.algorithmState = context.algorithm
-    context.algorithm.onUpdate(() => this.setModel())
+    this.algorithmState = context.state(AlgorithmStateIdentifier)
+    this.algorithmState.onUpdate(() => this.setModel())
     this.setModel()
   }
 
   private setModel() {
-    const model = this.algorithmState.value.value == Algorithm.SubtractSegments
+    const model = this.algorithmState.current.value == Algorithm.SubtractSegments
       ? Subtract.segments(this.models)
       : Subtract.faces(this.models, nothing, this.debugInfo)
 

@@ -1,12 +1,12 @@
-import {Scene} from "./scenes"
 import {CubeModel, Point, Size, SpaceModel} from "../models"
 import {SubtractModelObject} from "../objects/subtractModelObject"
 import {SubtractModels} from "../intersections"
-import {SceneContext} from "./sceneContext"
+import {ApplicationContext} from "../applicationContext"
+import {Scene} from "./scene"
 
 export function subtractCube(): Scene {
 
-  return new Scene("subtract cube", (context: SceneContext) => {
+  return new Scene("Subtract cube", (context: ApplicationContext) => {
 
     function subtractCube() {
       const subtractPosition = new Point(.5, .5, .5)
