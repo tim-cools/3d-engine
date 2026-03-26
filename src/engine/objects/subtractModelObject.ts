@@ -4,8 +4,7 @@ import {Nothing, nothing} from "../../infrastructure/nothing"
 import {ModelObject} from "./modelObject"
 import {DebugInfo, SubtractModels} from "../intersections"
 import {ApplicationContext} from "../applicationContext"
-import {Algorithm} from "../state/algorithm"
-import {AlgorithmStateIdentifier, AlgorithmState} from "../state/algorithmState"
+import {Algorithm, AlgorithmStateIdentifier, AlgorithmState} from "../state"
 
 export class SubtractModelObject extends ModelObject {
 
@@ -27,8 +26,8 @@ export class SubtractModelObject extends ModelObject {
     this.subtractPosition = subtractPosition
     this.subtractSize = subtractSize
     this.debugInfo = debugInfo
-    this.algorithmState = context.state(AlgorithmStateIdentifier)
-    this.algorithmState.onUpdate(() => this.setModel())
+    this.algorithmState = context.state.get(AlgorithmStateIdentifier)
+    context.state.subscribeUpdate(AlgorithmStateIdentifier, () => this.setModel())
     this.setModel()
   }
 

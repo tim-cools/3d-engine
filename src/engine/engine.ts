@@ -1,12 +1,12 @@
 import {World} from "./world"
 import {Controller} from "./controller"
-import {View} from "./view"
+import {CanvasView, View} from "./view"
 import {Context} from "./scenes/sceneContext"
 import {createScenes} from "./scenes"
 
 export class Engine {
 
-  private readonly view: View
+  private readonly view: CanvasView
   private readonly controller: Controller
   private readonly world: World
   private readonly canvas: HTMLCanvasElement
@@ -16,13 +16,13 @@ export class Engine {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
-    this.view = new View(canvas)
+    this.view = new CanvasView(canvas)
 
     const scenes = createScenes()
-    const globalContext = new Context(scenes)
+    const applicationContext = new Context(scenes)
 
-    this.world = new World(this.view, scenes, globalContext)
-    this.controller = new Controller(this.view, this.world, canvas, globalContext)
+    this.world = new World(this.view, scenes, applicationContext)
+    this.controller = new Controller(this.view, this.world, canvas, applicationContext)
   }
 
   start() {

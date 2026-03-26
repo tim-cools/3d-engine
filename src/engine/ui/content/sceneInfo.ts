@@ -20,8 +20,8 @@ export class SceneInfo extends ContentElement {
   constructor(context: ApplicationContext) {
     super(context, "sceneInfo")
 
-    this.scene = context.state(SceneStateIdentifier)
-    this.algorithm = context.state(AlgorithmStateIdentifier)
+    this.scene = context.state.get(SceneStateIdentifier)
+    this.algorithm = context.state.get(AlgorithmStateIdentifier)
 
     this.textRenderStyle = SceneInfo.value(context, this.scene.renderStyleCaption)
     this.textRenderModel = SceneInfo.value(context, this.scene.renderModelCaption)
@@ -29,8 +29,8 @@ export class SceneInfo extends ContentElement {
 
     this.setContent(this.createContext(context))
 
-    this.scene.onUpdate(state => this.setRenderState(state))
-    this.algorithm.onUpdate(state => this.setAlgorithm(state))
+    context.state.subscribeUpdate(SceneStateIdentifier, state => this.setRenderState(state))
+    context.state.subscribeUpdate(AlgorithmStateIdentifier, state => this.setAlgorithm(state))
   }
 
   private createContext(context: ApplicationContext) {

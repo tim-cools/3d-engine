@@ -1,7 +1,7 @@
-import {EventDispatcher} from "./events/eventDispatcher"
-import {State, StateIdentifier} from "./state/state"
+import {EventDispatcher} from "./events"
+import {StateManager} from "./state"
 
 export interface ApplicationContext {
   readonly events: EventDispatcher
-  state<TState>(definition: StateIdentifier<TState>): TState
+  readonly state: StateManager
 }

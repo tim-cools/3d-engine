@@ -20,7 +20,8 @@ import {Colors} from "../infrastructure/colors"
 import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
 import {Update} from "./events"
-import {SceneStateIdentifier} from "./state/sceneState"
+import {SceneStateIdentifier} from "./state"
+import {CanvasUIRenderContext} from "./ui/rendering/uiRenderContext"
 
 type ShapeRender = {
   z: number
@@ -49,7 +50,7 @@ class RenderContextFactory {
   }
 
   createUI(): UIRenderContext {
-    return new UIRenderContext(this.canvasContext)
+    return new CanvasUIRenderContext(this.canvasContext)
   }
 }
 
@@ -64,23 +65,30 @@ export class World {
   private readonly view: View
   private readonly context: Context
 
-  private scene: Scene
+  private sceneValue: Scene
   private objects: Object[] = []
   private selectables: SelectableObject[] = []
   private selected: SelectableObject | Nothing = nothing
-  private sceneObjects: Object[] = []
+  private sceneObjectsValue: Object[] = []
 
+  get scene(): Scene {
+    return this.sceneValue
+  }
 
-  constructor(view: View, scenes: readonly Scene[], globalContext: Context) {
+  get sceneObjects(): Object[] {
+    return this.sceneObjectsValue
+  }
+
+  constructor(view: View, scenes: readonly Scene[], context: Context) {
 
     this.view = view
     this.scenes = scenes
-    this.scene = this.scenes[0]
-    this.context = globalContext
+    this.sceneValue = this.scenes[0]
+    this.context = context
     this.ui = new UI(this.context)
     this.setScene(0)
-    const sceneState = this.context.state(SceneStateIdentifier)
-    sceneState.onUpdate(state => this.setScene(state.index))
+
+    context.state.subscribeUpdate(SceneStateIdentifier, state => this.setScene(state.index))
   }
 
   update(difference: number) {
@@ -116,14 +124,15 @@ export class World {
   }
 
   setScene(index: number) {
+
     if (index < 0 || index >= this.scenes.length) {
       return
     }
 
-    this.scene = this.scenes[index]
+    this.sceneValue = this.scenes[index]
 
     const context = this.context.newScene()
-    this.sceneObjects = this.scene.objects(context)
+    this.sceneObjectsValue = this.scene.objects(context)
     this.clearSelection()
     this.updateShapes()
   }
@@ -145,7 +154,7 @@ export class World {
 
     const space2D = this.view.space2D()
 
-    const sceneState = this.context.state(SceneStateIdentifier)
+    const sceneState = this.context.state.get(SceneStateIdentifier)
     this.objects = sceneState.axisVisible
       ? [this.axis, ...this.sceneObjects]
       : [...this.sceneObjects]

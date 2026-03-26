@@ -6,7 +6,7 @@ import {Colors} from "../../../infrastructure/colors"
 import {UIElement} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
+import {Identifier, nothing} from "../../../infrastructure/nothing"
 
 const rowHeight = 18
 
@@ -39,7 +39,7 @@ export class Text extends UIElement {
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
     //context.fillPath(Colors.highlight, elementArea.toPath())
-    context.text(Colors.ui.titleText, elementArea, this.valueValue)
+    context.text(Colors.ui.titleText, elementArea, this.valueValue, nothing)
     return elementArea
   }
 

@@ -7,7 +7,7 @@ import {UIElement} from "../ui/uiElement"
 import {Nothing} from "../../infrastructure/nothing"
 import {ElementMouseEventHandler} from "./elementMouseEventHandler"
 
-export class GlobalEventDispatcher implements EventDispatcher {
+export class ApplicationEventDispatcher implements EventDispatcher {
 
   private currentScene: SceneEventDispatcher = new SceneEventDispatcher(this)
   private subscribers: EventSubscribers = new EventSubscribers()

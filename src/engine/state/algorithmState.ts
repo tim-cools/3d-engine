@@ -1,9 +1,10 @@
 import {Algorithm} from "./algorithm"
-import {State, StateIdentifier, UpdatableState} from "./state"
+import {State, StateIdentifier} from "./state"
+import {PublishStateEvents} from "./stateManager"
 
 export const AlgorithmStateIdentifier = new StateIdentifier<AlgorithmState>("algorithm")
 
-export interface AlgorithmState extends UpdatableState<AlgorithmState> {
+export interface AlgorithmState {
   readonly value: Algorithm
   readonly caption: string
   switchAlgorithm(): void
@@ -14,8 +15,8 @@ export class AlgorithmStateHandler extends State<AlgorithmState> implements Algo
   value: Algorithm = Algorithm.SubtractFaces
   caption: string = Algorithm[Algorithm.SubtractFaces]
 
-  constructor() {
-    super(AlgorithmStateIdentifier)
+  constructor(publishStateEvents: PublishStateEvents) {
+    super(AlgorithmStateIdentifier, publishStateEvents)
   }
 
   switchAlgorithm() {

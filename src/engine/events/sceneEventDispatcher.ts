@@ -1,16 +1,16 @@
 import {Event} from "./event"
 import {EventType} from "./eventType"
 import {EventDispatcher} from "./eventDispatcher"
-import {GlobalEventDispatcher} from "./globalEventDispatcher"
+import {ApplicationEventDispatcher} from "./applicationEventDispatcher"
 import {EventSubscribers} from "./eventSubscribers"
 import {UIElement} from "../ui/uiElement"
 
 export class SceneEventDispatcher implements EventDispatcher {
 
-  private globalEventDispatcher: GlobalEventDispatcher
+  private globalEventDispatcher: ApplicationEventDispatcher
   private subscribers: EventSubscribers = new EventSubscribers()
 
-  constructor(globalEventDispatcher: GlobalEventDispatcher) {
+  constructor(globalEventDispatcher: ApplicationEventDispatcher) {
     this.globalEventDispatcher = globalEventDispatcher
   }
 

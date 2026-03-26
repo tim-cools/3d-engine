@@ -6,7 +6,7 @@ import {Colors} from "../../../infrastructure/colors"
 import {UIElement} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
+import {Identifier, nothing} from "../../../infrastructure/nothing"
 
 const defaultHeight = 32
 
@@ -39,7 +39,8 @@ export class Button extends UIElement {
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
     //context.fillPath(Colors.highlight, elementArea.toPath())
-    context.text(Colors.ui.titleText, elementArea, this.titleValue)
+    context.text(Colors.ui.titleText, elementArea, this.titleValue, nothing)
+    context.icon(Colors.ui.titleText, 100, 100)
     return elementArea
   }
 

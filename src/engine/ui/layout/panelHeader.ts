@@ -7,7 +7,7 @@ import {Colors} from "../../../infrastructure/colors"
 import {UIElement} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
+import {nothing} from "../../../infrastructure/nothing"
 
 export class PanelHeader extends UIElement {
 
@@ -37,7 +37,7 @@ export class PanelHeader extends UIElement {
   protected renderElement(area: ElementArea, context: UIRenderContext) {
     const elementArea = area.resize(this.size)
     context.fillPath(Colors.ui.titleBackground, elementArea.toPath())
-    context.text(Colors.ui.titleText, elementArea.pad(this.padding), this.titleValue)
+    context.text(Colors.ui.titleText, elementArea.pad(this.padding), this.titleValue, nothing)
     return elementArea
   }
 

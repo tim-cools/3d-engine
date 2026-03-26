@@ -1,9 +1,10 @@
 import {ContentElement} from "../layout/contentElement"
-import {Stack, Text} from "../controls"
+import {Row, Stack, Text} from "../controls"
 import {ElementSizeValue} from "../elementSizeValue"
 import {ApplicationContext} from "../../applicationContext"
 import {SidePanel, SidePanelLocation} from "../controls/sidePanel"
 import {UIElementType} from "../uiElementType"
+import {Button} from "../controls/button"
 
 export class SidePanelLeft extends ContentElement {
 
@@ -23,6 +24,9 @@ export class SidePanelLeft extends ContentElement {
 
     return new SidePanel(context, "side", SidePanelLocation.Left, [
       new Stack(context, "stack", [
+        new Row(context, "row", [
+          new Button(context, "", new ElementSizeValue(25), "Test")
+        ]),
         text("TEST 123"),
         text("TEST 456"),
         text("TEST 789"),

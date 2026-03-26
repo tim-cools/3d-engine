@@ -1,4 +1,4 @@
-import {Lazy} from "../../infrastructure/lazy"
+import {PublishStateEvents} from "./stateManager"
 
 export class StateIdentifier<TScene> {
 
@@ -9,31 +9,16 @@ export class StateIdentifier<TScene> {
   }
 }
 
-export interface UpdatableState<TState> {
-  onUpdate(handler: (state: TState) => void): void
-}
 
-export abstract class State<TState> implements UpdatableState<TState> {
-
-  private readonly updateSubscribers: ((state: TState) => void)[] = []
+export abstract class State<TState> {
 
   readonly identifier: StateIdentifier<TState>
 
-  protected constructor(identifier: StateIdentifier<TState>) {
+  protected constructor(identifier: StateIdentifier<TState>, private publishStateEvents: PublishStateEvents) {
     this.identifier = identifier
   }
 
-  onUpdate(handler: (state: TState) => void) {
-    this.updateSubscribers.push(handler)
-  }
-
   protected updated() {
-    this.notifySubscribers()
-  }
-
-  private notifySubscribers() {
-    for (const handler of this.updateSubscribers) {
-      handler(this as any as TState)
-    }
+    this.publishStateEvents.updated(this.identifier)
   }
 }

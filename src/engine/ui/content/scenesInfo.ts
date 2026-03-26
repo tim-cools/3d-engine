@@ -1,11 +1,9 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {Row, Stack} from "../controls"
 import {Link} from "../controls/link"
-import {SceneState, SceneStateIdentifier} from "../../state/sceneState"
-import {SceneName} from "../../state/sceneName"
+import {SceneName, SceneState, SceneStateIdentifier, ScenesStateIdentifier} from "../../state"
 import {ApplicationContext} from "../../applicationContext"
 import {UIElementType} from "../uiElementType"
-import {ScenesStateIdentifier} from "../../state/scenesState"
 
 export class ScenesInfo extends Stack {
 
@@ -15,12 +13,12 @@ export class ScenesInfo extends Stack {
 
   constructor(context: ApplicationContext) {
     super(context, "ScenesInfo", [])
-    this.sceneState = this.context.state(SceneStateIdentifier)
+    this.sceneState = this.context.state.get(SceneStateIdentifier)
     this.updateScenes()
   }
 
   private updateScenes() {
-    const state = this.context.state(ScenesStateIdentifier)
+    const state = this.context.state.get(ScenesStateIdentifier)
     const rows = state.scenes.map((scene: SceneName, index: number) => this.row(index, scene))
     this.setChildren(rows)
   }

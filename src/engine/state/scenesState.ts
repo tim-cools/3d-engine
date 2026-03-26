@@ -1,10 +1,11 @@
-import {State, StateIdentifier, UpdatableState} from "./state"
+import {State, StateIdentifier} from "./state"
 import {Scene} from "../scenes"
 import {SceneName} from "./sceneName"
+import {PublishStateEvents} from "./stateManager"
 
 export const ScenesStateIdentifier = new StateIdentifier<ScenesState>("scenes")
 
-export interface ScenesState extends UpdatableState<ScenesState> {
+export interface ScenesState {
   readonly scenes: readonly SceneName[]
 }
 
@@ -12,8 +13,8 @@ export class ScenesStateHandler extends State<ScenesState> implements ScenesStat
 
   scenes: SceneName[]
 
-  constructor(scenes: readonly Scene[]) {
-    super(ScenesStateIdentifier)
+  constructor(scenes: readonly Scene[], publishStateEvents: PublishStateEvents) {
+    super(ScenesStateIdentifier, publishStateEvents)
     this.scenes = ScenesStateHandler.createScenes(scenes)
   }
 

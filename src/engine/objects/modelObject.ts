@@ -14,9 +14,8 @@ import {LineShape, PathShape, PointShape, Shape} from "../shapes"
 import {Object3DBase} from "./object"
 import {Nothing, nothing} from "../../infrastructure/nothing"
 import {Colors} from "../../infrastructure/colors"
-import {RenderStyle} from "../state/renderStyle"
 import {ApplicationContext} from "../applicationContext"
-import {SceneState, SceneStateIdentifier} from "../state/sceneState"
+import {RenderStyle, SceneState, SceneStateIdentifier} from "../state"
 
 export class ModelObject extends Object3DBase {
 
@@ -32,8 +31,8 @@ export class ModelObject extends Object3DBase {
     this.model = spaceModel
     this.debugShapes = debugShape
     this.context = context
-    this.scene = context.state(SceneStateIdentifier)
-    this.scene.onUpdate(() => this.updateShapes())
+    this.scene = context.state.get(SceneStateIdentifier)
+    context.state.subscribeUpdate(SceneStateIdentifier, () => this.updateShapes())
     this.shapesValue = this.createShapes()
   }
 

@@ -1,11 +1,12 @@
 import {RenderStyle} from "./renderStyle"
 import {RenderModel} from "./renderModel"
-import {State, StateIdentifier, UpdatableState} from "./state"
+import {State, StateIdentifier} from "./state"
 import {SceneName} from "./sceneName"
+import {PublishStateEvents} from "./stateManager"
 
 export const SceneStateIdentifier = new StateIdentifier<SceneState>("scene")
 
-export interface SceneState extends UpdatableState<SceneState> {
+export interface SceneState {
   readonly index: number
   readonly name: string
   readonly renderStyle: RenderStyle
@@ -33,8 +34,8 @@ export class SceneStateHandler extends State<SceneState> implements SceneState {
   axisVisible: boolean = false
   showBoundaries: boolean = false
 
-  constructor() {
-    super(SceneStateIdentifier)
+  constructor(publishStateEvents: PublishStateEvents) {
+    super(SceneStateIdentifier, publishStateEvents)
   }
 
   setScene(scene: SceneName) {

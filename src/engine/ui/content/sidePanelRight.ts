@@ -5,7 +5,7 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {Panel} from "../layout/panel"
 import {SceneInfo} from "./sceneInfo"
 import {ScenesInfo} from "./scenesInfo"
-import {SceneStateIdentifier} from "../../state/sceneState"
+import {SceneStateIdentifier} from "../../state"
 import {SidePanel, SidePanelLocation} from "../controls/sidePanel"
 import {UIElementType} from "../uiElementType"
 
@@ -34,8 +34,8 @@ export class SidePanelRight extends ContentElement {
       ])
     )
 
-    context.state(SceneStateIdentifier).onUpdate(state => {
-      this.infoPanel.title = "Scene: " + state.name
+    context.state.subscribeUpdate(SceneStateIdentifier, state => {
+      this.infoPanel.title = `Scene: ${state.name}`
     })
   }
 

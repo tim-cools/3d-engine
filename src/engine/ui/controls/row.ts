@@ -4,7 +4,6 @@ import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
-import {ElementPosition} from "../elementPosition"
 import {UIElementType} from "../uiElementType"
 import {Identifier} from "../../../infrastructure/nothing"
 

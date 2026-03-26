@@ -1,8 +1,9 @@
-import {State, StateIdentifier, UpdatableState} from "./state"
+import {State, StateIdentifier} from "./state"
+import {PublishStateEvents} from "./stateManager"
 
 export const SelectionStateIdentifier = new StateIdentifier("selection")
 
-export interface SelectionState extends UpdatableState<SelectionState> {
+export interface SelectionState {
   readonly faceIds: number[]
 }
 
@@ -10,7 +11,7 @@ export class SelectionStateHandler extends State<SelectionState> implements Sele
 
   faceIds: [] = []
 
-  constructor() {
-    super(SelectionStateIdentifier)
+  constructor(publishStateEvents: PublishStateEvents) {
+    super(SelectionStateIdentifier, publishStateEvents)
   }
 }

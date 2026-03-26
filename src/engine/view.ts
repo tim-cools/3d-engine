@@ -13,11 +13,19 @@ export interface View2D {
   translateMany(point: readonly Point[]): readonly Point2D[]
 }
 
-export class View implements View2D {
+export interface View extends View2D {
+  toViewCoordinateZ(coordinate: Point): number
+  space2D(): Space2D
+  moveCamera(x: number | null, y: number | null, z: number | null): void
+  rotate(x: number, y: number): void
+  reset(): void
+}
+
+export class CanvasView implements View2D {
 
   private static defaultRotation: Rotation = Rotation.default
 
-  private rotation: Rotation = View.defaultRotation
+  private rotation: Rotation = CanvasView.defaultRotation
 
   private viewPort: Point = Point.null
   private camera: Point = Point.null
@@ -69,7 +77,7 @@ export class View implements View2D {
   }
 
   reset() {
-    this.rotation = View.defaultRotation
+    this.rotation = CanvasView.defaultRotation
     this.viewPort = new Point(0, 0, -750)
     this.camera = TransformablePoint.new(0, 0, -1500)
   }
