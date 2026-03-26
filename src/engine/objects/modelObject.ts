@@ -17,12 +17,11 @@ import {Colors} from "../../infrastructure/colors"
 import {RenderStyle} from "../state/renderStyle"
 import {ApplicationContext} from "../applicationContext"
 import {SceneState, SceneStateIdentifier} from "../state/sceneState"
-import {State} from "../state/state"
 
 export class ModelObject extends Object3DBase {
 
   private readonly debugShapes: ((translate: Transformer) => readonly Shape[]) | Nothing
-  private readonly scene: State<SceneState>
+  private readonly scene: SceneState
   private readonly context: ApplicationContext
 
   protected model: SpaceModel
@@ -47,7 +46,7 @@ export class ModelObject extends Object3DBase {
   }
 
   private createShapes(): readonly Shape[] {
-    const style = this.scene.current.renderStyle
+    const style = this.scene.renderStyle
     if (style == RenderStyle.Wireframe) {
       return this.wireframe(false)
     } else if (style == RenderStyle.WireframeDebug) {
@@ -96,7 +95,7 @@ export class ModelObject extends Object3DBase {
   }
 
   private addBoundaries(debug: boolean, result: Shape[]) {
-    if (!this.scene.current.showBoundaries) return
+    if (!this.scene.showBoundaries) return
 
     const boundaries = this.model.boundaries
     const cubeModel = CubeModel.create(1, boundaries.min, boundaries.max, ModelType.UtilityLight)

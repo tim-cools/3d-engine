@@ -1,3 +1,4 @@
+import {Lazy} from "../../infrastructure/lazy"
 
 export class StateIdentifier<TScene> {
 
@@ -8,32 +9,31 @@ export class StateIdentifier<TScene> {
   }
 }
 
-export class State<TState> {
+export interface UpdatableState<TState> {
+  onUpdate(handler: (state: TState) => void): void
+}
+
+export abstract class State<TState> implements UpdatableState<TState> {
 
   private readonly updateSubscribers: ((state: TState) => void)[] = []
 
-  private stateValue: TState
+  readonly identifier: StateIdentifier<TState>
 
-  get current(): TState {
-    return this.stateValue
-  }
-
-  constructor(state: TState) {
-    this.stateValue = state
-  }
-
-  update(update: (state: TState) => TState) {
-    this.stateValue = update(this.stateValue)
-    setTimeout(() => this.notifySubscribers(), 0)
-  }
-
-  private notifySubscribers() {
-    for (const handler of this.updateSubscribers) {
-      handler(this.stateValue)
-    }
+  protected constructor(identifier: StateIdentifier<TState>) {
+    this.identifier = identifier
   }
 
   onUpdate(handler: (state: TState) => void) {
     this.updateSubscribers.push(handler)
+  }
+
+  protected updated() {
+    this.notifySubscribers()
+  }
+
+  private notifySubscribers() {
+    for (const handler of this.updateSubscribers) {
+      handler(this as any as TState)
+    }
   }
 }

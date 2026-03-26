@@ -145,7 +145,7 @@ export class World {
 
     const space2D = this.view.space2D()
 
-    const sceneState = this.context.state(SceneStateIdentifier).current
+    const sceneState = this.context.state(SceneStateIdentifier)
     this.objects = sceneState.axisVisible
       ? [this.axis, ...this.sceneObjects]
       : [...this.sceneObjects]

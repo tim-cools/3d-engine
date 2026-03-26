@@ -1,12 +1,10 @@
-import {EventDispatcher} from "../events/eventDispatcher"
-import {GlobalEventDispatcher} from "../events/globalEventDispatcher"
+import {EventDispatcher, GlobalEventDispatcher} from "../events"
 import {SelectionStateHandler} from "../state/selectionState"
 import {AlgorithmStateHandler} from "../state/algorithmState"
-import {StateHandler} from "../state/stateHandler"
 import {ApplicationContext} from "../applicationContext"
 import {State, StateIdentifier} from "../state/state"
 import {SceneStateHandler} from "../state/sceneState"
-import {ScenesStateHandler} from "../state/scenes"
+import {ScenesStateHandler} from "../state/scenesState"
 import {Scene} from "./scene"
 
 export class SceneContext implements ApplicationContext {
@@ -20,7 +18,7 @@ export class SceneContext implements ApplicationContext {
     this.globalContext = globalContext
   }
 
-  state<TState>(definition: StateIdentifier<TState>): State<TState> {
+  state<TState>(definition: StateIdentifier<TState>): TState {
     return this.globalContext.state(definition)
   }
 }
@@ -28,7 +26,7 @@ export class SceneContext implements ApplicationContext {
 export class Context implements ApplicationContext {
 
   private currenScene: SceneContext
-  private states = new Map<string, {handler: any, state: any}>()
+  private states = new Map<string, any>()
 
   readonly events: GlobalEventDispatcher
 
@@ -41,12 +39,12 @@ export class Context implements ApplicationContext {
     this.addStateHandler(new ScenesStateHandler(scenes))
   }
 
-  state<TState>(definition: StateIdentifier<TState>): State<TState> {
+  state<TState>(definition: StateIdentifier<TState>): TState {
     const entry = this.states.get(definition.type)
     if (entry == undefined) {
       throw new Error("Invalid state: " + definition.type)
     }
-    return entry.state as State<TState>
+    return entry as TState
   }
 
   newScene(): ApplicationContext {
@@ -54,7 +52,7 @@ export class Context implements ApplicationContext {
     return this.currenScene
   }
 
-  private addStateHandler<TState>(handler: StateHandler<TState>) {
-    this.states.set(handler.identifier.type, {handler: handler, state: handler.state})
+  private addStateHandler<TState>(state: State<TState>) {
+    this.states.set(state.identifier.type, state)
   }
 }

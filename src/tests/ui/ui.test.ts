@@ -9,7 +9,6 @@ import {Link} from "../../engine/ui/controls/link"
 import {SceneInfo} from "../../engine/ui/content/sceneInfo"
 import {Identifier, nothing, Nothing} from "../../infrastructure/nothing"
 import {Text} from "../../engine/ui/controls"
-import {ScenesState} from "../../engine/state/scenes"
 import {SceneStateIdentifier} from "../../engine/state/sceneState"
 import {AlgorithmStateIdentifier} from "../../engine/state/algorithmState"
 
@@ -129,9 +128,12 @@ describe('ui', () => {
   test('create SceneInfo witch values', async () => {
 
     const context = new Context([])
-    context.state(SceneStateIdentifier).current.switchRenderStyle()
-    context.state(SceneStateIdentifier).current.switchRenderModel()
-    context.state(AlgorithmStateIdentifier).current.switchAlgorithm()
+    let sceneState = context.state(SceneStateIdentifier)
+    sceneState.switchRenderStyle()
+    sceneState.switchRenderModel()
+
+    let algorithmState = context.state(AlgorithmStateIdentifier)
+    algorithmState.switchAlgorithm()
 
     const info = new SceneInfo(context)
 

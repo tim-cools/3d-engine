@@ -1,8 +1,8 @@
 import {VerifyLogging} from "./verifyLogging"
 import {
   Face,
-  FaceType, Model,
-  Path,
+  FaceType,
+  Model,
   PathSegment,
   Point,
   Segment,

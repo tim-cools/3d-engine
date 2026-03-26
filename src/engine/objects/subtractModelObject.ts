@@ -6,7 +6,6 @@ import {DebugInfo, SubtractModels} from "../intersections"
 import {ApplicationContext} from "../applicationContext"
 import {Algorithm} from "../state/algorithm"
 import {AlgorithmStateIdentifier, AlgorithmState} from "../state/algorithmState"
-import {State} from "../state/state"
 
 export class SubtractModelObject extends ModelObject {
 
@@ -14,7 +13,7 @@ export class SubtractModelObject extends ModelObject {
   private readonly subtractPosition: Point
   private readonly subtractSize: Size
   private readonly debugInfo: DebugInfo | Nothing
-  private readonly algorithmState: State<AlgorithmState>
+  private readonly algorithmState: AlgorithmState
 
   constructor(context: ApplicationContext,
               id: string,
@@ -34,7 +33,7 @@ export class SubtractModelObject extends ModelObject {
   }
 
   private setModel() {
-    const model = this.algorithmState.current.value == Algorithm.SubtractSegments
+    const model = this.algorithmState.value == Algorithm.SubtractSegments
       ? Subtract.segments(this.models)
       : Subtract.faces(this.models, nothing, this.debugInfo)
 

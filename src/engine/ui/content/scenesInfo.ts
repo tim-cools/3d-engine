@@ -2,15 +2,14 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {Row, Stack} from "../controls"
 import {Link} from "../controls/link"
 import {SceneState, SceneStateIdentifier} from "../../state/sceneState"
-import {ScenesState} from "../../state/scenes"
 import {SceneName} from "../../state/sceneName"
 import {ApplicationContext} from "../../applicationContext"
-import {State} from "../../state/state"
 import {UIElementType} from "../uiElementType"
+import {ScenesStateIdentifier} from "../../state/scenesState"
 
 export class ScenesInfo extends Stack {
 
-  private sceneState: State<SceneState>
+  private sceneState: SceneState
 
   readonly elementType: UIElementType = UIElementType.ScenesInfo
 
@@ -21,8 +20,8 @@ export class ScenesInfo extends Stack {
   }
 
   private updateScenes() {
-    const context = this.context.state(ScenesState).current
-    const rows = context.scenes.map((scene, index) => this.row(index, scene))
+    const state = this.context.state(ScenesStateIdentifier)
+    const rows = state.scenes.map((scene: SceneName, index: number) => this.row(index, scene))
     this.setChildren(rows)
   }
 
@@ -33,6 +32,6 @@ export class ScenesInfo extends Stack {
   }
 
   private selectScene(scene: SceneName) {
-    this.sceneState.current.setScene(scene)
+    this.sceneState.setScene(scene)
   }
 }

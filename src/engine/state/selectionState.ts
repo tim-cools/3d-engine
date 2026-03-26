@@ -1,21 +1,16 @@
-import {StateIdentifier} from "./state"
-import {StateHandlerBase} from "./stateHandler"
+import {State, StateIdentifier, UpdatableState} from "./state"
 
 export const SelectionStateIdentifier = new StateIdentifier("selection")
 
-export interface SelectionState {
+export interface SelectionState extends UpdatableState<SelectionState> {
   readonly faceIds: number[]
 }
 
-export class SelectionStateHandler extends StateHandlerBase<SelectionState> {
+export class SelectionStateHandler extends State<SelectionState> implements SelectionState {
+
+  faceIds: [] = []
 
   constructor() {
     super(SelectionStateIdentifier)
-  }
-
-  protected createState(): SelectionState {
-    return {
-      faceIds: []
-    }
   }
 }

@@ -1,12 +1,11 @@
 import {RenderStyle} from "./renderStyle"
 import {RenderModel} from "./renderModel"
-import {StateIdentifier} from "./state"
-import {StateHandlerBase} from "./stateHandler"
+import {State, StateIdentifier, UpdatableState} from "./state"
 import {SceneName} from "./sceneName"
 
 export const SceneStateIdentifier = new StateIdentifier<SceneState>("scene")
 
-export interface SceneState {
+export interface SceneState extends UpdatableState<SceneState> {
   readonly index: number
   readonly name: string
   readonly renderStyle: RenderStyle
@@ -23,81 +22,50 @@ export interface SceneState {
   toggleShowBoundaries(): void
 }
 
-export class SceneStateHandler extends StateHandlerBase<SceneState> {
+export class SceneStateHandler extends State<SceneState> implements SceneState {
+
+  index: number = 0
+  name: string = ""
+  renderStyle: RenderStyle = RenderStyle.Solid
+  renderStyleCaption: string = "Solid"
+  renderModel: RenderModel = RenderModel.Result
+  renderModelCaption: string = "Result"
+  axisVisible: boolean = false
+  showBoundaries: boolean = false
 
   constructor() {
     super(SceneStateIdentifier)
   }
 
   setScene(scene: SceneName) {
-    this.state.update(state => {
-      console.log(`setScene: ${scene.index} - ${scene.name}`)
-      return {
-        ...state,
-        index: scene.index,
-        name: scene.name,
-      }
-    })
+    this.index = scene.index
+    this.name = scene.name
+    this.updated()
   }
 
   switchRenderStyle() {
-    this.state.update(state => {
-      const value = (state.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
-      console.log(`switchRenderStyle: ${RenderStyle[value]}`)
-      return {
-        ...state,
-        renderStyle: value,
-        renderStyleCaption: RenderStyle[value]
-      }
-    })
+    const value = (this.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
+    console.log(`switchRenderStyle: ${RenderStyle[value]}`)
+    this.renderStyle = value
+    this.renderStyleCaption =RenderStyle[value]
+    this.updated()
   }
 
   switchRenderModel() {
-    this.state.update(state => {
-      const value = (state.renderModel + 1) % (RenderModel.Second + 1)
-      console.log(`switchRenderModel: ${RenderModel[value]}`)
-      return {
-        ...state,
-        renderModel: value,
-        renderModelCaption: RenderModel[value]
-      }
-    })
+    const value = (this.renderModel + 1) % (RenderModel.Second + 1)
+    console.log(`switchRenderModel: ${RenderModel[value]}`)
+    this.renderModel = value
+    this.renderModelCaption = RenderModel[value]
+    this.updated()
   }
 
   toggleAxis() {
-    this.state.update(state => {
-      return {
-        ...state,
-        axisVisible: !state.axisVisible
-      }
-    })
+    this.axisVisible = !this.axisVisible
+    this.updated()
   }
 
   toggleShowBoundaries() {
-    this.state.update(state => {
-      return {
-        ...state,
-        showBoundaries: !state.showBoundaries
-      }
-    })
-  }
-
-  protected createState(): SceneState {
-    return {
-      index: 0,
-      name: "",
-      renderStyle: RenderStyle.Solid,
-      renderStyleCaption: "Solid",
-      renderModel: RenderModel.Result,
-      renderModelCaption: "Result",
-      axisVisible: false,
-      showBoundaries: false,
-
-      setScene: (scene: SceneName) => this.setScene(scene),
-      switchRenderStyle: () => this.switchRenderStyle(),
-      switchRenderModel: () => this.switchRenderModel(),
-      toggleAxis: () => this.toggleAxis(),
-      toggleShowBoundaries: () => this.toggleShowBoundaries(),
-    }
+    this.showBoundaries = !this.showBoundaries
+    this.updated()
   }
 }

@@ -5,7 +5,6 @@ import {Link} from "../controls/link"
 import {SceneStateIdentifier, SceneState} from "../../state/sceneState"
 import {AlgorithmStateIdentifier, AlgorithmState} from "../../state/algorithmState"
 import {ApplicationContext} from "../../applicationContext"
-import {State} from "../../state/state"
 import {UIElementType} from "../uiElementType"
 
 export class SceneInfo extends ContentElement {
@@ -13,8 +12,8 @@ export class SceneInfo extends ContentElement {
   private readonly textRenderStyle: Text
   private readonly textRenderModel: Text
   private readonly textAlgorithm: Text
-  private readonly scene: State<SceneState>
-  private readonly algorithm: State<AlgorithmState>
+  private readonly scene: SceneState
+  private readonly algorithm: AlgorithmState
 
   readonly elementType: UIElementType = UIElementType.SceneInfo
 
@@ -24,9 +23,9 @@ export class SceneInfo extends ContentElement {
     this.scene = context.state(SceneStateIdentifier)
     this.algorithm = context.state(AlgorithmStateIdentifier)
 
-    this.textRenderStyle = SceneInfo.value(context, this.scene.current.renderStyleCaption)
-    this.textRenderModel = SceneInfo.value(context, this.scene.current.renderModelCaption)
-    this.textAlgorithm = SceneInfo.value(context, this.algorithm.current.caption)
+    this.textRenderStyle = SceneInfo.value(context, this.scene.renderStyleCaption)
+    this.textRenderModel = SceneInfo.value(context, this.scene.renderModelCaption)
+    this.textAlgorithm = SceneInfo.value(context, this.algorithm.caption)
 
     this.setContent(this.createContext(context))
 
@@ -52,15 +51,15 @@ export class SceneInfo extends ContentElement {
   }
 
   private switchAlgorithm() {
-    this.algorithm.current.switchAlgorithm()
+    this.algorithm.switchAlgorithm()
   }
 
   private switchRenderModel() {
-    this.scene.current.switchRenderModel()
+    this.scene.switchRenderModel()
   }
 
   private switchRenderStyle() {
-    this.scene.current.switchRenderStyle()
+    this.scene.switchRenderStyle()
   }
 
   private static value(context: ApplicationContext, caption: string) {
