@@ -2,8 +2,7 @@ import {Point, Subtract} from "../../engine/models"
 import {Verify} from "../infrastructure"
 import {ModelContext} from "../infrastructure/modelContext"
 import {subtractTriangleTestCases4} from "./subtractTriangleTestCases4"
-import {analyseSubtractFaces} from "../../engine/intersections/analyseSubtractFaces"
-import {SubtractModels} from "../../engine/intersections/subtractModels"
+import {SubtractModels} from "../../engine/intersections"
 
 const points = [[
   new Point(0, 0, 0),

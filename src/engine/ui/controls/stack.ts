@@ -27,7 +27,10 @@ export class Stack extends UIElement {
 
     let top = area.top
     for (let index = 0; index < this.children.length; index++){
+
       const element = this.children[index]
+      if (!element.visible) continue
+
       const elementSize = element.calculateSize()
       const height = elementSize.height.proportion ? elementSize.height.value * ratioHeight : elementSize.height.value
       const elementArea = new ElementArea(area.left, top, area.calculateWidth(elementSize.width), height)
@@ -56,6 +59,8 @@ export class Stack extends UIElement {
 
     for (let index = 0; index < this.children.length; index++) {
       const child = this.children[index]
+      if (!child.visible) continue
+
       const childSize = child.calculateSize()
 
       if (childSize.height.proportion) {

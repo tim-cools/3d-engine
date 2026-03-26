@@ -21,7 +21,7 @@ import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
 import {Update} from "./events"
 import {SceneStateIdentifier} from "./state"
-import {CanvasUIRenderContext} from "./ui/rendering/uiRenderContext"
+import {CanvasUIRenderContext} from "./ui/rendering/canvasUIRenderContext"
 
 type ShapeRender = {
   z: number

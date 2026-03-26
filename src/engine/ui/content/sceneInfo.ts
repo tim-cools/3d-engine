@@ -1,11 +1,11 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {Row, Stack, Text} from "../controls"
 import {ContentElement} from "../layout/contentElement"
-import {Link} from "../controls/link"
-import {SceneStateIdentifier, SceneState} from "../../state/sceneState"
-import {AlgorithmStateIdentifier, AlgorithmState} from "../../state/algorithmState"
+import {SceneStateIdentifier, SceneState, AlgorithmStateIdentifier, AlgorithmState} from "../../state"
 import {ApplicationContext} from "../../applicationContext"
 import {UIElementType} from "../uiElementType"
+import {IconButton} from "../controls/iconButton"
+import {Icon} from "../rendering/icons"
 
 export class SceneInfo extends ContentElement {
 
@@ -63,14 +63,14 @@ export class SceneInfo extends ContentElement {
   }
 
   private static value(context: ApplicationContext, caption: string) {
-    return new Text(context, "value", new ElementSizeValue(135), caption)
+    return new Text(context, "value", new ElementSizeValue(1, true), caption)
   }
 
   private static row(context: ApplicationContext, id: string, title: string, caption: Text, onClick: (() => void)) {
     return new Row(context, id, [
       new Text(context, "title", new ElementSizeValue(120), title),
       caption,
-      new Link(context, "refresh", new ElementSizeValue(75), "🔁", onClick)
+      new IconButton(context, "refresh", new ElementSizeValue(18), Icon.Loop, onClick)
     ])
   }
 }

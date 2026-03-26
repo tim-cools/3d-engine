@@ -46,6 +46,10 @@ export class Colors {
     border: "#363636",
     tabBackground: "#494949",
     tabBackgroundInactive: "#343434",
+    buttonBackground: "#8d8d8d",
+    buttonHover: "#DDEEFA",
+    buttonClicked: "#5485a7",
+    buttonText: "#eeeeee",
     titleBackground: "#5d5d5d",
     titleText: "#a9a9a9",
     itemSelected: "#5485a7"

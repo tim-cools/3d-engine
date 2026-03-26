@@ -7,7 +7,6 @@ import {Colors} from "../../../infrastructure/colors"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
 
 export class PanelContent extends UIElement {
 
@@ -36,7 +35,7 @@ export class PanelContent extends UIElement {
   calculateSize(): ElementSize {
 
     const childSize = this.content.calculateSize()
-    const height =  this.padding.top + childSize.height.value + this.padding.bottom
+    const height = this.padding.top + childSize.height.value + this.padding.bottom
 
     return new ElementSize(ElementSizeValue.full, new ElementSizeValue(height))
   }

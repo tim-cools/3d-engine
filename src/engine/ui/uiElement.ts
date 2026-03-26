@@ -17,6 +17,8 @@ export abstract class UIElement {
     return this.lastAreaValue
   }
 
+  visible: boolean = true
+
   abstract get children(): readonly UIElement[]
   abstract get elementType(): UIElementType
 
@@ -30,11 +32,11 @@ export abstract class UIElement {
     return area
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
-    return area
+  calculateSize(): ElementSize {
+    return this.visible ? new ElementSize(ElementSizeValue.full, ElementSizeValue.full) : ElementSize.zero
   }
 
-  calculateSize(): ElementSize {
-    return new ElementSize(ElementSizeValue.full, ElementSizeValue.full)
+  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
+    return area
   }
 }

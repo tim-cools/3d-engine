@@ -1,4 +1,4 @@
-import {Icons} from "./icons"
+import {getIconPath, Icon} from "./icons"
 import {TextStyle, UIRenderContext} from "../uiRenderContext"
 import {Point2D} from "../../models"
 import {ElementArea} from "../elementArea"
@@ -29,6 +29,12 @@ export class CanvasUIRenderContext implements UIRenderContext {
     canvas.stroke()
   }
 
+  fillRectangle(background: string, left: number, top: number, width: number, height: number): void {
+    const canvas = this.canvas
+    canvas.fillStyle = background
+    canvas.fillRect(left, top, width, height)
+  }
+
   text(color: string, area: ElementArea, text: string, style: TextStyle | Nothing = nothing) {
     const canvas = this.canvas
 
@@ -56,14 +62,15 @@ export class CanvasUIRenderContext implements UIRenderContext {
     canvas.stroke()
   }
 
-  icon(color: string, left: number, top: number) {
+  icon(color: string, icon: Icon, left: number, top: number, size: number): void {
     const canvas = this.canvas
-    const path = new Path2D(Icons.Close)
-    canvas.lineWidth = 2
-    canvas.strokeStyle = color
+    const pathString = getIconPath(icon)
+    const path = new Path2D(pathString)
+    canvas.fillStyle = color
     canvas.beginPath()
     canvas.translate(left, top)
-    canvas.stroke(path)
+    canvas.scale(size / 14, size / 14)
+    canvas.fill(path)
     canvas.resetTransform()
   }
 

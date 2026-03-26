@@ -10,6 +10,11 @@ import {Identifier, nothing} from "../../../infrastructure/nothing"
 
 const defaultHeight = 32
 
+export enum ButtonState {
+  Normal,
+  Hover,
+}
+
 export class Button extends UIElement {
 
   private titleValue: string
@@ -40,7 +45,6 @@ export class Button extends UIElement {
     const elementArea = area.resize(size)
     //context.fillPath(Colors.highlight, elementArea.toPath())
     context.text(Colors.ui.titleText, elementArea, this.titleValue, nothing)
-    context.icon(Colors.ui.titleText, 100, 100)
     return elementArea
   }
 

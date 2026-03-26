@@ -21,13 +21,16 @@ export class Row extends UIElement {
   protected renderElement(area: ElementArea, context: UIRenderContext) {
 
     const rowSize = this.rowSize()
-    const ratioWidth = rowSize.totalPercentage > 0 ? area.width / rowSize.totalPercentage : 0
+    const ratioWidth = rowSize.totalPercentage > 0 ? (area.width - rowSize.width) / rowSize.totalPercentage : 0
 
     //context.fillPath("yellow", area.resize(rowSize.value).toPath())
 
     let left = area.left
     for (let index = 0; index < this.children.length; index++){
+
       const element = this.children[index]
+      if (!element.visible) continue
+
       const elementSize = element.calculateSize()
       const width = elementSize.width.proportion ? elementSize.width.value * ratioWidth : elementSize.width.value
       const elementArea = new ElementArea(left, area.top, width, elementSize.height.value)
@@ -47,14 +50,17 @@ export class Row extends UIElement {
 
     let width = 0
     let height = 0
-    let totalPercentage = 0
+    let totalRelevant = 0
 
     for (let index = 0; index < this.children.length; index++) {
+
       const child = this.children[index]
+      if (!child.visible) continue
+
       const childSize = child.calculateSize()
 
       if (childSize.width.proportion) {
-        totalPercentage += childSize.width.value
+        totalRelevant += childSize.width.value
       } else {
         width += index == 0 ? childSize.width.value : this.spacing + childSize.width.value
       }
@@ -65,7 +71,7 @@ export class Row extends UIElement {
       height = Math.max(height, childSize.height.value)
     }
 
-    let elementWith = totalPercentage > 0 ? ElementSizeValue.full : new ElementSizeValue(width)
-    return {totalPercentage: totalPercentage, value: new ElementSize(elementWith, new ElementSizeValue(height))}
+    let elementWith = totalRelevant > 0 ? ElementSizeValue.full : new ElementSizeValue(width)
+    return {totalPercentage: totalRelevant, width: width, value: new ElementSize(elementWith, new ElementSizeValue(height))}
   }
 }
