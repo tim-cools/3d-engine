@@ -17,6 +17,11 @@ export class ContentElement extends UIElement {
     return this.contentValue
   }
 
+  set content(element: UIElement) {
+    this.context.unsubscribeElement(this.contentValue)
+    this.contentValue = element
+  }
+
   get children(): readonly UIElement[] {
     return [this.contentValue]
   }
@@ -29,10 +34,6 @@ export class ContentElement extends UIElement {
   protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
     this.content.render(area, context)
     return area
-  }
-
-  protected setContent(value: UIElement) {
-    this.contentValue = value
   }
 
   calculateSize(): ElementSize {

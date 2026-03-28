@@ -3,7 +3,7 @@ import {Scene} from "../scenes"
 import {SceneName} from "./sceneName"
 import {PublishStateEvents} from "./stateManager"
 
-export const ScenesStateIdentifier = new StateIdentifier<ScenesState>("scenes")
+export const ScenesStateType = new StateIdentifier<ScenesState>("scenes")
 
 export interface ScenesState {
   readonly scenes: readonly SceneName[]
@@ -14,7 +14,7 @@ export class ScenesStateHandler extends State<ScenesState> implements ScenesStat
   scenes: SceneName[]
 
   constructor(scenes: readonly Scene[], publishStateEvents: PublishStateEvents) {
-    super(ScenesStateIdentifier, publishStateEvents)
+    super(ScenesStateType, publishStateEvents)
     this.scenes = ScenesStateHandler.createScenes(scenes)
   }
 

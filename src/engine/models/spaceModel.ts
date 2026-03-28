@@ -16,7 +16,7 @@ export class SpaceModel implements ModelBase, Space, SpaceObject, CanContainPoin
   private readonly faceLazy = new Lazy<readonly Face[]>(() => this.translateFaces())
   private readonly segmentsLazy = new Lazy<readonly Segment[]>(() => this.translateSegments())
   private readonly boundariesLazy = new Lazy<Boundaries>(() => this.translateBoundaries())
-  private readonly model: Model
+  readonly model: Model
 
   readonly position: Point
   readonly scale: Size

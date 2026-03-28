@@ -2,7 +2,7 @@ import {View} from "./view"
 import {World} from "./world"
 import {firstOrDefault} from "../infrastructure"
 import {Point2D} from "./models"
-import {Context} from "./scenes/sceneContext"
+import {Context} from "./scenes"
 import {KeyDown} from "./events"
 
 type KeyHandler = { key: string, handler: () => void }
@@ -11,25 +11,24 @@ export class Controller {
 
   private readonly keyHandlers: KeyHandler[]
 
+  private readonly world: World
+  private readonly view: View
+  private readonly context: Context
+
   private mouseIsDown: boolean = false
   private mouseX: number = 0
   private mouseY: number = 0
   private shiftDown: boolean = false
 
-  private world: World
-  private view: View
-  private applicationContext: Context
-
-  constructor(view: View, world: World, canvas: HTMLCanvasElement, applicationContext: Context) {
+  constructor(view: View, world: World, canvas: HTMLCanvasElement, context: Context) {
     this.world = world
     this.view = view
-    this.applicationContext = applicationContext
+    this.context = context
     canvas.addEventListener('mousemove', this.mouseMove.bind(this))
     canvas.addEventListener('mouseup', this.mouseUp.bind(this))
     canvas.addEventListener('mousedown', this.mouseDown.bind(this))
     window.addEventListener('keyup', this.keyUp.bind(this))
     window.addEventListener('keydown', this.keyDown.bind(this))
-    window.addEventListener('keypress', this.keyPress.bind(this))
     this.keyHandlers = this.createKeyHandlers()
   }
 
@@ -38,21 +37,8 @@ export class Controller {
       {key: "Shift", handler: () => this.shiftDown = true},
       {key: "ArrowDown", handler: () => this.view.moveCamera(null, null, -100)},
       {key: "ArrowUp", handler: () => this.view.moveCamera(null, null, 100)},
-      /*
-      {key: "r", handler: () => this.scene.switchRenderStyle()},
-      {key: "a", handler: () => this.algorith.switchAlgorithm()},
-      {key: "x", handler: () => this.world.toggleAxis()},
       {key: "l", handler: () => this.world.logShapes()},
-      {key: "b", handler: () => this.world.toggleShowBoundaries()}
-      */
     ]
-  }
-
-  private keyPress(event: KeyboardEvent) {
-    if (event.key >= "0" && event.key <= "9") {
-      this.world.setScene(parseInt(event.key))
-      this.view.reset()
-    }
   }
 
   private keyUp(event: KeyboardEvent) {
@@ -64,11 +50,11 @@ export class Controller {
   private keyDown(event: KeyboardEvent) {
     const keyHandler = firstOrDefault(this.keyHandlers, where => where.key == event.key)
     keyHandler?.handler.bind(this)()
-    this.applicationContext.events.publish(new KeyDown(event.key))
+    this.context.events.publish(new KeyDown(event.key))
   }
 
   private mouseDown(event: MouseEvent) {
-    this.applicationContext.events.mouse.down(new Point2D(event.x, event.y))
+    this.context.events.mouse.down(new Point2D(event.x, event.y))
     this.mouseIsDown = true
     this.mouseX = event.x
     this.mouseY = event.y
@@ -82,15 +68,13 @@ export class Controller {
 
     const point = new Point2D(event.x, event.y)
 
-    this.world.mouseMove(point)
-    this.applicationContext.events.mouse.move(point)
+    this.context.events.mouse.move(point, this.mouseIsDown)
 
     if (!this.mouseIsDown) return
 
     this.moveCamera(event)
     this.mouseX = event.x
     this.mouseY = event.y
-    this.world.clearSelection()
   }
 
   private moveCamera(event: MouseEvent) {

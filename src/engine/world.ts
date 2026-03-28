@@ -15,12 +15,12 @@ import {axis, Object, Object3D} from "./objects"
 import {Selectable, SelectableObject} from "./shapes/selectable"
 import {nothing, Nothing} from "../infrastructure/nothing"
 import {UIRenderContext, UI} from "./ui"
-import {Context} from "./scenes/sceneContext"
+import {Context} from "./scenes"
 import {Colors} from "../infrastructure/colors"
 import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
-import {Update} from "./events"
-import {SceneStateIdentifier} from "./state"
+import {MouseOver, Update} from "./events"
+import {SceneState, SceneStateType} from "./state"
 import {CanvasUIRenderContext} from "./ui/rendering/canvasUIRenderContext"
 
 type ShapeRender = {
@@ -61,7 +61,6 @@ export class World {
   private readonly ui: UI;
   private readonly axis = axis();
   private readonly lastZ: Map<string, number> = new Map()
-  private readonly scenes: readonly Scene[] = []
   private readonly view: View
   private readonly context: Context
 
@@ -82,13 +81,16 @@ export class World {
   constructor(view: View, scenes: readonly Scene[], context: Context) {
 
     this.view = view
-    this.scenes = scenes
-    this.sceneValue = this.scenes[0]
     this.context = context
     this.ui = new UI(this.context)
-    this.setScene(0)
 
-    context.state.subscribeUpdate(SceneStateIdentifier, state => this.setScene(state.index))
+    const sceneState = context.state.get(SceneStateType)
+    this.sceneValue = sceneState.current
+
+    this.setScene(sceneState)
+
+    context.state.subscribeUpdate(SceneStateType, state => this.setScene(state), nothing)
+    context.events.subscribe(MouseOver, nothing, event => this.mouseOver(event))
   }
 
   update(difference: number) {
@@ -123,22 +125,11 @@ export class World {
     this.selected = nothing
   }
 
-  setScene(index: number) {
-
-    if (index < 0 || index >= this.scenes.length) {
-      return
+  private mouseOver(event: MouseOver) {
+    this.selectAt(event.point)
+    if (event.mouseIsDown) {
+      this.clearSelection()
     }
-
-    this.sceneValue = this.scenes[index]
-
-    const context = this.context.newScene()
-    this.sceneObjectsValue = this.scene.objects(context)
-    this.clearSelection()
-    this.updateShapes()
-  }
-
-  mouseMove(point: Point2D) {
-    this.selectAt(point)
   }
 
   logShapes() {
@@ -150,14 +141,20 @@ export class World {
     console.log("Shapes End ----------------------------------------------------------------------")
   }
 
+  private setScene(state: SceneState) {
+
+    this.sceneValue = state.current
+    this.sceneObjectsValue = state.objects
+
+    this.clearSelection()
+    this.updateShapes()
+  }
+
   private updateShapes(): ShapeRender[] {
 
     const space2D = this.view.space2D()
 
-    const sceneState = this.context.state.get(SceneStateIdentifier)
-    this.objects = sceneState.axisVisible
-      ? [this.axis, ...this.sceneObjects]
-      : [...this.sceneObjects]
+    this.objects = [...this.sceneObjects]
 
     const result = this.shapesRenderers(space2D)
     result.sort((first, second) => first.z > second.z ? -1 : 1)

@@ -2,7 +2,7 @@ import {Point, Subtract} from "../../engine/models"
 import {Verify} from "../infrastructure"
 import {ModelContext} from "../infrastructure/modelContext"
 import {subtractTriangleTestCases1} from "./subtractTriangleTestCases1"
-import {SubtractModels} from "../../engine/intersections/subtractModels"
+import {SubtractModels} from "../../engine/intersections"
 
 function verifySegments(models: SubtractModels, points: Point[]) {
   const result = Subtract.segments(models)

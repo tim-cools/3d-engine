@@ -1,7 +1,7 @@
 import {Cube, Overlay, Raster, Sphere} from "../objects"
 import {Point, Size} from "../models"
 import {ApplicationContext} from "../applicationContext"
-import {RenderStyle} from "../state/renderStyle"
+import {RenderStyle} from "../state"
 import {Scene} from "./scene"
 
 export function cubesAndSphere(): Scene {

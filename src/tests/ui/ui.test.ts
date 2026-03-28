@@ -1,15 +1,19 @@
 import {UI} from "../../engine/ui"
-import {Context} from "../../engine/scenes/sceneContext"
+import {Context} from "../../engine/scenes"
 import {Scene} from "../../engine/scenes"
-import {ScenesInfo} from "../../engine/ui/content/scenesInfo"
+import {ScenesList} from "../../engine/ui/content/scenesList"
 import {UIElementType} from "../../engine/ui/uiElementType"
-import {Verify, VerifyModelContext} from "../infrastructure"
+import {Verify} from "../infrastructure"
 import {Link} from "../../engine/ui/controls/link"
-import {SceneInfo} from "../../engine/ui/content/sceneInfo"
-import {SceneStateIdentifier} from "../../engine/state/sceneState"
-import {AlgorithmStateIdentifier} from "../../engine/state/algorithmState"
 import {getChildrenOfType} from "./getChildrenById"
 import {VerifyUIElementContext} from "./verifyUIElementContext"
+import {ObjectsList} from "../../engine/ui/content/objectsList"
+import {ApplicationContext} from "../../engine/applicationContext"
+import {ModelObject} from "../../engine/objects"
+import {Point, Size, SpaceModel, CubeModel} from "../../engine/models"
+import {ObjectDetails} from "../../engine/ui/content/objectDetails"
+import {ObjectStateType} from "../../engine/state/objectState"
+import {SceneStateType} from "../../engine/state"
 
 describe('ui', () => {
 
@@ -20,7 +24,7 @@ describe('ui', () => {
     const ui = new UI(context)
   })
 
-  test('create ScenesInfo with links', async () => {
+  test('create ScenesList with links', async () => {
 
     const context = new Context([
       new Scene("test 1", () => []),
@@ -28,7 +32,7 @@ describe('ui', () => {
       new Scene("test 3", () => [])
     ])
 
-    const info = new ScenesInfo(context)
+    const info = new ScenesList(context)
     const links = getChildrenOfType(info, UIElementType.Link) as Link[]
 
     Verify.collection(links, context => context
@@ -39,34 +43,66 @@ describe('ui', () => {
     )
   })
 
-  test('create SceneInfo default values', async () => {
+  function newObject(id: string, context: ApplicationContext) {
+    const cube =  CubeModel.create(1)
+    const spaceModel = new SpaceModel(cube, Point.null, Size.null)
+    return new ModelObject(context, id, spaceModel)
+  }
 
-    const context = new Context([])
-    const info = new SceneInfo(context)
+  test('create ObjectList default values', async () => {
+
+    const context = new Context([
+      new Scene("test 1", context => [
+        newObject("model1", context),
+        newObject("model2", context),
+        newObject("model3", context),
+      ])
+    ])
+
+    const info = new ObjectsList(context)
 
     Verify.model(info, context => new VerifyUIElementContext(context)
-      .textWith("renderStyle.value", "Solid")
-      .textWith("renderModel.value", "Result")
-      .textWith("algorithm.value", "SubtractFaces")
+      .linkWith("link.model1", "model1")
+      .linkWith("link.model2", "model2")
+      .linkWith("link.model3", "model3")
     )
   })
 
-  test('create SceneInfo witch values', async () => {
+  test('create ObjectList default values', async () => {
 
-    const context = new Context([])
-    let sceneState = context.state.get(SceneStateIdentifier)
-    sceneState.switchRenderStyle()
-    sceneState.switchRenderModel()
+    const context = new Context([
+      new Scene("test 1", context => [
+        newObject("model1", context),
+        newObject("model2", context),
+        newObject("model3", context),
+      ])
+    ])
 
-    let algorithmState = context.state.get(AlgorithmStateIdentifier)
-    algorithmState.switchAlgorithm()
-
-    const info = new SceneInfo(context)
+    const info = new ObjectDetails(context)
 
     Verify.model(info, context => new VerifyUIElementContext(context)
-      .textWith("renderStyle.value", "WireframeDebug")
-      .textWith("renderModel.value", "Master")
-      .textWith("algorithm.value", "SubtractSegments")
+      .panelWith("objectDetails", "Object: model1")
+    )
+  })
+
+  test('create ObjectList select object', async () => {
+
+    const context = new Context([
+      new Scene("test 1", context => [
+        newObject("model1", context),
+        newObject("model2", context),
+        newObject("model3", context),
+      ])
+    ])
+
+    const sceneState = context.state.get(SceneStateType)
+    const objectState = context.state.get(ObjectStateType)
+    objectState.setObject(sceneState.objects[1])
+
+    const info = new ObjectDetails(context)
+
+    Verify.model(info, context => new VerifyUIElementContext(context)
+      .panelWith("objectDetails", "Object: model2")
     )
   })
 })

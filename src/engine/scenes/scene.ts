@@ -7,10 +7,10 @@ export type SceneFactory = (context: ApplicationContext) => Object[]
 export class Scene {
 
   readonly title: Text
-  readonly objects: SceneFactory
+  readonly createObjects: SceneFactory
 
-  constructor(title: Text, objects: SceneFactory) {
+  constructor(title: Text, createObjects: SceneFactory) {
     this.title = title
-    this.objects = objects
+    this.createObjects = createObjects
   }
 }

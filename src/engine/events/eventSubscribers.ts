@@ -78,4 +78,15 @@ export class EventSubscribers {
       this.subscribers.splice(index, 1)
     }
   }
+
+  removeByElement(element: UIElement) {
+    for (let index = 0; index < this.subscribers.length; ){
+      const subscriber = this.subscribers[index]
+      if (subscriber.handler == undefined || subscriber.element === element) {
+        this.subscribers.splice(index, 1)
+      } else {
+        index++
+      }
+    }
+  }
 }

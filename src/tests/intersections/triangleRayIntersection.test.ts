@@ -1,8 +1,7 @@
 import {Ray, Segment, Triangle, Vector} from "../../engine/models"
 import {Point} from "../../engine/models"
 import {equalsTolerancePoint} from "../../engine/models/equals"
-import {intersectionTriangleRay} from "../../engine/intersections/intersectionTriangleRay"
-import {IntersectionType} from "../../engine/intersections/intersectionResult"
+import {intersectionTriangleRay, IntersectionType} from "../../engine/intersections"
 
 describe("triangle ray intersection", () => {
 

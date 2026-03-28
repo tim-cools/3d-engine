@@ -1,4 +1,3 @@
-import {Object} from "../objects"
 import {subtractTriangle1} from "./subtractTriangle1"
 import {subtractTriangle2} from "./subtractTriangle2"
 import {subtractTriangle3} from "./subtractTriangle3"
@@ -14,9 +13,9 @@ import {Scene} from "./scene"
 
 export function createScenes(): readonly Scene[] {
   return [
-    layers(),
     cube(),
     sphere(),
+    layers(),
     cubesAndSphere(),
     subtractCube(),
     subtractSphere(),

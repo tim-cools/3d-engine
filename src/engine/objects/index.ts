@@ -7,3 +7,4 @@ export * from './rectangle'
 export * from './sphere'
 export * from './title'
 export * from "./axis"
+export {ObjectProperties} from "./objectProperties"

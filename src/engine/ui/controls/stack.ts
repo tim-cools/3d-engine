@@ -11,11 +11,23 @@ export class Stack extends UIElement {
 
   private readonly spacing: number
 
+  private childrenValue: readonly UIElement[]
+
   readonly elementType: UIElementType = UIElementType.Stack
 
-  constructor(context: ApplicationContext, id: Identifier, public children: readonly UIElement[], spacing: number = 4) {
+  get children(): readonly UIElement[] {
+    return this.childrenValue
+  }
+
+  set children(children: readonly UIElement[]) {
+    this.context.unsubscribeElements(this.childrenValue, children)
+    this.childrenValue = children
+  }
+
+  constructor(context: ApplicationContext, id: Identifier, children: readonly UIElement[], spacing: number = 4) {
     super(context, id)
     this.spacing = spacing
+    this.childrenValue = children
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {
@@ -44,10 +56,6 @@ export class Stack extends UIElement {
 
   calculateSize(): ElementSize {
     return this.stackSize().value
-  }
-
-  protected setChildren(children: readonly UIElement[]) {
-    this.children = children
   }
 
   private stackSize() {

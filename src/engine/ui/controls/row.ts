@@ -11,11 +11,23 @@ export class Row extends UIElement {
 
   private readonly spacing: number = 8
 
+  private childrenValue: readonly UIElement[]
+
   readonly elementType: UIElementType = UIElementType.Row
 
-  constructor(context: ApplicationContext, id: Identifier, public children: readonly UIElement[], spacing: number = 8) {
+  get children(): readonly UIElement[] {
+    return this.childrenValue
+  }
+
+  set children(children: readonly UIElement[]) {
+    this.context.unsubscribeElements(this.childrenValue, children)
+    this.childrenValue = children
+  }
+
+  constructor(context: ApplicationContext, id: Identifier, children: readonly UIElement[], spacing: number = 8) {
     super(context, id)
     this.spacing = spacing
+    this.childrenValue = children
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

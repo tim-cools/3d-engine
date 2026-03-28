@@ -36,7 +36,7 @@ export class Panel extends ContentElement {
     this.headerText = new Text(context, "text", new ElementSizeValue(100, true), title)
     this.expandButton = new IconButton(context, "expand", new ElementSizeValue(18), Icon.ArrowUp, () => this.toggleExpand())
     this.panel = new PanelContent(context, content)
-    this.setContent(
+    this.content =
       new Stack(context, "stack", [
         new Box(context, "header", Colors.ui.titleBackground,
           new ElementSize(new ElementSizeValue(100, true), new ElementSizeValue(28)),
@@ -48,7 +48,6 @@ export class Panel extends ContentElement {
       ),
         this.panel
       ], 0)
-    )
   }
 
   private toggleExpand() {

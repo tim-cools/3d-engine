@@ -1,40 +1,29 @@
 import {ContentElement} from "../layout/contentElement"
-import {Row, Stack, Text} from "../controls"
-import {ElementSizeValue} from "../elementSizeValue"
+import {Stack} from "../controls"
 import {ApplicationContext} from "../../applicationContext"
 import {SidePanel, SidePanelLocation} from "../controls/sidePanel"
 import {UIElementType} from "../uiElementType"
-import {Button} from "../controls/button"
+import {Panel} from "../layout/panel"
+import {ObjectsList} from "./objectsList"
+import {ObjectDetails} from "./objectDetails"
+import {ScenesList} from "./scenesList"
 
 export class SidePanelLeft extends ContentElement {
 
   readonly elementType: UIElementType = UIElementType.SidePanelLeft
 
   constructor(context: ApplicationContext) {
-    super(context, "SidePanelLeft")
-    this.setContent(this.createElements(context))
+    super(context, "sidePanelLeft")
+    this.content = SidePanelLeft.createElements(context)
   }
 
-  private createElements(context: ApplicationContext) {
-
-    let index = 0
-    function text(title: string) {
-      return new Text(context, index.toString(), ElementSizeValue.full, title)
-    }
-
+  private static createElements(context: ApplicationContext) {
     return new SidePanel(context, "side", SidePanelLocation.Left, [
       new Stack(context, "stack", [
-        new Row(context, "row", [
-          new Button(context, "", new ElementSizeValue(25), "Test")
-        ]),
-        text("TEST 123"),
-        text("TEST 456"),
-        text("TEST 789"),
-        text("TEST 012"),
-        text("TEST 345"),
-        text("TEST 678"),
-        text("TEST 901"),
-      ])
+        new ScenesList(context),
+        new ObjectsList(context),
+        new ObjectDetails(context)
+      ], 16)
     ])
   }
 }

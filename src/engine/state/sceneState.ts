@@ -1,72 +1,58 @@
-import {RenderStyle} from "./renderStyle"
-import {RenderModel} from "./renderModel"
 import {State, StateIdentifier} from "./state"
-import {SceneName} from "./sceneName"
+import {Context, Scene} from "../scenes"
+import {Object} from "../objects"
 import {PublishStateEvents} from "./stateManager"
+import {ObjectStateType} from "./objectState"
+import {nothing} from "../../infrastructure/nothing"
 
-export const SceneStateIdentifier = new StateIdentifier<SceneState>("scene")
+export const SceneStateType = new StateIdentifier<SceneState>("scene")
 
 export interface SceneState {
-  readonly index: number
-  readonly name: string
-  readonly renderStyle: RenderStyle
-  readonly renderStyleCaption: string
-  readonly renderModel: RenderModel
-  readonly renderModelCaption: string
-  readonly axisVisible: boolean
-  readonly showBoundaries: boolean
 
-  setScene(scene: SceneName): void
-  switchRenderStyle(): void
-  switchRenderModel(): void
-  toggleAxis(): void
-  toggleShowBoundaries(): void
+  readonly objects: Object[]
+  readonly current: Scene
+  readonly index: number
+  readonly title: string
+
+  setScene(index: number): void
 }
 
 export class SceneStateHandler extends State<SceneState> implements SceneState {
 
+  current: Scene
   index: number = 0
-  name: string = ""
-  renderStyle: RenderStyle = RenderStyle.Solid
-  renderStyleCaption: string = "Solid"
-  renderModel: RenderModel = RenderModel.Result
-  renderModelCaption: string = "Result"
-  axisVisible: boolean = false
-  showBoundaries: boolean = false
+  title: string = ""
+  objects: Object[] =[]
 
-  constructor(publishStateEvents: PublishStateEvents) {
-    super(SceneStateIdentifier, publishStateEvents)
+  constructor(private scenes: readonly Scene[], publishStateEvents: PublishStateEvents, private context: Context) {
+    super(SceneStateType, publishStateEvents)
+    if (scenes.length == 0) {
+      throw new Error("No scenes")
+    }
+    this.current = scenes[0]
+    this.initializeScene(0)
   }
 
-  setScene(scene: SceneName) {
-    this.index = scene.index
-    this.name = scene.name
+  setScene(index: number) {
+
+    if (index < 0 || index >= this.scenes.length) {
+      return
+    }
+
+    this.initializeScene(index)
     this.updated()
   }
 
-  switchRenderStyle() {
-    const value = (this.renderStyle + 1) % (RenderStyle.WireframeDebug + 1)
-    console.log(`switchRenderStyle: ${RenderStyle[value]}`)
-    this.renderStyle = value
-    this.renderStyleCaption =RenderStyle[value]
-    this.updated()
-  }
+  private initializeScene(index: number) {
+    const scene = this.scenes[index]
+    this.index = index
+    this.title = scene.title
+    this.current = scene
 
-  switchRenderModel() {
-    const value = (this.renderModel + 1) % (RenderModel.Second + 1)
-    console.log(`switchRenderModel: ${RenderModel[value]}`)
-    this.renderModel = value
-    this.renderModelCaption = RenderModel[value]
-    this.updated()
-  }
+    const context = this.context.newScene()
+    this.objects = scene.createObjects(context)
 
-  toggleAxis() {
-    this.axisVisible = !this.axisVisible
-    this.updated()
-  }
-
-  toggleShowBoundaries() {
-    this.showBoundaries = !this.showBoundaries
-    this.updated()
+    const object = this.context.state.get(ObjectStateType)
+    object.setObject(this.objects.length > 0 ? this.objects[0] : nothing)
   }
 }

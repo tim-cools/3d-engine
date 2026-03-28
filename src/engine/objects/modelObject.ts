@@ -15,12 +15,15 @@ import {Object3DBase} from "./object"
 import {Nothing, nothing} from "../../infrastructure/nothing"
 import {Colors} from "../../infrastructure/colors"
 import {ApplicationContext} from "../applicationContext"
-import {RenderStyle, SceneState, SceneStateIdentifier} from "../state"
+import {RenderStyle} from "../state"
+import {ObjectProperty, TypedObjectProperty} from "./objectProperties"
 
 export class ModelObject extends Object3DBase {
 
+  private readonly renderStyleProperty: TypedObjectProperty<RenderStyle>
+  private readonly showBoundariesProperty: TypedObjectProperty<boolean>
+
   private readonly debugShapes: ((translate: Transformer) => readonly Shape[]) | Nothing
-  private readonly scene: SceneState
   private readonly context: ApplicationContext
 
   protected model: SpaceModel
@@ -31,8 +34,8 @@ export class ModelObject extends Object3DBase {
     this.model = spaceModel
     this.debugShapes = debugShape
     this.context = context
-    this.scene = context.state.get(SceneStateIdentifier)
-    context.state.subscribeUpdate(SceneStateIdentifier, () => this.updateShapes())
+    this.renderStyleProperty = this.properties.add<RenderStyle>("Render Style", RenderStyle.Solid, value => RenderStyle[value], value => ModelObject.switchRenderStyle(value))
+    this.showBoundariesProperty = this.properties.add<boolean>("Show Boundaries", false, nothing, value => !value)
     this.shapesValue = this.createShapes()
   }
 
@@ -40,12 +43,22 @@ export class ModelObject extends Object3DBase {
     return this.shapesValue
   }
 
+  protected propertiesChanged(properties: readonly ObjectProperty[]) {
+    this.updateShapes()
+  }
+
+  private static switchRenderStyle(value: RenderStyle) {
+    const newValue = (value + 1) % (RenderStyle.WireframeDebug + 1)
+    console.log(`switchRenderStyle: ${RenderStyle[newValue]}`)
+    return newValue;
+  }
+
   protected updateShapes() {
     this.shapesValue = this.createShapes()
   }
 
   private createShapes(): readonly Shape[] {
-    const style = this.scene.renderStyle
+    const style = this.renderStyleProperty.typed
     if (style == RenderStyle.Wireframe) {
       return this.wireframe(false)
     } else if (style == RenderStyle.WireframeDebug) {
@@ -59,7 +72,6 @@ export class ModelObject extends Object3DBase {
   private wireframe(debug: boolean) {
     const result: Shape[] = []
     this.addFacesWireframe(debug, result)
-    this.addBoundaries(debug, result)
     this.addSegments(debug, result)
     this.addPoints(debug, result)
     this.addDebugShapes(result)
@@ -87,14 +99,14 @@ export class ModelObject extends Object3DBase {
 
   private addDebugShapes(result: Shape[]) {
     if (this.debugShapes == nothing) return
-    let debugShapes = this.debugShapes(point => translateSpace(point, this.model))
+    const debugShapes = this.debugShapes(point => translateSpace(point, this.model))
     for (const debugShape of debugShapes) {
       result.push(debugShape)
     }
   }
 
   private addBoundaries(debug: boolean, result: Shape[]) {
-    if (!this.scene.showBoundaries) return
+    if (!this.showBoundariesProperty.typed) return
 
     const boundaries = this.model.boundaries
     const cubeModel = CubeModel.create(1, boundaries.min, boundaries.max, ModelType.UtilityLight)
@@ -111,6 +123,7 @@ export class ModelObject extends Object3DBase {
       const face = this.model.faces[index]
       this.addFace(face, result, index)
     }
+    this.addBoundaries(false, result)
     return result
   }
 

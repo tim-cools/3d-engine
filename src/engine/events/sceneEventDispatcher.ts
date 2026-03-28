@@ -18,6 +18,10 @@ export class SceneEventDispatcher implements EventDispatcher {
     this.globalEventDispatcher.subscribe(type, element, handler)
   }
 
+  unsubscribeElement(element: UIElement): void {
+    this.globalEventDispatcher.unsubscribeElement(element)
+  }
+
   publish<TEvent extends Event>(event: TEvent): void {
     const eventType = event.eventType
     this.globalEventDispatcher.publishGlobal(eventType, event)

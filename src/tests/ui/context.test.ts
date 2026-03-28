@@ -1,19 +1,19 @@
-import {Context} from "../../engine/scenes/sceneContext"
-import {Scene} from "../../engine/scenes"
+import {Scene, Context} from "../../engine/scenes"
 import {ApplicationContext} from "../../engine/applicationContext"
 import {Object2DBase} from "../../engine/objects/object2D"
-import {AlgorithmState, AlgorithmStateIdentifier} from "../../engine/state"
+import {nothing} from "../../infrastructure/nothing"
+import {SelectionState, SelectionStateType} from "../../engine/state"
 
 class TestEventObject extends Object2DBase {
 
-  private algorithm: AlgorithmState
+  private selectionState: SelectionState
 
   called: number = 0
 
   constructor(context: ApplicationContext, id: string) {
     super(id)
-    this.algorithm = context.state.get(AlgorithmStateIdentifier)
-    context.state.subscribeUpdate(AlgorithmStateIdentifier, () => this.updated())
+    this.selectionState = context.state.get(SelectionStateType)
+    context.state.subscribeUpdate(SelectionStateType, () => this.updated(), nothing)
   }
 
   private updated() {
@@ -22,7 +22,7 @@ class TestEventObject extends Object2DBase {
 }
 
 function getSceneTestObject(scenes: Scene[], number: number, scene1context: ApplicationContext) {
-  return scenes[number].objects(scene1context)[0] as TestEventObject
+  return scenes[number].createObjects(scene1context)[0] as TestEventObject
 }
 
 describe('application context', () => {
@@ -30,20 +30,21 @@ describe('application context', () => {
   test('create new scene context', async () => {
 
     const scenes = [
-      new Scene("test1", context => [new TestEventObject(context, "1")])
+      new Scene("test1", context => [new TestEventObject(context, "1")]),
+      new Scene("test1", context => [new TestEventObject(context, "1")]),
     ]
 
     const context = new Context(scenes)
-    const algorithmState = context.state.get(AlgorithmStateIdentifier)
+    const selectionState = context.state.get(SelectionStateType)
     const scene1context = context.newScene()
 
     const testObject1 = getSceneTestObject(scenes, 0, scene1context)
     expect(testObject1.called).toBe(0)
 
-    algorithmState.switchAlgorithm()
+    selectionState.select(1)
     expect(testObject1.called).toBe(1)
 
-    algorithmState.switchAlgorithm()
+    selectionState.select(2)
     expect(testObject1.called).toBe(2)
   })
 
@@ -55,13 +56,13 @@ describe('application context', () => {
     ]
 
     const context = new Context(scenes)
-    const algorithmState = context.state.get(AlgorithmStateIdentifier)
+    const selectionState = context.state.get(SelectionStateType)
     const scene1context = context.newScene()
 
     const testObject1 = getSceneTestObject(scenes, 0, scene1context)
     expect(testObject1.called).toBe(0)
 
-    algorithmState.switchAlgorithm()
+    selectionState.select(1)
     expect(testObject1.called).toBe(1)
 
     const scene2context = context.newScene()
@@ -69,7 +70,7 @@ describe('application context', () => {
     expect(testObject1.called).toBe(1)
     expect(testObject2.called).toBe(0)
 
-    algorithmState.switchAlgorithm()
+    selectionState.select(2)
     expect(testObject1.called).toBe(1)
     expect(testObject2.called).toBe(1)
   })

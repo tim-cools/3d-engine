@@ -23,6 +23,10 @@ export class ApplicationEventDispatcher implements EventDispatcher {
     this.subscribers.add(eventType, element, handler)
   }
 
+  unsubscribeElement(element: UIElement): void {
+    this.subscribers.removeByElement(element)
+  }
+
   publish<TEvent extends Event>(event: TEvent): void {
     const eventType = event.eventType
     this.publishGlobal(eventType, event)

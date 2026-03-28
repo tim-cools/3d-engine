@@ -3,6 +3,9 @@ import {VerifyModelContext} from "../infrastructure"
 import {UIElementType} from "../../engine/ui/uiElementType"
 import {Text} from "../../engine/ui/controls"
 import {getChildrenById} from "./getChildrenById"
+import {Nothing, nothing} from "../../infrastructure/nothing"
+import {Link} from "../../engine/ui/controls/link"
+import {Panel} from "../../engine/ui/layout/panel"
 
 export class VerifyUIElementContext {
 
@@ -13,17 +16,48 @@ export class VerifyUIElementContext {
   }
 
   textWith(idEnd: string, value: string): VerifyUIElementContext {
+
+    const element = this.getElement<Text>(idEnd, UIElementType.Text)
+    if (element == nothing) return this
+
+    this.context.logging.logAssert(element.value == value, ` value: ${value}`, `element: ${idEnd} value is: '${element.value}'`)
+
+    return this
+  }
+
+  linkWith(idEnd: string, value: string) {
+
+    const element = this.getElement<Link>(idEnd, UIElementType.Link)
+    if (element == nothing) return this
+
+    this.context.logging.logAssert(element.title == value, ` value: ${value}`, `element: ${idEnd} value is: '${element.title}'`)
+
+    return this
+  }
+
+
+  panelWith(idEnd: string, value: string) {
+
+    const element = this.getElement<Panel>(idEnd, UIElementType.Panel)
+    if (element == nothing) return this
+
+    this.context.logging.logAssert(element.title == value, ` value: ${value}`, `element: ${idEnd} value is: '${element.title}'`)
+
+    return this
+  }
+
+  private getElement<TElement extends UIElement>(idEnd: string, type: UIElementType): TElement | Nothing {
     const elements = getChildrenById(this.element, idEnd)
     if (elements.length == 0) {
       this.context.fail("No element found with id: " + idEnd)
+      return nothing
     } else if (elements.length > 1) {
       this.context.fail(`More than one element found with id: ${idEnd}: ${elements.length}`)
-    } else if (elements[0].elementType != UIElementType.Text) {
-      this.context.fail(`Element not of type 'Text'. Actual: ${elements[0].elementType}`)
-    } else {
-      const element = elements[0] as Text
-      this.context.logging.logAssert(element.value == value, ` value: ${value}`, `element: ${idEnd} value is: '${element.value}'`)
+      return nothing
+    } else if (elements[0].elementType != type) {
+      this.context.fail(`Element not of type 'Text'. Actual: ${UIElementType[elements[0].elementType]}`)
+      return nothing
     }
-    return this
+    return elements[0] as TElement
   }
 }

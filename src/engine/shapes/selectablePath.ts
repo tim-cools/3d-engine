@@ -25,6 +25,7 @@ export class SelectablePath implements Shape2D, Selectable {
   }
 
   includes(point: Point2D): boolean {
+    if (!point) return false
     if (this.solid) {
       const point3D = point.to3D()
       return any(this.triangles, triangle => triangle.pointLocation(point3D) >= 0)

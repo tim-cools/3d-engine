@@ -279,6 +279,9 @@ export class TransformablePoint extends Point {
 }
 
 export class Point2D {
+
+  static default: Point2D = new Point2D(0, 0)
+
   readonly x: number
   readonly y: number
 

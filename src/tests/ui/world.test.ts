@@ -1,9 +1,9 @@
-import {Context} from "../../engine/scenes/sceneContext"
-import {Scene} from "../../engine/scenes"
+import {Context, Scene} from "../../engine/scenes"
 import {View, World} from "../../engine"
 import {cube} from "../../engine/scenes/cube"
 import {sphere} from "../../engine/scenes/sphere"
 import {Point, Point2D, Space2D} from "../../engine/models"
+import {SceneStateType} from "../../engine/state"
 
 class DummyView implements View {
   
@@ -71,11 +71,11 @@ describe('world', () => {
     const context = new Context(scenes)
     const view = new DummyView()
     const world = new World(view, scenes, context)
-    world.setScene(1)
+    context.state.get(SceneStateType).setScene(1)
     expect(world.scene.title).toBe("test 2")
   })
 
-  test('create with real objects', async () => {
+  test('create with real createObjects', async () => {
     const scenes = [
       cube(),
       sphere()

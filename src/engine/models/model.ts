@@ -32,8 +32,8 @@ export class Model implements ModelBase, CanContainPoint {
     return this.boundaryLazy.value
   }
 
-  //exposed as functions so they can be combined in composite objects without the need to
-  //hold references to the whole original objects. This is used when subtracting segments
+  //exposed as functions so they can be combined in composite createObjects without the need to
+  //hold references to the whole original createObjects. This is used when subtracting segments
   readonly containsFunction: (coordinate: Point) => boolean
   readonly onBoundaryFunction: (coordinate: Point) => boolean
 

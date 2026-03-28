@@ -12,8 +12,8 @@ export class ElementMouseEventHandler {
   constructor(private subscribers: EventSubscribers) {
   }
 
-  move(point: Point2D) {
-    this.handleMouseOver(point)
+  move(point: Point2D, mouseIsDown: boolean) {
+    this.handleMouseOver(point, mouseIsDown)
     this.handleMouseEnterLeave(point)
   }
 
@@ -26,11 +26,11 @@ export class ElementMouseEventHandler {
     }
   }
 
-  private handleMouseOver(point: Point2D) {
+  private handleMouseOver(point: Point2D, mouseIsDown: boolean) {
     const subscribers = this.subscribers.get(EventType.MouseOver)
     for (const subscriber of subscribers) {
       if (subscriber.element && subscriber.element.lastArea.contains(point) && subscriber.handler != undefined) {
-        subscriber.handler(new MouseOver())
+        subscriber.handler(new MouseOver(point, mouseIsDown))
       }
     }
   }

@@ -1,17 +1,25 @@
 import {State, StateIdentifier} from "./state"
 import {PublishStateEvents} from "./stateManager"
 
-export const SelectionStateIdentifier = new StateIdentifier("selection")
+export const SelectionStateType = new StateIdentifier<SelectionState>("selection")
 
 export interface SelectionState {
   readonly faceIds: number[]
+  select(id: number): void
 }
 
 export class SelectionStateHandler extends State<SelectionState> implements SelectionState {
 
-  faceIds: [] = []
+  faceIds: number[] = []
 
   constructor(publishStateEvents: PublishStateEvents) {
-    super(SelectionStateIdentifier, publishStateEvents)
+    super(SelectionStateType, publishStateEvents)
+  }
+
+  select(id: number) {
+    if (this.faceIds.indexOf(id) < 0) {
+      this.faceIds.push(id)
+    }
+    this.updated()
   }
 }

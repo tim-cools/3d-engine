@@ -105,7 +105,6 @@ export function addTrianglesBySegments(segments: Segment[], faces: Face[]) {
   const trianglesAdded = new Map<string, Triangle>()
   const nodes = createNodes(segments)
 
-  const pointsPerAmount = new Map<number, SegmentNode[]>()
   nodes.forEach((value: SegmentNode) => {
     addSegmentFaces(value, nodes, faces, trianglesAdded)
   })
