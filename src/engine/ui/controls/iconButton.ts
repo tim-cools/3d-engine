@@ -1,39 +1,54 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
-import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {UIElement} from "../uiElement"
+import {UIElement, UIElementProperties} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
-import {Identifier, nothing, Nothing} from "../../../infrastructure/nothing"
+import {nothing, Nothing} from "../../../infrastructure/nothing"
 import {Icon} from "../rendering/icons"
 import {ButtonState} from "./button"
 import {MouseDown, MouseEnter, MouseLeave} from "../../events"
+import {UIContext} from "../uiContext"
+
+export interface IconButtonProperties extends UIElementProperties {
+  size?: ElementSizeValue
+  icon?: Icon
+  onClick?: (() => void)
+}
 
 export class IconButton extends UIElement {
 
-  private readonly onClick: (() => void) | Nothing
+  private readonly onClick: (() => void) | Nothing = nothing
 
   private state: ButtonState = ButtonState.Normal
 
-  readonly size: ElementSizeValue
+  readonly size: ElementSizeValue = new ElementSizeValue(25)
   readonly elementType: UIElementType = UIElementType.Button
 
-  icon: Icon
+  icon: Icon = Icon.Close
 
   get children(): readonly UIElement[] {
     return []
   }
 
-  constructor(context: ApplicationContext, id: Identifier, size: ElementSizeValue, icon: Icon, onClick: (() => void) | Nothing = nothing) {
-    super(context, id)
-    this.size = size;
-    this.icon = icon
-    this.onClick = onClick
-    this.context.events.subscribe(MouseEnter, event => this.mouseEnter(), this)
-    this.context.events.subscribe(MouseLeave, event => this.mouseLeave(), this)
-    this.context.events.subscribe(MouseDown, event => this.mouseDown(), this)
+  constructor(properties: IconButtonProperties) {
+    super(properties)
+    if (properties.size != undefined) {
+      this.size = properties.size
+    }
+    if (properties.icon != undefined) {
+      this.icon = properties.icon
+    }
+    if (properties.onClick != undefined) {
+      this.onClick = properties.onClick
+    }
+  }
+
+  protected contextAttached(context: UIContext) {
+    context.events.subscribe(MouseEnter, event => this.mouseEnter(), this)
+    context.events.subscribe(MouseLeave, event => this.mouseLeave(), this)
+    context.events.subscribe(MouseDown, event => this.mouseDown(), this)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

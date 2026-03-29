@@ -2,7 +2,7 @@ import {View} from "./view"
 import {World} from "./world"
 import {firstOrDefault} from "../infrastructure"
 import {Point2D} from "./models"
-import {Context} from "./scenes"
+import {Context} from "./context"
 import {KeyDown} from "./events"
 
 type KeyHandler = { key: string, handler: () => void }

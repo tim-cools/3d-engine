@@ -1,17 +1,21 @@
-import {ApplicationContext} from "../../applicationContext"
-import {UIElement} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
+import {nothing, Nothing} from "../../../infrastructure/nothing"
+
+export interface StackProperties extends UIElementProperties {
+  children?: readonly UIElement[]
+  spacing?: number
+}
 
 export class Stack extends UIElement {
 
-  private readonly spacing: number
+  private readonly spacing: number = 4
 
-  private childrenValue: readonly UIElement[]
+  private childrenValue: readonly UIElement[] = []
 
   readonly elementType: UIElementType = UIElementType.Stack
 
@@ -20,14 +24,18 @@ export class Stack extends UIElement {
   }
 
   set children(children: readonly UIElement[]) {
-    this.context.unsubscribeElements(this.childrenValue, children)
+    this.contextOptional?.detachElements(this.childrenValue)
     this.childrenValue = children
+    this.contextOptional?.attachElements(this.childrenValue)
   }
 
-  constructor(context: ApplicationContext, id: Identifier, children: readonly UIElement[], spacing: number = 4) {
-    super(context, id)
-    this.spacing = spacing
-    this.childrenValue = children
+  constructor(stackProperties: StackProperties | Nothing = nothing) {
+    super(stackProperties)
+
+    if (stackProperties === nothing) return
+
+    this.spacing = setProperty(stackProperties.spacing, this.spacing)
+    this.childrenValue = setProperty(stackProperties.children, this.childrenValue)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

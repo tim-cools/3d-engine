@@ -1,11 +1,9 @@
-import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIRenderContext} from "../uiRenderContext"
-import {UIElement} from "../uiElement"
+import {UIElement, UIElementProperties} from "../uiElement"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
 
 export class Canvas extends UIElement {
 
@@ -17,12 +15,18 @@ export class Canvas extends UIElement {
     return this.elementsValue
   }
 
+  set elements(elements: readonly UIElement[]) {
+    this.contextOptional?.detachElements(this.elementsValue)
+    this.elementsValue = elements
+    this.contextOptional?.attachElements(this.elementsValue)
+  }
+
   get children(): readonly UIElement[] {
     return this.elementsValue
   }
 
-  constructor(context: ApplicationContext, id: Identifier) {
-    super(context, id)
+  constructor(properties: UIElementProperties) {
+    super(properties)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
@@ -34,10 +38,6 @@ export class Canvas extends UIElement {
     for (const element of this.elements) {
       element.render(area, context)
     }
-  }
-
-  protected setElements(values: readonly UIElement[]) {
-    this.elementsValue = values
   }
 
   calculateSize(): ElementSize {

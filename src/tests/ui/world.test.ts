@@ -1,4 +1,5 @@
-import {Context, Scene} from "../../engine/scenes"
+import {Scene} from "../../engine/scenes"
+import {Context} from "../../engine/context"
 import {View, World} from "../../engine"
 import {cube} from "../../engine/scenes/cube"
 import {sphere} from "../../engine/scenes/sphere"

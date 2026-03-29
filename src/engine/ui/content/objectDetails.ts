@@ -11,6 +11,7 @@ import {ObjectProperty} from "../../objects/objectProperties"
 import {IconButton} from "../controls/iconButton"
 import {Icon} from "../rendering/icons"
 import {UIElement} from "../uiElement"
+import {UIContext} from "../uiContext"
 
 export class ObjectDetails extends ContentElement {
 
@@ -18,7 +19,6 @@ export class ObjectDetails extends ContentElement {
   private readonly objectCaption = "Object: "
   private readonly noPropertiesCaption = "No properties"
 
-  private readonly object: ObjectState
   private readonly properties: Stack
   private readonly panel: Panel
 
@@ -26,17 +26,17 @@ export class ObjectDetails extends ContentElement {
 
   readonly elementType: UIElementType = UIElementType.SceneInfo
 
-  constructor(context: ApplicationContext) {
-    super(context, "sceneInfo")
+  constructor() {
+    super()
 
-    this.object = context.state.get(ObjectStateType)
-
-    this.properties = new Stack(context, "stack", [])
-    this.panel = new Panel(context, "objectDetails", this.noObjectsCaption, this.properties)
+    this.properties = new Stack()
+    this.panel = new Panel({id: "objectDetails", title: this.noObjectsCaption, content: this.properties})
     this.content = this.panel
-    this.setObject(this.object)
+  }
 
+  protected contextAttached(context: UIContext) {
     context.state.subscribeUpdate(ObjectStateType, state => this.setObject(state), this)
+    this.setObject(context.state.get(ObjectStateType))
   }
 
   private setObject(state: ObjectState) {
@@ -51,7 +51,7 @@ export class ObjectDetails extends ContentElement {
 
     this.lastObject = object
     if (object == nothing || object.properties.values.length == 0) {
-      this.properties.children = [new Text(this.context, "noProperties", ElementSizeValue.full, this.noPropertiesCaption)]
+      this.properties.children = [new Text({ id: "noProperties", width: ElementSizeValue.full, text: this.noPropertiesCaption})]
       return
     }
 
@@ -60,18 +60,18 @@ export class ObjectDetails extends ContentElement {
   }
 
   private setPropertiesValues(properties: readonly ObjectProperty[]) {
-    const elements = properties.map((property, index: number) => this.createPropertyRow(property, index))
+    const elements = properties.map((property) => this.createPropertyRow(property))
     this.properties.children = elements
   }
 
-  private createPropertyRow(property: ObjectProperty, index: number) {
+  private createPropertyRow(property: ObjectProperty) {
     const elements: UIElement[] = [
-      new Text(this.context, "title", new ElementSizeValue(160), property.name),
-      new Text(this.context, "title", new ElementSizeValue(1, true), property.value),
+      new Text({width: new ElementSizeValue(160), text: property.name}),
+      new Text({width: new ElementSizeValue(1, true), text: property.value})
     ]
     if (property.update != nothing) {
-      elements.push(new IconButton(this.context, "change", new ElementSizeValue(18), Icon.Loop, property.update))
+      elements.push(new IconButton({id: "change", size: new ElementSizeValue(18), icon: Icon.Loop, onClick: property.update}))
     }
-    return new Row(this.context, "row." + index, elements)
+    return new Row({children: elements})
   }
 }

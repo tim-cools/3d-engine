@@ -3,10 +3,10 @@ import {ElementSize} from "../elementSize"
 import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {UIElement} from "../uiElement"
+import {UIElement, UIElementProperties} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
-import {Identifier, nothing} from "../../../infrastructure/nothing"
+import {nothing} from "../../../infrastructure/nothing"
 
 const defaultHeight = 32
 
@@ -15,11 +15,17 @@ export enum ButtonState {
   Hover,
 }
 
+export interface ButtonProperties extends UIElementProperties {
+  content?: UIElement
+  width?: ElementSizeValue
+  title?: string
+}
+
 export class Button extends UIElement {
 
-  private titleValue: string
+  private titleValue: string = ""
 
-  readonly width: ElementSizeValue
+  readonly width: ElementSizeValue = ElementSizeValue.full
   readonly elementType: UIElementType = UIElementType.Button
 
   get title(): string {
@@ -34,10 +40,14 @@ export class Button extends UIElement {
     return []
   }
 
-  constructor(context: ApplicationContext, id: Identifier, width: ElementSizeValue, title: string) {
-    super(context, id)
-    this.width = width;
-    this.titleValue = title
+  constructor(properties: ButtonProperties) {
+    super(properties)
+    if (properties.width != undefined) {
+      this.width = properties.width
+    }
+    if (properties.title != undefined) {
+      this.titleValue = properties.title
+    }
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

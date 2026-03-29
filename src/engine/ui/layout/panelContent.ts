@@ -1,6 +1,5 @@
-import {UIElement} from "../uiElement"
+import {UIElement, UIElementProperties} from "../uiElement"
 import {Padding} from "../padding"
-import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {Colors} from "../../../infrastructure/colors"
@@ -8,7 +7,13 @@ import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
 
+export interface PanelContentProperties extends UIElementProperties {
+  content: UIElement
+}
+
 export class PanelContent extends UIElement {
+
+  private readonly content: UIElement
 
   readonly padding = Padding.single(12)
   readonly elementType: UIElementType = UIElementType.PanelContent
@@ -17,8 +22,9 @@ export class PanelContent extends UIElement {
     return [this.content]
   }
 
-  constructor(context: ApplicationContext, private content: UIElement) {
-    super(context, "content")
+  constructor(properties: PanelContentProperties) {
+    super(properties)
+    this.content = properties.content
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

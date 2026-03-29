@@ -1,20 +1,24 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
-import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {UIElement} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
-import {Identifier, nothing} from "../../../infrastructure/nothing"
+import {nothing} from "../../../infrastructure/nothing"
 
 const rowHeight = 18
 
+export interface TextProperties extends UIElementProperties {
+  width: ElementSizeValue
+  text: string
+}
+
 export class Text extends UIElement {
 
-  private valueValue: string
+  private valueValue: string = ""
 
-  readonly width: ElementSizeValue
+  readonly width: ElementSizeValue = ElementSizeValue.full
   readonly elementType: UIElementType = UIElementType.Text
 
   get value(): string {
@@ -29,10 +33,10 @@ export class Text extends UIElement {
     return []
   }
 
-  constructor(context: ApplicationContext, id: Identifier, width: ElementSizeValue, title: string) {
-    super(context, id)
-    this.width = width;
-    this.valueValue = title
+  constructor(properties: TextProperties) {
+    super(properties)
+    this.width = setProperty(properties.width, this.width)
+    this.valueValue = setProperty(properties.text, this.valueValue)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

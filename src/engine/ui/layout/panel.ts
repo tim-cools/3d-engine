@@ -1,10 +1,8 @@
 import {PanelContent} from "./panelContent"
-import {ApplicationContext} from "../../applicationContext"
-import {UIElement} from "../uiElement"
+import {UIElement, UIElementProperties} from "../uiElement"
 import {Row, Stack, Text} from "../controls"
 import {ContentElement} from "./contentElement"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
 import {Colors} from "../../../infrastructure/colors"
 import {ElementSizeValue} from "../elementSizeValue"
 import {IconButton} from "../controls/iconButton"
@@ -12,6 +10,11 @@ import {Icon} from "../rendering/icons"
 import {Box} from "../controls/box"
 import {ElementSize} from "../elementSize"
 import {Padding} from "../padding"
+
+export interface PanelProperties extends UIElementProperties {
+  title?: string
+  content: UIElement
+}
 
 export class Panel extends ContentElement {
 
@@ -31,23 +34,28 @@ export class Panel extends ContentElement {
     this.headerText.value = value
   }
 
-  constructor(context: ApplicationContext, id: Identifier, title: string, content: UIElement) {
-    super(context, id)
-    this.headerText = new Text(context, "text", new ElementSizeValue(100, true), title)
-    this.expandButton = new IconButton(context, "expand", new ElementSizeValue(18), Icon.ArrowUp, () => this.toggleExpand())
-    this.panel = new PanelContent(context, content)
+  constructor(properties: PanelProperties) {
+    super(properties)
+    this.headerText = new Text({id: "text", width: new ElementSizeValue(100, true), text: properties.title ?? "Title"})
+    this.expandButton = new IconButton({id: "expand", size: new ElementSizeValue(18), icon: Icon.ArrowUp, onClick: () => this.toggleExpand()})
+    this.panel = new PanelContent({content: properties.content})
     this.content =
-      new Stack(context, "stack", [
-        new Box(context, "header", Colors.ui.titleBackground,
-          new ElementSize(new ElementSizeValue(100, true), new ElementSizeValue(28)),
-          new Row(context, "row", [
-            this.headerText,
-            this.expandButton
-          ], 0),
-          new Padding(6, 6, 12, 6)
-      ),
+      new Stack({id: "stack", spacing: 0, children: [
+        new Box({
+          id: "header",
+          backgroundColor: Colors.ui.titleBackground,
+          size: new ElementSize(new ElementSizeValue(100, true), new ElementSizeValue(28)),
+          padding: new Padding(6, 6, 12, 6),
+          content: new Row({
+            spacing: 0,
+            children: [
+              this.headerText,
+              this.expandButton
+            ]
+          })
+        }),
         this.panel
-      ], 0)
+      ]})
   }
 
   private toggleExpand() {
@@ -56,4 +64,3 @@ export class Panel extends ContentElement {
     this.panel.visible = this.expand
   }
 }
-

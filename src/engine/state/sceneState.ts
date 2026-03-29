@@ -1,5 +1,6 @@
 import {State, StateIdentifier} from "./state"
-import {Context, Scene} from "../scenes"
+import {Scene} from "../scenes"
+import {Context} from "../context"
 import {Object} from "../objects"
 import {PublishStateEvents} from "./stateManager"
 import {ObjectStateType} from "./objectState"

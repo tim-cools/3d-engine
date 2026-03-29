@@ -1,23 +1,30 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
-import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {UIElement} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
-import {Identifier, Nothing, nothing} from "../../../infrastructure/nothing"
+import {Id, Nothing, nothing} from "../../../infrastructure/nothing"
 import {MouseDown, MouseEnter, MouseLeave} from "../../events"
 import {UIElementType} from "../uiElementType"
+import {UIContext} from "../uiContext"
 
 const rowHeight = 18
+
+export interface LinkProperties extends UIElementProperties {
+  id?: Id
+  width?: ElementSizeValue
+  title?: string
+  onClick?: (() => void) | Nothing
+}
 
 export class Link extends UIElement {
 
   private hover: boolean = false
-  private titleValue: string
-  private onClick: (() => void) | Nothing
+  private titleValue: string = ""
+  private onClick: (() => void) | Nothing = nothing
 
-  readonly width: ElementSizeValue
+  readonly width: ElementSizeValue = ElementSizeValue.full
   readonly elementType: UIElementType = UIElementType.Link
 
   get title(): string {
@@ -32,11 +39,15 @@ export class Link extends UIElement {
     return []
   }
 
-  constructor(context: ApplicationContext, id: Identifier, width: ElementSizeValue, title: string, onClick: (() => void) | Nothing = nothing) {
-    super(context, id)
-    this.width = width;
-    this.titleValue = title
-    this.onClick = onClick
+  constructor(properties: LinkProperties) {
+    super(properties)
+
+    this.width = setProperty(properties.width, this.width)
+    this.titleValue = setProperty(properties.title, this.titleValue)
+    this.onClick = setProperty(properties.onClick, this.onClick)
+  }
+
+  protected contextAttached(context: UIContext) {
     context.events.subscribe(MouseEnter, event => this.setHover(), this)
     context.events.subscribe(MouseLeave, event => this.resetHover(), this)
     context.events.subscribe(MouseDown, event => this.mouseDown(), this)

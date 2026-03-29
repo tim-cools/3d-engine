@@ -1,11 +1,11 @@
 import {UI} from "../../engine/ui"
-import {Context} from "../../engine/scenes"
+import {Context} from "../../engine/context"
 import {Scene} from "../../engine/scenes"
 import {ScenesList} from "../../engine/ui/content/scenesList"
 import {UIElementType} from "../../engine/ui/uiElementType"
 import {Verify} from "../infrastructure"
 import {Link} from "../../engine/ui/controls/link"
-import {getChildrenOfType} from "./getChildrenById"
+import {getChildrenOfType, logElements} from "./getChildrenById"
 import {VerifyUIElementContext} from "./verifyUIElementContext"
 import {ObjectsList} from "../../engine/ui/content/objectsList"
 import {ApplicationContext} from "../../engine/applicationContext"
@@ -17,11 +17,12 @@ import {SceneStateType} from "../../engine/state"
 
 describe('ui', () => {
 
-  test('create UI', async () => {
+  test('create and attach UI', async () => {
     const context = new Context([
       new Scene("test", () => [])
     ])
-    const ui = new UI(context)
+    const ui = new UI()
+    context.attachElement(ui)
   })
 
   test('create ScenesList with links', async () => {
@@ -32,7 +33,9 @@ describe('ui', () => {
       new Scene("test 3", () => [])
     ])
 
-    const info = new ScenesList(context)
+    const info = new ScenesList()
+    context.attachElement(info)
+
     const links = getChildrenOfType(info, UIElementType.Link) as Link[]
 
     Verify.collection(links, context => context
@@ -59,16 +62,19 @@ describe('ui', () => {
       ])
     ])
 
-    const info = new ObjectsList(context)
+    const info = new ObjectsList()
+    context.attachElement(info)
+
+    console.log(logElements(info))
 
     Verify.model(info, context => new VerifyUIElementContext(context)
-      .linkWith("link.model1", "model1")
-      .linkWith("link.model2", "model2")
-      .linkWith("link.model3", "model3")
+      .linkWith("Row0.Link", "model1")
+      .linkWith("Row1.Link", "model2")
+      .linkWith("Row2.Link", "model3")
     )
   })
 
-  test('create ObjectList default values', async () => {
+  test('create ObjectDetails default values', async () => {
 
     const context = new Context([
       new Scene("test 1", context => [
@@ -78,7 +84,8 @@ describe('ui', () => {
       ])
     ])
 
-    const info = new ObjectDetails(context)
+    const info = new ObjectDetails()
+    context.attachElement(info)
 
     Verify.model(info, context => new VerifyUIElementContext(context)
       .panelWith("objectDetails", "Object: model1")
@@ -99,7 +106,8 @@ describe('ui', () => {
     const objectState = context.state.get(ObjectStateType)
     objectState.setObject(sceneState.objects[1])
 
-    const info = new ObjectDetails(context)
+    const info = new ObjectDetails()
+    context.attachElement(info)
 
     Verify.model(info, context => new VerifyUIElementContext(context)
       .panelWith("objectDetails", "Object: model2")

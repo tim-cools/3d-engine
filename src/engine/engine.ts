@@ -1,8 +1,8 @@
 import {World} from "./world"
 import {Controller} from "./controller"
-import {CanvasView, View} from "./view"
-import {Context} from "./scenes/sceneContext"
+import {CanvasView} from "./view"
 import {createScenes} from "./scenes"
+import {Context} from "./context"
 
 export class Engine {
 

@@ -1,17 +1,20 @@
-import {ApplicationContext} from "../../applicationContext"
-import {UIElement} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
-import {Identifier} from "../../../infrastructure/nothing"
+
+export interface RowProperties extends UIElementProperties {
+  children?: readonly UIElement[]
+  spacing?: number
+}
 
 export class Row extends UIElement {
 
   private readonly spacing: number = 8
 
-  private childrenValue: readonly UIElement[]
+  private childrenValue: readonly UIElement[] = []
 
   readonly elementType: UIElementType = UIElementType.Row
 
@@ -20,14 +23,15 @@ export class Row extends UIElement {
   }
 
   set children(children: readonly UIElement[]) {
-    this.context.unsubscribeElements(this.childrenValue, children)
+    this.contextOptional?.detachElements(this.childrenValue)
     this.childrenValue = children
+    this.contextOptional?.attachElements(this.childrenValue)
   }
 
-  constructor(context: ApplicationContext, id: Identifier, children: readonly UIElement[], spacing: number = 8) {
-    super(context, id)
-    this.spacing = spacing
-    this.childrenValue = children
+  constructor(properties: RowProperties ) {
+    super(properties)
+    this.spacing = setProperty(properties.spacing, this.spacing)
+    this.childrenValue = setProperty(properties.children, this.childrenValue)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

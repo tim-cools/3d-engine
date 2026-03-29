@@ -1,4 +1,5 @@
-import {Scene, Context} from "../../engine/scenes"
+import {Scene} from "../../engine/scenes"
+import {Context} from "../../engine/context"
 import {ApplicationContext} from "../../engine/applicationContext"
 import {Object2DBase} from "../../engine/objects/object2D"
 import {nothing} from "../../infrastructure/nothing"

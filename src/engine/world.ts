@@ -11,11 +11,11 @@ import {
 } from "./models"
 import {RenderShape2DContext, RenderShapeContext, Shape, Shape2D} from "./shapes"
 import {Scene} from "./scenes"
-import {axis, Object, Object3D} from "./objects"
+import {Object, Object3D} from "./objects"
 import {Selectable, SelectableObject} from "./shapes/selectable"
 import {nothing, Nothing} from "../infrastructure/nothing"
 import {UIRenderContext, UI} from "./ui"
-import {Context} from "./scenes"
+import {Context} from "./context"
 import {Colors} from "../infrastructure/colors"
 import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
@@ -59,7 +59,6 @@ export class World {
   private readonly logEnabled = false
 
   private readonly ui: UI;
-  private readonly axis = axis();
   private readonly lastZ: Map<string, number> = new Map()
   private readonly view: View
   private readonly context: Context
@@ -82,7 +81,8 @@ export class World {
 
     this.view = view
     this.context = context
-    this.ui = new UI(this.context)
+    this.ui = new UI()
+    this.context.attachElement(this.ui)
 
     const sceneState = context.state.get(SceneStateType)
     this.sceneValue = sceneState.current
