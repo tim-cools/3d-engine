@@ -1,5 +1,4 @@
 import {Context} from "../../engine/context"
-import {SelectionStateType} from "../../engine/state"
 import {UIElement} from "../../engine/ui/uiElement"
 import {UIElementType} from "../../engine/ui/uiElementType"
 import {UIContext} from "../../engine/ui/uiContext"
@@ -25,14 +24,42 @@ class TestElement extends UIElement {
 
 describe('element events', () => {
 
-  test('when an element are detached they should not receive the event anymore', async () => {
+  test('when an element is attached it should receive the event', async () => {
 
     const context = new Context([
       new Scene("test1", context => []),
     ])
     const element = new TestElement()
-    context.attachElement(element)
 
+    context.attachElement(element)
+    expect(element.eventReceived).toBe(0)
+
+    context.events.publish(new MouseEnter())
+    expect(element.eventReceived).toBe(1)
+  })
+
+  test('when elements are attached they should receive the events', async () => {
+
+    const context = new Context([
+      new Scene("test1", context => []),
+    ])
+    const element = new TestElement()
+
+    context.attachElements([element])
+    expect(element.eventReceived).toBe(0)
+
+    context.events.publish(new MouseEnter())
+    expect(element.eventReceived).toBe(1)
+  })
+
+  test('when an element is detached is should not receive the event anymore', async () => {
+
+    const context = new Context([
+      new Scene("test1", context => []),
+    ])
+    const element = new TestElement()
+
+    context.attachElement(element)
     expect(element.eventReceived).toBe(0)
 
     context.events.publish(new MouseEnter())
@@ -50,8 +77,8 @@ describe('element events', () => {
       new Scene("test1", context => []),
     ])
     const element = new TestElement()
-    context.attachElements([element])
 
+    context.attachElements([element])
     expect(element.eventReceived).toBe(0)
 
     context.events.publish(new MouseEnter())
@@ -61,5 +88,28 @@ describe('element events', () => {
 
     context.events.publish(new MouseEnter())
     expect(element.eventReceived).toBe(1)
+  })
+
+  test('when elements are attached and one is detached, the detached should not receive the event anymore', async () => {
+
+    const context = new Context([
+      new Scene("test1", context => []),
+    ])
+    const element1 = new TestElement()
+    const element2 = new TestElement()
+
+    context.attachElements([element1, element2])
+    expect(element1.eventReceived).toBe(0)
+    expect(element2.eventReceived).toBe(0)
+
+    context.events.publish(new MouseEnter())
+    expect(element1.eventReceived).toBe(1)
+    expect(element2.eventReceived).toBe(1)
+
+    context.detachElements([element1])
+
+    context.events.publish(new MouseEnter())
+    expect(element1.eventReceived).toBe(1)
+    expect(element2.eventReceived).toBe(2)
   })
 })
