@@ -1,6 +1,5 @@
 import {UIElement} from "../ui/uiElement"
 import {nothing, Nothing} from "../../infrastructure/nothing"
-import {Object} from "./object"
 
 export type PropertiesChangedHandler = (values: readonly ObjectProperty[]) => void
 export type ChangeProperty = () => void
@@ -52,12 +51,16 @@ interface UpdatableObjectProperties {
 
 export class ObjectProperties {
 
-  private readonly subscriptionsObjects = new Map<Object, PropertiesChangedHandler>()
   private readonly subscriptionsElements = new Map<UIElement, PropertiesChangedHandler>()
   private readonly valuesValue: ObjectProperty[] = []
+  private readonly onUpdate: PropertiesChangedHandler
 
   get values(): readonly ObjectProperty[] {
     return this.valuesValue
+  }
+
+  constructor(onUpdate: PropertiesChangedHandler) {
+    this.onUpdate = onUpdate
   }
 
   add<TValue>(name: string, value: TValue, format: ((value: TValue) => string) | Nothing = nothing, update: ChangePropertyTyped<TValue> | Nothing = nothing): TypedObjectProperty<TValue> {
@@ -70,16 +73,8 @@ export class ObjectProperties {
     this.subscriptionsElements.set(target, handler)
   }
 
-  subscribeUpdateObject(target: Object, handler: PropertiesChangedHandler) {
-    this.subscriptionsObjects.set(target, handler)
-  }
-
   unsubscribeUpdate(target: UIElement) {
     this.subscriptionsElements.delete(target)
-  }
-
-  unsubscribeUpdateObject(target: Object) {
-    this.subscriptionsObjects.delete(target)
   }
 
   updated(): void {
@@ -87,9 +82,6 @@ export class ObjectProperties {
     for (const subscription of elementValues) {
       subscription(this.valuesValue)
     }
-    const objectValues = Array.from(this.subscriptionsObjects.values())
-    for (const subscription of objectValues) {
-      subscription(this.valuesValue)
-    }
+    this.onUpdate(this.valuesValue)
   }
 }

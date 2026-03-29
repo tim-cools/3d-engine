@@ -6,7 +6,7 @@ import {Scene} from "./scene"
 
 export function subtractCube(): Scene {
 
-  return new Scene("Subtract cube", (context: ApplicationContext) => {
+  return new Scene("Subtract cube (not finished)", (context: ApplicationContext) => {
 
     function subtractCube() {
       const subtractPosition = new Point(.5, .5, .5)

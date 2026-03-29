@@ -32,12 +32,7 @@ export abstract class Object3DBase {
     this.id = id
     this.transformablePosition = new TransformablePoint(position)
     this.scale = scale ?? Size.default
-    this.properties = new ObjectProperties()
-    this.properties.subscribeUpdateObject(this, properties => this.propertiesChanged(properties))
-  }
-
-  dispose() {
-    this.properties.unsubscribeUpdateObject(this)
+    this.properties = new ObjectProperties(properties => this.propertiesChanged(properties))
   }
 
   abstract shapes(): readonly Shape[]

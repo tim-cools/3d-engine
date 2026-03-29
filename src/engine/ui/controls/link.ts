@@ -37,9 +37,9 @@ export class Link extends UIElement {
     this.width = width;
     this.titleValue = title
     this.onClick = onClick
-    context.events.subscribe(MouseEnter, this, event => this.setHover())
-    context.events.subscribe(MouseLeave, this, event => this.resetHover())
-    context.events.subscribe(MouseDown, this, event => this.mouseDown())
+    context.events.subscribe(MouseEnter, event => this.setHover(), this)
+    context.events.subscribe(MouseLeave, event => this.resetHover(), this)
+    context.events.subscribe(MouseDown, event => this.mouseDown(), this)
   }
 
   calculateSize(): ElementSize {

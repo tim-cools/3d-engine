@@ -33,10 +33,7 @@ export class SidePanelRight extends ContentElement {
       text("Fun with 3D graphics and typescript."),
       text("  Mouse: rotate world (+shift)"),
       text("  Keys arrows: move world (+shift))"),
-      text("  x: toggle axis"),
-      text("  b: toggle boundaries"),
-      text("  r: change render style"),
-      text("  a: change algorithm"),
+      text("  Select objects to change render settings"),
     ])
   }
 }

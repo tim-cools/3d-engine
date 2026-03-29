@@ -90,7 +90,7 @@ export class World {
     this.setScene(sceneState)
 
     context.state.subscribeUpdate(SceneStateType, state => this.setScene(state), nothing)
-    context.events.subscribe(MouseOver, nothing, event => this.mouseOver(event))
+    context.events.subscribe(MouseOver, event => this.mouseOver(event), nothing)
   }
 
   update(difference: number) {

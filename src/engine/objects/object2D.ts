@@ -1,5 +1,5 @@
 import {Shape2D} from "../shapes"
-import {ObjectProperties} from "./objectProperties"
+import {ObjectProperties, ObjectProperty} from "./objectProperties"
 
 export interface Object2D {
 
@@ -24,10 +24,13 @@ export abstract class Object2DBase {
 
   protected constructor(id: string) {
     this.id = id
-    this.properties = new ObjectProperties()
+    this.properties = new ObjectProperties(properties => this.propertiesChanged(properties))
   }
 
   protected setShapes(shapes: readonly Shape2D[]) {
     this.shapesValue = shapes
+  }
+
+  protected propertiesChanged(properties: readonly ObjectProperty[]) {
   }
 }

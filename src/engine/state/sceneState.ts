@@ -44,6 +44,7 @@ export class SceneStateHandler extends State<SceneState> implements SceneState {
   }
 
   private initializeScene(index: number) {
+
     const scene = this.scenes[index]
     this.index = index
     this.title = scene.title

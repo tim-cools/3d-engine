@@ -18,9 +18,9 @@ export class ApplicationEventDispatcher implements EventDispatcher {
     this.mouse = new ElementMouseEventHandler(this.subscribers)
   }
 
-  subscribe<TEvent extends Event>(type : new () => TEvent, element: UIElement | Nothing, handler: (event: TEvent) => void): void {
+  subscribe<TEvent extends Event>(type: { new(): TEvent }, param: (event: TEvent) => void, element: UIElement | Nothing): void {
     const eventType = new type().eventType
-    this.subscribers.add(eventType, element, handler)
+    this.subscribers.add(eventType, element, param)
   }
 
   unsubscribeElement(element: UIElement): void {

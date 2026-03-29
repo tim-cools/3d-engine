@@ -9,7 +9,7 @@ import {Scene} from "./scene"
 
 export function subtractSphere(): Scene {
 
-  return new Scene("Death star", (context: ApplicationContext) => {
+  return new Scene("Death star (not finished)", (context: ApplicationContext) => {
 
     function subtractSphere() {
       const models = subtractSphereTestModelAkaDeathStar(10, 7)
