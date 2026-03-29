@@ -2,7 +2,7 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {UIElement, UIElementProperties} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
@@ -34,15 +34,9 @@ export class IconButton extends UIElement {
 
   constructor(properties: IconButtonProperties) {
     super(properties)
-    if (properties.size != undefined) {
-      this.size = properties.size
-    }
-    if (properties.icon != undefined) {
-      this.icon = properties.icon
-    }
-    if (properties.onClick != undefined) {
-      this.onClick = properties.onClick
-    }
+    this.size = setProperty(properties.size, this.size)
+    this.icon = setProperty(properties.icon, this.icon)
+    this.onClick = setProperty(properties.onClick, this.onClick)
   }
 
   protected contextAttached(context: UIContext) {

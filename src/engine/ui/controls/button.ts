@@ -3,7 +3,7 @@ import {ElementSize} from "../elementSize"
 import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {UIElement, UIElementProperties} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
 import {nothing} from "../../../infrastructure/nothing"
@@ -42,12 +42,8 @@ export class Button extends UIElement {
 
   constructor(properties: ButtonProperties) {
     super(properties)
-    if (properties.width != undefined) {
-      this.width = properties.width
-    }
-    if (properties.title != undefined) {
-      this.titleValue = properties.title
-    }
+    this.width = setProperty(properties.width, this.width)
+    this.titleValue = setProperty(properties.title, this.titleValue)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

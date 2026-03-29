@@ -20,7 +20,7 @@ export class SidePanelRight extends ContentElement {
           new Panel({
             title: "Instructions",
             content: SidePanelRight.instructionsInfo()
-          }),
+          })
         ]
       })
   }

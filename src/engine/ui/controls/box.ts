@@ -1,4 +1,4 @@
-import {UIElement, UIElementProperties} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
@@ -24,18 +24,10 @@ export class Box extends ContentElement {
 
   constructor(properties: BoxProperties) {
     super(properties)
-    if (properties.backgroundColor != undefined) {
-      this.backgroundColor = properties.backgroundColor
-    }
-    if (properties.padding != undefined) {
-      this.padding = properties.padding
-    }
-    if (properties.size != undefined) {
-      this.size = properties.size
-    }
-    if (properties.content != undefined) {
-      this.content = properties.content
-    }
+    this.backgroundColor = setProperty(properties.backgroundColor, this.backgroundColor)
+    this.padding = setProperty(properties.padding, this.padding)
+    this.size = setProperty(properties.size, this.size)
+    this.content = setProperty(properties.content, this.content)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {
