@@ -1,7 +1,6 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {Row, Stack, Text} from "../controls"
 import {ContentElement} from "../layout/contentElement"
-import {ApplicationContext} from "../../applicationContext"
 import {UIElementType} from "../uiElementType"
 import {ObjectState, ObjectStateType} from "../../state/objectState"
 import {Panel} from "../layout/panel"
@@ -60,11 +59,10 @@ export class ObjectDetails extends ContentElement {
   }
 
   private setPropertiesValues(properties: readonly ObjectProperty[]) {
-    const elements = properties.map((property) => this.createPropertyRow(property))
-    this.properties.children = elements
+    this.properties.children = properties.map((property) => ObjectDetails.createPropertyRow(property))
   }
 
-  private createPropertyRow(property: ObjectProperty) {
+  private static createPropertyRow(property: ObjectProperty) {
     const elements: UIElement[] = [
       new Text({width: new ElementSizeValue(160), text: property.name}),
       new Text({width: new ElementSizeValue(1, true), text: property.value})

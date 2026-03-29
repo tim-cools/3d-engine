@@ -47,7 +47,7 @@ export abstract class UIElement {
 
   visible: boolean = true
 
-  protected constructor(properties: UIElementProperties | Nothing = nothing) {
+  public constructor(properties: UIElementProperties | Nothing = nothing) {
     if (properties != nothing && properties.id !== undefined) {
       this.idValue = properties.id
     }
