@@ -49,7 +49,7 @@ export class Row extends UIElement {
 
       const elementSize = element.calculateSize()
       const width = elementSize.width.proportion ? elementSize.width.value * ratioWidth : elementSize.width.value
-      const elementArea = new ElementArea(left, area.top, width, elementSize.height.value)
+      const elementArea = new ElementArea(left, area.top, width, area.calculateHeight(elementSize.height))
       element.render(elementArea, context)
 
       left += index < this.children.length - 1 ? width + this.spacing : width

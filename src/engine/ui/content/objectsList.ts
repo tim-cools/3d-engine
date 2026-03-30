@@ -1,12 +1,10 @@
-import {Row, Stack} from "../controls"
 import {SceneState, SceneStateType} from "../../state"
 import {UIElementType} from "../uiElementType"
-import {Link} from "../controls/link"
+import {Link} from "../controls"
 import {ElementSizeValue} from "../elementSizeValue"
 import {Object} from "../../objects"
 import {ObjectState, ObjectStateType} from "../../state/objectState"
-import {ContentElement} from "../layout/contentElement"
-import {Panel} from "../layout/panel"
+import {Panel, Row, Stack, ContentElement} from "../layout"
 import {UIContext} from "../uiContext"
 
 export class ObjectsList extends ContentElement {

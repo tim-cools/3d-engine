@@ -1,6 +1,5 @@
 import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
-import {ApplicationContext} from "../../applicationContext"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
 import {setProperty, UIElement, UIElementProperties} from "../uiElement"

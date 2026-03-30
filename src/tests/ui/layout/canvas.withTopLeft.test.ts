@@ -1,7 +1,7 @@
 import {Context} from "../../../engine/context"
 import {Scene} from "../../../engine/scenes"
-import {Canvas} from "../../../engine/ui/layout"
-import {IconButton} from "../../../engine/ui/controls"
+import {Canvas} from "../../../engine/ui/layout/canvas"
+import {IconButton} from "../../../engine/ui/controls/iconButton"
 import {Icon} from "../../../engine/ui/rendering/icons"
 import {ElementSizeValue} from "../../../engine/ui/elementSizeValue"
 import {ElementArea} from "../../../engine/ui/elementArea"
@@ -23,7 +23,7 @@ function verifyCanvasAnchors(attach: AttachmentProperty[]) {
   const canvas = new Canvas({elements: [iconButton]})
   context.attachElement(canvas)
 
-  canvas.render(ElementArea.square(100), dummyContext)
+  canvas.render(new ElementArea(50, 50, 200, 200), dummyContext)
   return iconButton.lastArea
 }
 
@@ -45,8 +45,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 10)
-      .areEqual(area => area.left, 10)
+      .areEqual(area => area.top, 60)
+      .areEqual(area => area.left, 60)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )
@@ -60,8 +60,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 70)
-      .areEqual(area => area.left, 10)
+      .areEqual(area => area.top, 220)
+      .areEqual(area => area.left, 60)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )
@@ -75,8 +75,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 10)
-      .areEqual(area => area.left, 70)
+      .areEqual(area => area.top, 60)
+      .areEqual(area => area.left, 220)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )
@@ -90,8 +90,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 70)
-      .areEqual(area => area.left, 70)
+      .areEqual(area => area.top, 220)
+      .areEqual(area => area.left, 220)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )
@@ -104,8 +104,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 0)
-      .areEqual(area => area.left, 10)
+      .areEqual(area => area.top, 50)
+      .areEqual(area => area.left, 60)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )
@@ -118,8 +118,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 0)
-      .areEqual(area => area.left, 70)
+      .areEqual(area => area.top, 50)
+      .areEqual(area => area.left, 220)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )
@@ -132,8 +132,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 10)
-      .areEqual(area => area.left, 0)
+      .areEqual(area => area.top, 60)
+      .areEqual(area => area.left, 50)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )
@@ -146,8 +146,8 @@ describe('canvas', () => {
     ])
 
     Verify.model(elementArea, context => context
-      .areEqual(area => area.top, 70)
-      .areEqual(area => area.left, 0)
+      .areEqual(area => area.top, 220)
+      .areEqual(area => area.left, 50)
       .areEqual(area => area.width, 20)
       .areEqual(area => area.height, 20)
     )

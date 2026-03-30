@@ -1,10 +1,10 @@
-import {ApplicationContext} from "../../applicationContext"
-import {ContentElement} from "../layout/contentElement"
-import {Stack, Text} from "../controls"
+import {Panel, ContentElement} from "../layout"
+import {Box, Text} from "../controls"
 import {ElementSizeValue} from "../elementSizeValue"
-import {Panel} from "../layout/panel"
-import {SidePanel, SidePanelLocation} from "../controls/sidePanel"
+import {Stack, SidePanel, SidePanelLocation} from "../layout"
 import {UIElementType} from "../uiElementType"
+import {WorldDetails} from "./worldDetails"
+import {SelectedList} from "./selectedList"
 
 export class SidePanelRight extends ContentElement {
 
@@ -20,7 +20,9 @@ export class SidePanelRight extends ContentElement {
           new Panel({
             title: "Instructions",
             content: SidePanelRight.instructionsInfo()
-          })
+          }),
+          new WorldDetails(),
+          new SelectedList(),
         ]
       })
   }

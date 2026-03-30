@@ -5,15 +5,18 @@ import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
+import {Padding} from "../padding"
 
 export interface StackProperties extends UIElementProperties {
   children?: readonly UIElement[]
-  spacing?: number
+  spacing?: number,
+  padding?: Padding
 }
 
 export class Stack extends UIElement {
 
   private readonly spacing: number = 4
+  private readonly padding: Padding = Padding.single(0)
 
   private childrenValue: readonly UIElement[] = []
 
@@ -35,10 +38,13 @@ export class Stack extends UIElement {
     if (stackProperties === nothing) return
 
     this.spacing = setProperty(stackProperties.spacing, this.spacing)
+    this.padding = setProperty(stackProperties.padding, this.padding)
     this.childrenValue = setProperty(stackProperties.children, this.childrenValue)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {
+
+    area = area.pad(this.padding)
 
     const stackSize = this.stackSize()
     const ratioHeight = stackSize.totalPercentage > 0 ? area.height / stackSize.totalPercentage : 0

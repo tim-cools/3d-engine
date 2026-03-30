@@ -5,6 +5,7 @@ import {UIRenderContext} from "../uiRenderContext"
 import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIElementType} from "../uiElementType"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
+import {createAttachmentProperty} from "../attachmentProperty"
 
 export interface CanvasProperties extends UIElementProperties {
   elements?: readonly UIElement[]
@@ -12,21 +13,10 @@ export interface CanvasProperties extends UIElementProperties {
 
 export class Canvas extends UIElement {
 
-  static left(number: number) {
-    return new Left(number)
-  }
-
-  static right(number: number) {
-    return new Left(number)
-  }
-
-  static top(number: number) {
-    return new Left(number)
-  }
-
-  static bottom(number: number) {
-    return new Left(number)
-  }
+  static left = createAttachmentProperty<number>("left")
+  static right = createAttachmentProperty<number>("right")
+  static top = createAttachmentProperty<number>("top")
+  static bottom = createAttachmentProperty<number>("bottom")
 
   private elementsValue: readonly UIElement[] = []
 
@@ -52,6 +42,10 @@ export class Canvas extends UIElement {
     this.elementsValue = setProperty(properties.elements, this.elementsValue)
   }
 
+  calculateSize(): ElementSize {
+    return new ElementSize(ElementSizeValue.full, ElementSizeValue.full)
+  }
+
   protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
     this.renderElements(area, context)
     return area
@@ -59,12 +53,84 @@ export class Canvas extends UIElement {
 
   protected renderElements(area: ElementArea, context: UIRenderContext) {
     for (const element of this.elements) {
-      element.render(area, context)
+      this.renderChild(element, area, context)
     }
   }
 
-  calculateSize(): ElementSize {
-    return new ElementSize(ElementSizeValue.full, ElementSizeValue.full)
+  private renderChild(element: UIElement, area: ElementArea, context: UIRenderContext) {
+    if (!element.visible) return
+    const childArea = this.calculateChildArea(element, area)
+    element.render(childArea, context)
+  }
+
+  private calculateChildArea(element: UIElement, area: ElementArea): ElementArea {
+
+    function notSupported() {
+      const anchors: string[] = []
+      if (left != undefined) anchors.push("left")
+      if (right != undefined) anchors.push("right")
+      if (top != undefined) anchors.push("top")
+      if (bottom != undefined) anchors.push("bottom")
+      throw new Error("Invalid anchors: " + anchors.join(", "))
+    }
+
+    function calculateLeft(left: number) {
+      if (right != undefined || (top != undefined && bottom != undefined)) {
+        notSupported()
+      } else if (top != undefined) {
+        return new ElementArea(area.left + left, area.top + top, width, height)
+      } else if (bottom != undefined) {
+        const topFromBottom = area.height - height - bottom
+        return new ElementArea(area.left + left, area.top + topFromBottom, width, height)
+      }
+      return new ElementArea(area.left + left, area.top, width, height)
+    }
+
+    function calculateRight(right: number) {
+      const leftFromRight = area.left + area.width - width - right
+      if (left != undefined || (top != undefined && bottom != undefined)) {
+        notSupported()
+      } else if (top != undefined) {
+        return new ElementArea(leftFromRight, area.top + top, width, height)
+      } else if (bottom != undefined) {
+        return new ElementArea(leftFromRight, area.top + area.height - height - bottom, width, height)
+      }
+      return new ElementArea(leftFromRight, area.top, width, height)
+    }
+
+    function calculateTop(top: number) {
+      if (bottom != undefined) {
+        notSupported()
+      }
+      return new ElementArea(area.left, area.top + top, width, height)
+    }
+
+    function calculateBottom(bottom: number) {
+      if (top != undefined) {
+        notSupported()
+      }
+      const topFromBottom = area.top + area.height - height - bottom
+      return new ElementArea(area.left, topFromBottom, width, height)
+    }
+
+    const left = element.attachmentPropertyValue(Canvas.left)
+    const right = element.attachmentPropertyValue(Canvas.right)
+    const top = element.attachmentPropertyValue(Canvas.top)
+    const bottom = element.attachmentPropertyValue(Canvas.bottom)
+    const size = element.calculateSize()
+    const width = area.calculateWidth(size.width)
+    const height = area.calculateHeight(size.height)
+
+    if (left != undefined) {
+      return calculateLeft(left)
+    } else if (right != undefined) {
+      return calculateRight(right)
+    } else  if (top != undefined) {
+      return calculateTop(top)
+    } else if (bottom != undefined) {
+      return calculateBottom(bottom)
+    }
+    return new ElementArea(area.left, area.top, width, height)
   }
 }
 

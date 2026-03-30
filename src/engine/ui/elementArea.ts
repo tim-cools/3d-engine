@@ -43,7 +43,11 @@ export class ElementArea {
   }
 
   calculateWidth(width: ElementSizeValue) {
-    return width.proportion ? this.width : width.value
+    return width.proportion ? this.width * width.value : width.value
+  }
+
+  calculateHeight(height: ElementSizeValue) {
+    return height.proportion ? this.width * height.value : height.value
   }
 
   pad(padding: Padding) {
@@ -67,8 +71,8 @@ export class ElementArea {
     return new ElementArea(this.left + left, this.top + top, this.width - left, this.height - top)
   }
 
-  static single(value: number) {
-    return new ElementArea(value, value, value,value)
+  static square(value: number) {
+    return new ElementArea(0, 0, value,value)
   }
 
   contains(point: Point2D) {

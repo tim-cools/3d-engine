@@ -40,9 +40,9 @@ export class IconButton extends UIElement {
   }
 
   protected contextAttached(context: UIContext) {
-    context.events.subscribe(MouseEnter, event => this.mouseEnter(), this)
-    context.events.subscribe(MouseLeave, event => this.mouseLeave(), this)
-    context.events.subscribe(MouseDown, event => this.mouseDown(), this)
+    context.events.subscribe(MouseEnter, () => this.mouseEnter(), this)
+    context.events.subscribe(MouseLeave, () => this.mouseLeave(), this)
+    context.events.subscribe(MouseDown, () => this.mouseDown(), this)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {

@@ -1,6 +1,5 @@
-import {ContentElement} from "../layout/contentElement"
-import {Stack} from "../controls"
-import {SidePanel, SidePanelLocation} from "../controls/sidePanel"
+import {ContentElement} from "../layout"
+import {Stack, SidePanel, SidePanelLocation} from "../layout"
 import {UIElementType} from "../uiElementType"
 import {ObjectsList} from "./objectsList"
 import {ObjectDetails} from "./objectDetails"

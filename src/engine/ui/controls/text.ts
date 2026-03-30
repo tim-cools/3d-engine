@@ -10,8 +10,8 @@ import {nothing} from "../../../infrastructure/nothing"
 const rowHeight = 18
 
 export interface TextProperties extends UIElementProperties {
-  width: ElementSizeValue
-  text: string
+  width?: ElementSizeValue
+  text?: string
 }
 
 export class Text extends UIElement {

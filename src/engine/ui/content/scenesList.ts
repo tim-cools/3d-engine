@@ -1,10 +1,8 @@
 import {ElementSizeValue} from "../elementSizeValue"
-import {Row, Stack} from "../controls"
-import {Link} from "../controls/link"
+import {Link} from "../controls"
 import {SceneName, SceneStateType, ScenesStateType} from "../../state"
 import {UIElementType} from "../uiElementType"
-import {ContentElement} from "../layout/contentElement"
-import {Panel} from "../layout/panel"
+import {Row, Stack, Panel, ContentElement} from "../layout"
 import {UIContext} from "../uiContext"
 import {Assert} from "../../../infrastructure"
 

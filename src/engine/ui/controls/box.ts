@@ -6,6 +6,7 @@ import {UIElementType} from "../uiElementType"
 import {ContentElement} from "../layout/contentElement"
 import {Padding} from "../padding"
 import {Colors} from "../../../infrastructure/colors"
+import {nothing, Nothing} from "../../../infrastructure/nothing"
 
 export interface BoxProperties extends UIElementProperties {
   backgroundColor?: string
@@ -18,12 +19,13 @@ export class Box extends ContentElement {
 
   private readonly backgroundColor: string = Colors.ui.tabBackground
   private readonly padding: Padding = Padding.single(8)
-  private readonly size: ElementSize = ElementSize.full
 
+  size: ElementSize = ElementSize.full
   readonly elementType: UIElementType = UIElementType.Stack
 
-  constructor(properties: BoxProperties) {
+  constructor(properties: BoxProperties | Nothing = nothing) {
     super(properties)
+    if (properties == nothing) return
     this.backgroundColor = setProperty(properties.backgroundColor, this.backgroundColor)
     this.padding = setProperty(properties.padding, this.padding)
     this.size = setProperty(properties.size, this.size)
