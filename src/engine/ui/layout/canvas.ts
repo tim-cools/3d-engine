@@ -2,10 +2,31 @@ import {ElementArea} from "../elementArea"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIRenderContext} from "../uiRenderContext"
-import {UIElement, UIElementProperties} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIElementType} from "../uiElementType"
+import {nothing, Nothing} from "../../../infrastructure/nothing"
+
+export interface CanvasProperties extends UIElementProperties {
+  elements?: readonly UIElement[]
+}
 
 export class Canvas extends UIElement {
+
+  static left(number: number) {
+    return new Left(number)
+  }
+
+  static right(number: number) {
+    return new Left(number)
+  }
+
+  static top(number: number) {
+    return new Left(number)
+  }
+
+  static bottom(number: number) {
+    return new Left(number)
+  }
 
   private elementsValue: readonly UIElement[] = []
 
@@ -25,8 +46,10 @@ export class Canvas extends UIElement {
     return this.elementsValue
   }
 
-  constructor(properties: UIElementProperties) {
+  constructor(properties: CanvasProperties | Nothing = nothing) {
     super(properties)
+    if (properties === nothing) return
+    this.elementsValue = setProperty(properties.elements, this.elementsValue)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {

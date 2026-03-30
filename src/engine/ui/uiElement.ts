@@ -10,8 +10,12 @@ export function setProperty<T>(propertyValue: T | undefined, defaultValue: T): T
   return propertyValue == undefined ? defaultValue : propertyValue
 }
 
+export class AttachmentProperty {
+}
+
 export interface UIElementProperties {
-  id?: Id
+  id?: Id,
+  attach?: readonly AttachmentProperty[]
 }
 
 export abstract class UIElement {
