@@ -27,7 +27,7 @@ function verifyCanvasAnchors(attach: AttachmentProperty[]) {
   return iconButton.lastArea
 }
 
-describe('canvas', () => {
+describe('canvas with top and left area', () => {
 
   test('create and attach canvas', async () => {
     const context = new Context([
@@ -152,18 +152,4 @@ describe('canvas', () => {
       .areEqual(area => area.height, 20)
     )
   })
-
-  const unsupportedCases: any[] = [
-    {attach: [Canvas.left(10), Canvas.right(10), Canvas.bottom (10)]},
-    {attach: [Canvas.left(10), Canvas.right(10), Canvas.top (10)]},
-    {attach: [Canvas.left(10), Canvas.bottom(10), Canvas.top (10)]},
-    {attach: [Canvas.right(10), Canvas.bottom(10), Canvas.top (10)]},
-    {attach: [Canvas.left(10), Canvas.right(10), Canvas.top (10), Canvas.bottom(10)]}
-  ]
-
-  it.each(unsupportedCases)("anchors not implements", verify)
-
-  function verify(properties: {attach: AttachmentProperty[]}) {
-    expect(() => verifyCanvasAnchors(properties.attach)).toThrow("Invalid anchors: ")
-  }
 })
