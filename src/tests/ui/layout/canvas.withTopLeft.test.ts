@@ -1,16 +1,17 @@
-import {Context} from "../../../engine/context"
 import {Scene} from "../../../engine/scenes"
-import {Canvas} from "../../../engine/ui/layout/canvas"
-import {IconButton} from "../../../engine/ui/controls/iconButton"
+import {Canvas} from "../../../engine/ui/layout"
+import {IconButton} from "../../../engine/ui/controls"
 import {Icon} from "../../../engine/ui/rendering/icons"
 import {ElementSizeValue} from "../../../engine/ui/elementSizeValue"
 import {ElementArea} from "../../../engine/ui/elementArea"
 import {Verify} from "../../infrastructure"
 import {dummyContext} from "./dummyContext"
 import {AttachmentProperty} from "../../../engine/ui/attachmentProperty"
+import {createTestContext} from "../testContext"
 
 function verifyCanvasAnchors(attach: AttachmentProperty[]) {
-  const context = new Context([
+
+  const context = createTestContext([
     new Scene("test", () => [])
   ])
 
@@ -30,7 +31,7 @@ function verifyCanvasAnchors(attach: AttachmentProperty[]) {
 describe('canvas with top and left area', () => {
 
   test('create and attach canvas', async () => {
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test", () => [])
     ])
     const canvas = new Canvas()

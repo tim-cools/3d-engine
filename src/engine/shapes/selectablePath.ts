@@ -1,7 +1,7 @@
 import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
 import {Path, PathSegment, Point2D, Segment2D, Triangle} from "../models"
 import {Colors} from "../../infrastructure/colors"
-import {Selectable, SelectableMargin} from "./selectable"
+import {Selectable, SelectableMargin, SelectableState} from "./selectable"
 import {any} from "../../infrastructure"
 
 export class SelectablePath implements Shape2D, Selectable {
@@ -13,6 +13,8 @@ export class SelectablePath implements Shape2D, Selectable {
 
   readonly id: string
   readonly z: number = FrontShape2D
+
+  state: SelectableState = SelectableState.Hover
 
   constructor(id: string, points: readonly Point2D[], solid: boolean) {
     this.id = id
@@ -38,7 +40,7 @@ export class SelectablePath implements Shape2D, Selectable {
 
     const {canvas} = context
 
-    canvas.strokeStyle = Colors.highlight
+    canvas.strokeStyle = this.color()
     canvas.lineWidth = 3
     canvas.beginPath()
     canvas.moveTo(this.points[this.points.length - 1].x, this.points[this.points.length - 1].y)
@@ -46,6 +48,15 @@ export class SelectablePath implements Shape2D, Selectable {
       canvas.lineTo(this.points[index].x, this.points[index].y)
     }
     canvas.stroke()
+  }
+
+  private color() {
+    if (this.state == SelectableState.Selected) {
+      return Colors.highlightMax
+    } else if (this.state == SelectableState.Group) {
+      return Colors.highlightSecondary
+    }
+    return Colors.highlight
   }
 
   private static createTriangles(points: readonly Point2D[]): {triangles: readonly Triangle[], segments: readonly Segment2D[]} {

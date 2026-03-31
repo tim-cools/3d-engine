@@ -81,4 +81,8 @@ export class ElementArea {
         && point.y >= this.top
         && point.y <= this.top + this.height
   }
+
+  middle(): Point2D {
+    return new Point2D(this.left + this.width / 2, this.top + this.height / 2)
+  }
 }

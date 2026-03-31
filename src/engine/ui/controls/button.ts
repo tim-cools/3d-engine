@@ -3,9 +3,8 @@ import {ElementSize} from "../elementSize"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
 import {setProperty, UIElement, UIElementProperties} from "../uiElement"
-import {UIRenderContext} from "../uiRenderContext"
+import {AlignHorizontal, AlignVertical, UIRenderContext} from "../uiRenderContext"
 import {UIElementType} from "../uiElementType"
-import {nothing} from "../../../infrastructure/nothing"
 
 const defaultHeight = 32
 
@@ -19,6 +18,8 @@ export interface ButtonProperties extends UIElementProperties {
   width?: ElementSizeValue
   title?: string
 }
+
+const textStyle = {alignHorizontal: AlignHorizontal.Centre, alignVertical: AlignVertical.Middle}
 
 export class Button extends UIElement {
 
@@ -46,10 +47,15 @@ export class Button extends UIElement {
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {
+
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
-    //context.fillPath(Colors.highlight, elementArea.toPath())
-    context.text(Colors.ui.titleText, elementArea, this.titleValue, nothing)
+
+    context.fillPath(Colors.ui.buttonBackground, elementArea.toPath())
+
+    const middle = elementArea.middle()
+    context.text(Colors.ui.buttonText, middle.x, middle.y, this.titleValue, textStyle)
+
     return elementArea
   }
 

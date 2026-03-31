@@ -4,10 +4,15 @@ import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
+import {Nothing, nothing} from "../../../infrastructure/nothing"
+import {EventHandler, MouseEnter, MouseLeave} from "../../events"
+import {UIContext} from "../uiContext"
 
 export interface RowProperties extends UIElementProperties {
   children?: readonly UIElement[]
   spacing?: number
+  onEnter?: EventHandler
+  onLeave?: EventHandler
 }
 
 export class Row extends UIElement {
@@ -15,6 +20,8 @@ export class Row extends UIElement {
   private readonly spacing: number = 8
 
   private childrenValue: readonly UIElement[] = []
+  private onEnter: EventHandler | Nothing
+  private onLeave: EventHandler| Nothing
 
   readonly elementType: UIElementType = UIElementType.Row
 
@@ -32,6 +39,25 @@ export class Row extends UIElement {
     super(properties)
     this.spacing = setProperty(properties.spacing, this.spacing)
     this.childrenValue = setProperty(properties.children, this.childrenValue)
+    this.onEnter = setProperty(properties.onEnter, nothing)
+    this.onLeave = setProperty(properties.onLeave, nothing)
+  }
+
+  protected contextAttached(context: UIContext) {
+    if (this.onEnter != nothing) {
+      context.events.subscribe(MouseEnter, event => this.callOnEnter(), this)
+    }
+    if (this.onLeave != nothing) {
+      context.events.subscribe(MouseLeave, event => this.callOnLeave(), this)
+    }
+  }
+
+  private callOnLeave() {
+    return this.onLeave?.call(this)
+  }
+
+  private callOnEnter() {
+    return this.onEnter?.call(this)
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {
@@ -81,9 +107,6 @@ export class Row extends UIElement {
         width += index == 0 ? childSize.width.value : this.spacing + childSize.width.value
       }
 
-      if (childSize.height.proportion) {
-        console.log('Warning: childSize.height.proportion is not supported in a row')
-      }
       height = Math.max(height, childSize.height.value)
     }
 

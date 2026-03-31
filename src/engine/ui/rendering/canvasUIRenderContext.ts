@@ -1,7 +1,6 @@
 import {getIconPath, Icon} from "./icons"
-import {TextStyle, UIRenderContext} from "../uiRenderContext"
+import {AlignHorizontal, AlignVertical, TextStyle, UIRenderContext} from "../uiRenderContext"
 import {Point2D} from "../../models"
-import {ElementArea} from "../elementArea"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
 
 export class CanvasUIRenderContext implements UIRenderContext {
@@ -35,20 +34,19 @@ export class CanvasUIRenderContext implements UIRenderContext {
     canvas.fillRect(left, top, width, height)
   }
 
-  text(color: string, area: ElementArea, text: string, style: TextStyle | Nothing = nothing) {
+  text(color: string, left: number, top: number, text: string, style: TextStyle | Nothing = nothing) {
     const canvas = this.canvas
-
-    canvas.textAlign = "left"
-    canvas.textBaseline = "top"
+    canvas.textAlign = CanvasUIRenderContext.textAlignHorizontal(style?.alignHorizontal)
+    canvas.textBaseline = CanvasUIRenderContext.textAlignVertical(style?.alignVertical)
     canvas.fillStyle = color
     canvas.font = "15px -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', system-ui, 'Ubuntu', 'Droid Sans', sans-serif"
 
-    canvas.fillText(text, area.left, area.top + 1)
+    canvas.fillText(text, left, top, style?.maxWidth)
 
     if (style != nothing && style.underline) {
       const measure = canvas.measureText(text)
-      const top = area.top + measure.fontBoundingBoxDescent + 2
-      this.line(color, 2, area.left, top, area.left + measure.width, top)
+      const lineTop = top + measure.fontBoundingBoxDescent + 1
+      this.line(color, 2, left, lineTop, left + measure.width, lineTop)
     }
   }
 
@@ -80,6 +78,18 @@ export class CanvasUIRenderContext implements UIRenderContext {
     for (let index = 0; index < points.length; index++) {
       canvas.lineTo(points[index].x, points[index].y)
     }
+  }
+
+  private static textAlignVertical(alignVertical: AlignVertical | undefined): "top" | "middle" | "bottom" {
+    return alignVertical == undefined || alignVertical == AlignVertical.Top
+      ? "top"
+      : alignVertical == AlignVertical.Bottom ? "bottom" : "middle"
+  }
+
+  private static textAlignHorizontal(alignHorizontal: AlignHorizontal | undefined): "left" | "center" | "right" {
+    return alignHorizontal == undefined || alignHorizontal == AlignHorizontal.Left
+      ? "left"
+      : alignHorizontal == AlignHorizontal.Right ? "right" : "center"
   }
 }
 

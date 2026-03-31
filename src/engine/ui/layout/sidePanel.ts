@@ -36,7 +36,7 @@ export class SidePanel extends ContentElement {
   readonly location: SidePanelLocation
 
   get size(): ElementSize {
-    return  this.open ? this.sizeOpen : this.sizeClosed
+    return this.open ? this.sizeOpen : this.sizeClosed
   }
 
   constructor(properties: SidePanelProperties) {
@@ -67,13 +67,11 @@ export class SidePanel extends ContentElement {
 
   private icon() {
     return this.location == SidePanelLocation.Left
-      ? this.open ? Icon.ArrowRight : Icon.ArrowLeft
-      : this.open ? Icon.ArrowLeft : Icon.ArrowRight
+      ? this.open ? Icon.ArrowLeft : Icon.ArrowRight
+      : this.open ? Icon.ArrowRight : Icon.ArrowLeft
   }
 
   protected renderElement(area: ElementArea, context: UIRenderContext) {
-
-
     const size = this.size
     const position = this.location == SidePanelLocation.Right
       ? new ElementPosition(area.width - size.width.value, -1)

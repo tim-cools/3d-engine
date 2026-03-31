@@ -14,11 +14,12 @@ import {Point, Size, SpaceModel, CubeModel} from "../../engine/models"
 import {ObjectDetails} from "../../engine/ui/content/objectDetails"
 import {ObjectStateType} from "../../engine/state/objectState"
 import {SceneStateType} from "../../engine/state"
+import {createTestContext} from "./testContext"
 
 describe('ui', () => {
 
   test('create and attach UI', async () => {
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test", () => [])
     ])
     const ui = new UI()
@@ -27,7 +28,7 @@ describe('ui', () => {
 
   test('create ScenesList with links', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test 1", () => []),
       new Scene("test 2", () => []),
       new Scene("test 3", () => [])
@@ -54,7 +55,7 @@ describe('ui', () => {
 
   test('create ObjectList default values', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test 1", context => [
         newObject("model1", context),
         newObject("model2", context),
@@ -76,7 +77,7 @@ describe('ui', () => {
 
   test('create ObjectDetails default values', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test 1", context => [
         newObject("model1", context),
         newObject("model2", context),
@@ -94,7 +95,7 @@ describe('ui', () => {
 
   test('create ObjectList select object', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test 1", context => [
         newObject("model1", context),
         newObject("model2", context),

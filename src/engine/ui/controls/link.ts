@@ -65,7 +65,7 @@ export class Link extends UIElement {
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
     // context.fillPath(Colors.highlight, elementArea.toPath())
-    context.text(Colors.ui.titleText, elementArea, this.titleValue, {underline: this.hover})
+    context.text(Colors.ui.titleText, elementArea.left, elementArea.top + 1, this.titleValue, {underline: this.hover})
     return elementArea
   }
 

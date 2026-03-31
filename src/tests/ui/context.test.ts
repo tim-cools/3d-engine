@@ -3,18 +3,18 @@ import {Context} from "../../engine/context"
 import {ApplicationContext} from "../../engine/applicationContext"
 import {Object2DBase} from "../../engine/objects/object2D"
 import {nothing} from "../../infrastructure/nothing"
-import {SelectionState, SelectionStateType} from "../../engine/state"
+import {SelectionListState, SelectionListStateType} from "../../engine/state/selectionListState"
 
 class TestEventObject extends Object2DBase {
 
-  private selectionState: SelectionState
+  private selectionState: SelectionListState
 
   called: number = 0
 
   constructor(context: ApplicationContext, id: string) {
     super(id)
-    this.selectionState = context.state.get(SelectionStateType)
-    context.state.subscribeUpdate(SelectionStateType, () => this.updated(), nothing)
+    this.selectionState = context.state.get(SelectionListStateType)
+    context.state.subscribeUpdate(SelectionListStateType, () => this.updated(), nothing)
   }
 
   private updated() {
@@ -36,16 +36,16 @@ describe('application context', () => {
     ]
 
     const context = new Context(scenes)
-    const selectionState = context.state.get(SelectionStateType)
+    const selectionState = context.state.get(SelectionListStateType)
     const scene1context = context.newScene()
 
     const testObject1 = getSceneTestObject(scenes, 0, scene1context)
     expect(testObject1.called).toBe(0)
 
-    selectionState.select(1)
+    selectionState.select("1")
     expect(testObject1.called).toBe(1)
 
-    selectionState.select(2)
+    selectionState.select("2")
     expect(testObject1.called).toBe(2)
   })
 
@@ -57,13 +57,13 @@ describe('application context', () => {
     ]
 
     const context = new Context(scenes)
-    const selectionState = context.state.get(SelectionStateType)
+    const selectionState = context.state.get(SelectionListStateType)
     const scene1context = context.newScene()
 
     const testObject1 = getSceneTestObject(scenes, 0, scene1context)
     expect(testObject1.called).toBe(0)
 
-    selectionState.select(1)
+    selectionState.select("1")
     expect(testObject1.called).toBe(1)
 
     const scene2context = context.newScene()
@@ -71,7 +71,7 @@ describe('application context', () => {
     expect(testObject1.called).toBe(1)
     expect(testObject2.called).toBe(0)
 
-    selectionState.select(2)
+    selectionState.select("2")
     expect(testObject1.called).toBe(1)
     expect(testObject2.called).toBe(1)
   })

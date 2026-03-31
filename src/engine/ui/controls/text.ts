@@ -42,8 +42,7 @@ export class Text extends UIElement {
   protected renderElement(area: ElementArea, context: UIRenderContext) {
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
-    //context.fillPath(Colors.highlight, elementArea.toPath())
-    context.text(Colors.ui.titleText, elementArea, this.valueValue, nothing)
+    context.text(Colors.ui.titleText, elementArea.left, elementArea.top, this.valueValue, nothing)
     return elementArea
   }
 

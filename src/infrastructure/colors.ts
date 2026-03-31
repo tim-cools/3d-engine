@@ -52,6 +52,7 @@ export class Colors {
     buttonText: "#eeeeee",
     titleBackground: "#5d5d5d",
     titleText: "#a9a9a9",
+    itemBackground: "#eeeeee",
     itemSelected: "#5485a7"
   }
 }

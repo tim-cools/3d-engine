@@ -1,27 +1,20 @@
 import {View} from "./view"
-import {
-  Point,
-  Point2D,
-  Space,
-  Space2D,
-  SpaceObject,
-  translateSpace,
-  translateSpaceTriangle,
-  Triangle
-} from "./models"
+import {Point, Point2D, Space, Space2D, SpaceObject, translateSpace, translateSpaceTriangle, Triangle} from "./models"
 import {RenderShape2DContext, RenderShapeContext, Shape, Shape2D} from "./shapes"
 import {Scene} from "./scenes"
 import {Object, Object3D} from "./objects"
-import {Selectable, SelectableObject} from "./shapes/selectable"
+import {Selectable, SelectableObject, SelectableState} from "./shapes/selectable"
 import {nothing, Nothing} from "../infrastructure/nothing"
-import {UIRenderContext, UI} from "./ui"
+import {UI, UIRenderContext} from "./ui"
 import {Context} from "./context"
 import {Colors} from "../infrastructure/colors"
 import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
-import {MouseOver, Update} from "./events"
-import {SceneState, SceneStateType} from "./state"
+import {MouseDown, MouseOver, Update} from "./events"
+import {SceneState, SceneStateType, SelectionState, SelectionStateType} from "./state"
 import {CanvasUIRenderContext} from "./ui/rendering/canvasUIRenderContext"
+import {RoundEnumerator} from "./roundEnumerator"
+import {SelectionListState, SelectionListStateType} from "./state/selectionListState"
 
 type ShapeRender = {
   z: number
@@ -62,12 +55,14 @@ export class World {
   private readonly lastZ: Map<string, number> = new Map()
   private readonly view: View
   private readonly context: Context
+  private readonly selectionState: SelectionState
+  private readonly selectionListState: SelectionListState
 
   private sceneValue: Scene
   private objects: Object[] = []
   private selectables: SelectableObject[] = []
-  private selected: SelectableObject | Nothing = nothing
   private sceneObjectsValue: Object[] = []
+  private lastSelectedIndex: number | Nothing = nothing
 
   get scene(): Scene {
     return this.sceneValue
@@ -83,6 +78,8 @@ export class World {
     this.context = context
     this.ui = new UI()
     this.context.attachElement(this.ui)
+    this.selectionState = context.state.get(SelectionStateType)
+    this.selectionListState = context.state.get(SelectionListStateType)
 
     const sceneState = context.state.get(SceneStateType)
     this.sceneValue = sceneState.current
@@ -91,6 +88,7 @@ export class World {
 
     context.state.subscribeUpdate(SceneStateType, state => this.setScene(state), nothing)
     context.events.subscribe(MouseOver, event => this.mouseOver(event), nothing)
+    context.events.subscribe(MouseDown, event => this.mouseDown(event), nothing)
   }
 
   update(difference: number) {
@@ -107,7 +105,23 @@ export class World {
     canvasContext.fillRect(0, 0, canvas.width, canvas.height)
 
     const shapes = this.updateShapes()
+    this.renderShapes(canvasContext, shapes)
+  }
 
+  logShapes() {
+    const shapes = this.updateShapes()
+    console.log("Shapes     ----------------------------------------------------------------------")
+    for (const objectShape of shapes) {
+      console.log("-- " + objectShape.shape.toString())
+    }
+    console.log("Shapes End ----------------------------------------------------------------------")
+  }
+
+  pointInUI(point: Point2D) {
+    return this.ui.pointInUI(point)
+  }
+
+  private renderShapes(canvasContext: CanvasRenderingContext2D, shapes: ShapeRender[]) {
     this.selectables = []
     const context = new RenderContextFactory(this.view, canvasContext, this.selectables)
     for (const objectShape of shapes) {
@@ -121,24 +135,13 @@ export class World {
     this.ui.render(area, context.createUI())
   }
 
-  clearSelection() {
-    this.selected = nothing
-  }
-
   private mouseOver(event: MouseOver) {
-    this.selectAt(event.point)
-    if (event.mouseIsDown) {
-      this.clearSelection()
-    }
+    this.hoverAt(event.point)
+    this.lastSelectedIndex = nothing
   }
 
-  logShapes() {
-    const shapes = this.updateShapes()
-    console.log("Shapes     ----------------------------------------------------------------------")
-    for (const objectShape of shapes) {
-      console.log("-- " + objectShape.shape.toString())
-    }
-    console.log("Shapes End ----------------------------------------------------------------------")
+  private mouseDown(event: MouseDown) {
+    this.selectAt(event.point)
   }
 
   private setScene(state: SceneState) {
@@ -147,7 +150,6 @@ export class World {
     this.sceneObjectsValue = state.objects
 
     this.clearSelection()
-    this.updateShapes()
   }
 
   private updateShapes(): ShapeRender[] {
@@ -159,11 +161,35 @@ export class World {
     const result = this.shapesRenderers(space2D)
     result.sort((first, second) => first.z > second.z ? -1 : 1)
 
-    if (this.selected) {
-      this.renderShape2D(this.selected, space2D, result)
-    }
+    this.renderSelected(space2D, result)
 
     return result
+  }
+
+  private renderSelected(space2D: Space2D, result: ShapeRender[]) {
+    let hoverSelectable: SelectableObject | Nothing = nothing
+    let selected: SelectableObject | Nothing = nothing
+    for (const selectable of this.selectables) {
+      const selectionState = this.selectionState
+      const selectionListState = this.selectionListState
+      if (selectable.id == selectionState.hover) {
+        hoverSelectable = selectable
+      } else if (selectionState.selected == selectable.id) {
+        selected = selectable
+      } else if (selectionListState.faceIds.indexOf(selectable.id) >= 0) {
+        selectable.state = SelectableState.Group
+        this.renderShape2D(selectable, space2D, result)
+      }
+    }
+
+    if (hoverSelectable != nothing) {
+      hoverSelectable.state = SelectableState.Hover
+      this.renderShape2D(hoverSelectable, space2D, result)
+    }
+    if (selected != nothing) {
+      selected.state = SelectableState.Selected
+      this.renderShape2D(selected, space2D, result)
+    }
   }
 
   private shapesRenderers(space2D: Space2D) {
@@ -234,14 +260,44 @@ export class World {
     }
   }
 
-  private selectAt(point: Point2D) {
+  private hoverAt(point: Point2D) {
+
+    const selectionState = this.selectionState
+
     for (let index = this.selectables.length - 1; index >= 0; index--) {
       const selectable = this.selectables[index]
       if (selectable.includes(point)) {
-        this.selected = selectable
+        if (selectionState.hover != selectable.id) {
+          selectionState.hover = selectable.id
+          this.lastSelectedIndex = nothing
+        }
         return
       }
     }
-    this.selected = nothing
+
+    selectionState.hover = nothing
+  }
+
+  private selectAt(point: Point2D) {
+
+    const roundEnumerator = new RoundEnumerator(this.lastSelectedIndex, this.selectables)
+    const selectionState = this.selectionState
+
+    while (roundEnumerator.current != nothing) {
+      const selectable = roundEnumerator.current
+      if (selectable.includes(point)) {
+        selectionState.selected = selectable.id
+        this.lastSelectedIndex = roundEnumerator.index
+        return
+      }
+      roundEnumerator.next()
+    }
+
+    this.lastSelectedIndex = nothing
+    selectionState.selected = nothing
+  }
+
+  private clearSelection() {
+    this.selectionState.hover = nothing
   }
 }

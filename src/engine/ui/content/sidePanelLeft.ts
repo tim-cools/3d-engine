@@ -4,6 +4,8 @@ import {UIElementType} from "../uiElementType"
 import {ObjectsList} from "./objectsList"
 import {ObjectDetails} from "./objectDetails"
 import {ScenesList} from "./scenesList"
+import {UIRenderContext} from "../uiRenderContext"
+import {ElementArea} from "../elementArea"
 
 export class SidePanelLeft extends ContentElement {
 
@@ -28,5 +30,9 @@ export class SidePanelLeft extends ContentElement {
         })
       ]
     })
+  }
+
+  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
+    return super.renderElement(area, context)
   }
 }

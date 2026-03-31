@@ -7,6 +7,7 @@ import {Context} from "../context"
 import {ObjectStateHandler} from "./objectState"
 import {UIElement} from "../ui/uiElement"
 import {nothing, Nothing} from "../../infrastructure/nothing"
+import {SelectionListStateHandler} from "./selectionListState"
 
 export interface PublishStateEvents {
   updated<TState>(definition: StateIdentifier<TState>): void
@@ -81,7 +82,8 @@ export class ApplicationStateManager implements StateManager {
 
   initialize(context: Context) {
     this.addStateHandler(new ScenesStateHandler(this.scenes, this))
-    this.addStateHandler(new SelectionStateHandler(this))
+    this.addStateHandler(new SelectionStateHandler(this, context))
+    this.addStateHandler(new SelectionListStateHandler(this, context))
     this.addStateHandler(new ObjectStateHandler(this))
     this.addStateHandler(new SceneStateHandler(this.scenes, this, context))
   }

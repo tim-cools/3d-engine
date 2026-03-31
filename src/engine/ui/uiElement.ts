@@ -89,7 +89,7 @@ export abstract class UIElement {
     }
   }
 
-  public attachmentPropertyValue<T>(property: TypedAttachmentProperty<T>): T | undefined {
+  attachmentPropertyValue<T>(property: TypedAttachmentProperty<T>): T | undefined {
     if (!this.attachmentProperties) return undefined
     const value = firstOrDefault(this.attachmentProperties, where => where.type == property.type)
     return value != nothing ? (value as AttachmentPropertyValue<T>).value : undefined

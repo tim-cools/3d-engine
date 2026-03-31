@@ -1,7 +1,7 @@
 import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
 import {Point2D} from "../models"
 import {Colors} from "../../infrastructure/colors"
-import {Selectable} from "./selectable"
+import {Selectable, SelectableState} from "./selectable"
 
 export class SelectablePoint implements Shape2D, Selectable {
 
@@ -11,6 +11,8 @@ export class SelectablePoint implements Shape2D, Selectable {
 
   readonly id: string
   readonly z: number = FrontShape2D
+
+  state: SelectableState = SelectableState.Hover
 
   constructor(id: string, point: Point2D, size: number) {
     this.id = id
@@ -30,10 +32,19 @@ export class SelectablePoint implements Shape2D, Selectable {
     const radius = this.size
     const halfSize = radius / 2
 
-    canvas.strokeStyle = Colors.highlight
+    canvas.strokeStyle = this.color()
     canvas.lineWidth = 2
     canvas.beginPath()
     canvas.ellipse(this.point.x - halfSize, this.point.y - halfSize, radius, radius, 0, 0, 360)
     canvas.stroke()
+  }
+
+  private color() {
+    if (this.state == SelectableState.Selected) {
+      return Colors.highlightMax
+    } else if (this.state == SelectableState.Group) {
+      return Colors.highlightSecondary
+    }
+    return Colors.highlight
   }
 }

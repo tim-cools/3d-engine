@@ -8,9 +8,10 @@ import {ElementArea} from "../../../engine/ui/elementArea"
 import {Verify} from "../../infrastructure"
 import {dummyContext} from "./dummyContext"
 import {AttachmentProperty} from "../../../engine/ui/attachmentProperty"
+import {createTestContext} from "../testContext"
 
 function verifyCanvasAnchors(attach: AttachmentProperty[]) {
-  const context = new Context([
+  const context = createTestContext([
     new Scene("test", () => [])
   ])
 
@@ -30,7 +31,7 @@ function verifyCanvasAnchors(attach: AttachmentProperty[]) {
 describe('canvas', () => {
 
   test('create and attach canvas', async () => {
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test", () => [])
     ])
     const canvas = new Canvas()

@@ -1,7 +1,7 @@
 import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
 import {Point2D, Segment2D} from "../models"
 import {Colors} from "../../infrastructure/colors"
-import {Selectable, SelectableMargin} from "./selectable"
+import {Selectable, SelectableMargin, SelectableState} from "./selectable"
 
 export class SelectableSegment implements Shape2D, Selectable {
 
@@ -10,6 +10,8 @@ export class SelectableSegment implements Shape2D, Selectable {
 
   readonly id: string
   readonly z: number = FrontShape2D
+
+  state: SelectableState = SelectableState.Hover
 
   constructor(id: string, begin: Point2D, end: Point2D, margin: number = SelectableMargin) {
     this.id = id
@@ -25,11 +27,20 @@ export class SelectableSegment implements Shape2D, Selectable {
 
     const {canvas} = context
 
-    canvas.strokeStyle = Colors.highlight
+    canvas.strokeStyle = this.color()
     canvas.lineWidth = 5
     canvas.beginPath()
     canvas.moveTo(this.segment.begin.x, this.segment.begin.y)
     canvas.lineTo(this.segment.end.x, this.segment.end.y)
     canvas.stroke()
+  }
+
+  private color() {
+    if (this.state == SelectableState.Selected) {
+      return Colors.highlightMax
+    } else if (this.state == SelectableState.Group) {
+      return Colors.highlightSecondary
+    }
+    return Colors.highlight
   }
 }

@@ -6,6 +6,7 @@ import {UIElement} from "./ui/uiElement"
 import {UIContext} from "./ui/uiContext"
 import {nothing, Nothing} from "../infrastructure/nothing"
 import {UIElementType} from "./ui/uiElementType"
+import {Point2D} from "./models"
 
 export class Context implements ApplicationContext, UIContext {
 

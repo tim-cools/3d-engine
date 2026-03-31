@@ -11,7 +11,7 @@ export const dummyContext = {
   },
   fillRectangle: function(background: string, left: number, top: number, width: number, height: number): void {
   },
-  text: function(color: string, area: ElementArea, text: string, style: TextStyle | Nothing): void {
+  text: function(color: string, left: number, top: number, text: string, style: TextStyle | Nothing): void {
   },
   line: function(color: string, lineWidth: number, left: number, top: number, right: number, bottom: number): void {
   },

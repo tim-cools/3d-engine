@@ -4,6 +4,7 @@ import {firstOrDefault} from "../infrastructure"
 import {Point2D} from "./models"
 import {Context} from "./context"
 import {KeyDown} from "./events"
+import {debug} from "util"
 
 type KeyHandler = { key: string, handler: () => void }
 
@@ -67,14 +68,13 @@ export class Controller {
   private mouseMove(event: MouseEvent): any {
 
     const point = new Point2D(event.x, event.y)
+    const pointInUI = this.world.pointInUI(point)
 
-    this.context.events.mouse.move(point, this.mouseIsDown)
+    this.context.events.mouse.move(point, this.mouseIsDown, pointInUI)
 
-    if (!this.mouseIsDown) return
-
-    this.moveCamera(event)
-    this.mouseX = event.x
-    this.mouseY = event.y
+    if (this.mouseIsDown && !pointInUI) {
+      this.moveCamera(event)
+    }
   }
 
   private moveCamera(event: MouseEvent) {
@@ -85,5 +85,7 @@ export class Controller {
     } else {
       this.view.rotate(-offsetY / 100, offsetX / 100)
     }
+    this.mouseX = event.x
+    this.mouseY = event.y
   }
 }

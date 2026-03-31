@@ -19,4 +19,7 @@ export class MouseOver {
 
 export class MouseDown {
   readonly eventType = EventType.MouseDown
+
+  constructor(public point: Point2D = Point2D.default, public mouseIsDown: boolean = false) {
+  }
 }

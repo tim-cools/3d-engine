@@ -6,6 +6,7 @@ import {EventSubscribers} from "./eventSubscribers"
 import {UIElement} from "../ui/uiElement"
 import {Nothing} from "../../infrastructure/nothing"
 import {ElementMouseEventHandler} from "./elementMouseEventHandler"
+import {Point2D} from "../models"
 
 export class ApplicationEventDispatcher implements EventDispatcher {
 

@@ -3,7 +3,7 @@ import {ElementArea} from "../elementArea"
 import {UIRenderContext} from "../uiRenderContext"
 import {ElementSize} from "../elementSize"
 import {UIElementType} from "../uiElementType"
-import {ContentElement} from "../layout/contentElement"
+import {ContentElement} from "../layout"
 import {Padding} from "../padding"
 import {Colors} from "../../../infrastructure/colors"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
@@ -40,6 +40,8 @@ export class Box extends ContentElement {
   }
 
   calculateSize(): ElementSize {
-    return this.size
+    return this.content && this.size.height.proportion && this.size.width.proportion
+      ? this.content.calculateSize().pad(this.padding)
+      : this.size
   }
 }

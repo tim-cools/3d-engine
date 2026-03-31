@@ -1,15 +1,23 @@
-import {UIElement} from "../uiElement"
+import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIElementType} from "../uiElementType"
+import {ElementSizeValue} from "../elementSizeValue"
+import {nothing, Nothing} from "../../../infrastructure/nothing"
+
+export interface EmptyElementProperties extends UIElementProperties {
+  width?: ElementSizeValue
+}
 
 export class EmptyElement extends UIElement {
 
+  private width: ElementSizeValue
   readonly elementType: UIElementType = UIElementType.EmptyElement
 
   get children(): readonly UIElement[] {
     return []
   }
 
-  constructor() {
-    super({ id: "empty"})
+  constructor(properties: EmptyElementProperties | Nothing = nothing) {
+    super(properties)
+    this.width = setProperty(properties?.width, ElementSizeValue.full)
   }
 }

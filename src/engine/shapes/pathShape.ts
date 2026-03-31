@@ -91,12 +91,12 @@ export class PathShape implements Shape {
 
   static fromTriangle(id: string, debugColors: boolean, triangle: Triangle, solid: boolean = true) {
     const color = this.segmentColor(debugColors, triangle.type)
-    return new PathShape(id, color, [triangle.point1, triangle.point2, triangle.point3], solid)
+    return new PathShape(triangle.hash.toString(), color, [triangle.point1, triangle.point2, triangle.point3], solid)
   }
 
   static fromPolygon(id: string, debugColors: boolean, path: Path, solid: boolean = true) {
     const color = this.segmentColor(debugColors, path.type)
-    return new PathShape(id, color, path.points, solid)
+    return new PathShape(path.hash.toString(), color, path.points, solid)
   }
 
   private static segmentColor(debugColors: boolean, type: ModelType) {

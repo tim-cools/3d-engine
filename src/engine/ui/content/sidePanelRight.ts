@@ -4,7 +4,7 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {Stack, SidePanel, SidePanelLocation} from "../layout"
 import {UIElementType} from "../uiElementType"
 import {WorldDetails} from "./worldDetails"
-import {SelectedList} from "./selectedList"
+import {Selection} from "./selection"
 
 export class SidePanelRight extends ContentElement {
 
@@ -13,18 +13,17 @@ export class SidePanelRight extends ContentElement {
   constructor() {
     super()
 
-    this.content =
-      new SidePanel({
-        location: SidePanelLocation.Right,
-        children: [
-          new Panel({
-            title: "Instructions",
-            content: SidePanelRight.instructionsInfo()
-          }),
-          new WorldDetails(),
-          new SelectedList(),
-        ]
-      })
+    this.content = new SidePanel({
+      location: SidePanelLocation.Right,
+      children: [
+        new Panel({
+          title: "Instructions",
+          content: SidePanelRight.instructionsInfo()
+        }),
+        new WorldDetails(),
+        new Selection(),
+      ]
+    })
   }
 
   private static instructionsInfo() {

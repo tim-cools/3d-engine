@@ -5,6 +5,7 @@ import {UIContext} from "../../engine/ui/uiContext"
 import {MouseEnter} from "../../engine/events"
 import {Scene} from "../../engine/scenes"
 import {nothing, Nothing} from "../../infrastructure/nothing"
+import {createTestContext} from "./testContext"
 
 class TestElement extends UIElement {
 
@@ -34,7 +35,7 @@ describe('element events', () => {
 
   test('when an element is attached it should receive the event', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test1", context => []),
     ])
     const element = new TestElement()
@@ -48,7 +49,7 @@ describe('element events', () => {
 
   test('when elements are attached they should receive the events', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test1", context => []),
     ])
     const element = new TestElement()
@@ -62,7 +63,7 @@ describe('element events', () => {
 
   test('when an element is detached is should not receive the event anymore', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test1", context => []),
     ])
     const element = new TestElement()
@@ -81,7 +82,7 @@ describe('element events', () => {
 
   test('when elements are detached they should not receive the event anymore', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test1", context => []),
     ])
     const element = new TestElement()
@@ -100,7 +101,7 @@ describe('element events', () => {
 
   test('when elements are attached and one is detached, the detached should not receive the event anymore', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test1", context => []),
     ])
     const element1 = new TestElement()
@@ -123,7 +124,7 @@ describe('element events', () => {
 
   test('when elements with children are attached, they all should receive the event', async () => {
 
-    const context = new Context([
+    const context = createTestContext([
       new Scene("test1", context => []),
     ])
     const elementChild = new TestElement()
