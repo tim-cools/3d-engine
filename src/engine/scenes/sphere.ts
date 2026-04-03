@@ -8,14 +8,14 @@ export function sphere() {
 
   return new Scene("Sphere", (context: ApplicationContext) => {
 
-    function cube() {
+    function sphere() {
       const model = SphereModel.create(10)
       const spaceModel = new SpaceModel(model, Point.null, Size.default)
       return new ModelObject(context, "sphere", spaceModel)
     }
 
     return [
-      cube()
+      sphere()
     ]
   })
 }

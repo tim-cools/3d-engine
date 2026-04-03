@@ -1,7 +1,8 @@
 import {Model} from "./model"
-import {ModelType, Point, Segment} from "./primitives"
+import {Point, Segment} from "./primitives"
 import {any} from "../../infrastructure"
 import {Triangle} from "./triangle"
+import {ModelType} from "./modelType"
 
 export class TriangleModel extends Model {
 

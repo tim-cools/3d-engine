@@ -1,17 +1,15 @@
-import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
+import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape2D"
 import {Point2D} from "../models"
 
 export class TextShape2D implements Shape2D {
 
-  readonly id: string
   readonly color: string
   readonly position: Point2D
   readonly fontSize: number
   readonly text: string
   readonly z: number = FrontShape2D
 
-  constructor(id: string, color: string, position: Point2D, fontSize: number, text: string) {
-    this.id = id
+  constructor(color: string, position: Point2D, fontSize: number, text: string) {
     this.color = color
     this.position = position
     this.fontSize = fontSize

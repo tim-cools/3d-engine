@@ -82,7 +82,7 @@ export class ModelObject extends Object3DBase {
     for (let index = 0; index < this.model.segments.length; index++) {
       const segment = this.model.segments[index]
       if (debug || !segment.debug) {
-        result.push(LineShape.fromSegment(`${this.id}.line.${index}`, segment, debug))
+        result.push(LineShape.fromSegment(segment, debug))
       }
     }
   }
@@ -92,7 +92,7 @@ export class ModelObject extends Object3DBase {
       const point = this.model.points[index]
       if (debug || !point.debug) {
         const color = debug ? modelColor(point.type) : point.type == ModelType.Utility ? Colors.gray.darker : Colors.primary.middle
-        result.push(new PointShape(`${this.id}.point.${index}`, color, point, 2))
+        result.push(new PointShape(color, point, 2))
       }
     }
   }
@@ -113,7 +113,7 @@ export class ModelObject extends Object3DBase {
 
     for (let index = 0; index < cubeModel.segments.length; index++) {
       const segment = cubeModel.segments[index]
-      result.push(LineShape.fromSegment(`${this.id}.boundary.${index}`, segment, true))
+      result.push(LineShape.fromSegment(segment, true))
     }
   }
 
@@ -130,9 +130,9 @@ export class ModelObject extends Object3DBase {
   private addFace(face: Triangle | Path, result: Shape[], index: number) {
     if (face.debug) return
     if (face.faceType == FaceType.Triangle) {
-      result.push(PathShape.fromTriangle(this.id + ".triangle." + index, false, face))
+      result.push(PathShape.fromTriangle(face, false, true))
     } else {
-      result.push(PathShape.fromPolygon(this.id + ".closePath." + index, false, face))
+      result.push(PathShape.fromPolygon(face, false, true))
     }
   }
 
@@ -146,15 +146,15 @@ export class ModelObject extends Object3DBase {
   private addFaceWireframeTriangles(face: Triangle | Path, debug: boolean, result: Shape[]) {
 
     if (face.faceType == FaceType.Triangle) {
-      result.push(PathShape.fromTriangle(this.id + ".triangle." + face.hash, debug, face, false))
+      result.push(PathShape.fromTriangle(face, debug, false))
       return
     }
 
     if (debug || !face.debug) {
       for (const triangle of face.triangles) {
-        result.push(PathShape.fromTriangle(this.id + ".triangle." + triangle.hash, debug, triangle, false))
+        result.push(PathShape.fromTriangle(triangle, debug, false))
       }
-      result.push(PathShape.fromPolygon(this.id + ".polygon." + face.hash, debug, face, false))
+      result.push(PathShape.fromPolygon(face, debug, false))
     }
   }
 }

@@ -1,5 +1,5 @@
 import {World} from "./world"
-import {Controller} from "./controller"
+import {HumanInterface} from "./humanInterface"
 import {CanvasView} from "./view"
 import {createScenes} from "./scenes"
 import {Context} from "./context"
@@ -7,7 +7,7 @@ import {Context} from "./context"
 export class Engine {
 
   private readonly view: CanvasView
-  private readonly controller: Controller
+  private readonly humanInterface: HumanInterface
   private readonly world: World
   private readonly canvas: HTMLCanvasElement
   private context: CanvasRenderingContext2D
@@ -22,7 +22,7 @@ export class Engine {
     const applicationContext = new Context(scenes)
 
     this.world = new World(this.view, scenes, applicationContext)
-    this.controller = new Controller(this.view, this.world, canvas, applicationContext)
+    this.humanInterface = new HumanInterface(this.view, this.world, canvas, applicationContext)
   }
 
   start() {

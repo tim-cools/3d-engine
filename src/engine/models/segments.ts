@@ -1,6 +1,7 @@
-import {ModelType, Point, Segment} from "./primitives"
+import {Point, Segment} from "./primitives"
 import {Size} from "./size"
 import {nothing, Nothing} from "../../infrastructure/nothing"
+import {ModelType} from "./modelType"
 
 export function segments(segments: number, begin: Point, end: Point, size: Size | null = null, type: ModelType = ModelType.Primary) {
 

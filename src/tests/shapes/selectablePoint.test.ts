@@ -1,4 +1,4 @@
-import {Point2D} from "../../engine/models"
+import {Point2D, PrimitiveSource} from "../../engine/models"
 import {SelectablePoint} from "../../engine/shapes/selectablePoint"
 
 type AssertInclude = {x: number, y: number, result: boolean}
@@ -26,7 +26,8 @@ describe('selectable point', () => {
   ])("include point '%s'", verifyInclude);
 
   function verifyInclude(assert: AssertInclude) {
-    const selectable = new SelectablePoint("id", point, 1)
+    const source = new PrimitiveSource(point.to3D(), "model")
+    const selectable = new SelectablePoint(source, point, 1)
     const point2D = new Point2D(assert.x, assert.y)
     const result = selectable.includes(point2D)
     expect(result).toBe(assert.result)

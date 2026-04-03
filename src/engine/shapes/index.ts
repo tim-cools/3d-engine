@@ -1,4 +1,5 @@
 export * from './shape'
+export * from './shape2D'
 export * from './lineShape'
 export * from './line2DShape'
 export * from './pointShape'

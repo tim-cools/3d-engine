@@ -28,7 +28,7 @@ class AxisObject extends Object3DBase {
     for (let index = 0; index < this.model.segments.length; index++) {
       const segment = this.model.segments[index]
       if (!segment.debug) {
-        result.push(LineShape.fromSegment(this.id + ".line." + index, segment, false))
+        result.push(LineShape.fromSegment(segment, false))
       }
     }
     return result

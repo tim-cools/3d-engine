@@ -12,13 +12,17 @@ export class Segment2D {
 
   includes(point: Point2D, margin: number) {
 
-    const lengthX = this.end.x - this.begin.x
-    const lengthY = this.end.y - this.begin.y
+    const beginX = Math.min(this.begin.x, this.end.x)
+    const endX = Math.max(this.begin.x, this.end.x)
+    const beginY = Math.min(this.begin.y, this.end.y)
+    const endY = Math.max(this.begin.y, this.end.y)
+    const lengthX = endX - beginX
+    const lengthY = endY - beginY
 
     if (lengthX > lengthY) {
-      return Segment2D.includesPoint(point.x, this.begin.x, this.end.x, lengthX, point.y, this.begin.y, lengthY, margin)
+      return Segment2D.includesPoint(point.x, beginX, endX, lengthX, point.y, beginY, lengthY, margin)
     } else {
-      return Segment2D.includesPoint(point.y, this.begin.y, this.end.y, lengthY, point.x, this.begin.x, lengthX, margin)
+      return Segment2D.includesPoint(point.y, beginY, endY, lengthY, point.x, beginX, lengthX, margin)
     }
   }
 

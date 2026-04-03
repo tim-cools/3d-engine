@@ -2,15 +2,19 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {setProperty, UIElement, UIElementProperties} from "../uiElement"
-import {UIRenderContext} from "../uiRenderContext"
+import {setProperty, setSizeProperty, UIElement, UIElementProperties} from "../uiElement"
+import {RenderUIContext} from "../renderUIContext"
 import {UIElementType} from "../uiElementType"
-import {nothing} from "../../../infrastructure/nothing"
+import {nothing, Nothing} from "../../../infrastructure/nothing"
 
 const rowHeight = 18
 
+export function text(text: string, properties: TextProperties | Nothing = nothing) {
+  return new Text({...properties, text: text})
+}
+
 export interface TextProperties extends UIElementProperties {
-  width?: ElementSizeValue
+  width?: ElementSizeValue | number
   text?: string
 }
 
@@ -33,16 +37,19 @@ export class Text extends UIElement {
     return []
   }
 
-  constructor(properties: TextProperties) {
+  constructor(properties: TextProperties | Nothing = nothing) {
     super(properties)
-    this.width = setProperty(properties.width, this.width)
+    if (properties == nothing) return
+    this.width = setSizeProperty(properties.width, this.width)
     this.valueValue = setProperty(properties.text, this.valueValue)
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
+
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
-    context.text(Colors.ui.titleText, elementArea.left, elementArea.top, this.valueValue, nothing)
+    context.text(this.valueValue, Colors.ui.titleText, elementArea.position, {})
+
     return elementArea
   }
 

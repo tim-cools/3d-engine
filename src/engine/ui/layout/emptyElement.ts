@@ -3,6 +3,12 @@ import {UIElementType} from "../uiElementType"
 import {ElementSizeValue} from "../elementSizeValue"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
 
+export function emptyElement(properties: EmptyElementProperties | undefined = undefined) {
+  return new EmptyElement({
+    ...properties
+  })
+}
+
 export interface EmptyElementProperties extends UIElementProperties {
   width?: ElementSizeValue
 }

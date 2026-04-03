@@ -1,5 +1,5 @@
-import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
-import {Point2D} from "../models"
+import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape2D"
+import {Point2D, PrimitiveSource} from "../models"
 import {Colors} from "../../infrastructure/colors"
 import {Selectable, SelectableState} from "./selectable"
 
@@ -9,13 +9,13 @@ export class SelectablePoint implements Shape2D, Selectable {
   private readonly size: number
   private readonly radius: number
 
-  readonly id: string
   readonly z: number = FrontShape2D
+  readonly source: PrimitiveSource
 
   state: SelectableState = SelectableState.Hover
 
-  constructor(id: string, point: Point2D, size: number) {
-    this.id = id
+  constructor(source: PrimitiveSource, point: Point2D, size: number) {
+    this.source = source
     this.point = point
     this.size = size
     this.radius = this.size / 2

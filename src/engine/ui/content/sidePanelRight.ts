@@ -1,44 +1,47 @@
-import {Panel, ContentElement} from "../layout"
-import {Box, Text} from "../controls"
-import {ElementSizeValue} from "../elementSizeValue"
-import {Stack, SidePanel, SidePanelLocation} from "../layout"
+import {Canvas, collapsablePanel, ContentElement, sidePanel, stack} from "../layout"
+import {text} from "../controls"
+import {SidePanelLocation} from "../layout"
 import {UIElementType} from "../uiElementType"
-import {WorldDetails} from "./worldDetails"
-import {Selection} from "./selection"
+import {selection} from "./selection"
+import {worldDetails} from "./worldDetails"
+
+export function sidePanelRight() {
+  return new SidePanelRight()
+}
 
 export class SidePanelRight extends ContentElement {
 
   readonly elementType: UIElementType = UIElementType.SidePanelRight
 
   constructor() {
-    super()
+    super({attach: [Canvas.right(0)]})
 
-    this.content = new SidePanel({
-      location: SidePanelLocation.Right,
-      children: [
-        new Panel({
-          title: "Instructions",
-          content: SidePanelRight.instructionsInfo()
-        }),
-        new WorldDetails(),
-        new Selection(),
-      ]
-    })
+    this.content = sidePanel(SidePanelLocation.Right, "Right", [
+      collapsablePanel("Instructions", SidePanelRight.instructionsInfo()),
+      worldDetails(),
+      selection(),
+    ])
   }
 
   private static instructionsInfo() {
-
-    function text(title: string) {
-      return new Text({width: ElementSizeValue.full, text: title})
-    }
-
-    return new Stack({
-      children: [
-        text("Fun with 3D graphics and typescript."),
-        text("  Mouse: rotate world (+shift)"),
-        text("  Keys arrows: move world (+shift))"),
-        text("  Select objects to change render settings"),
-      ]
-    })
+    return stack({}, [
+      text("Fun with 3D graphics and typescript."),
+      text("  Mouse: rotate world (+shift)"),
+      text("  Keys arrows: move world (+shift))"),
+      text("  Select objects to change render settings"),
+    ])
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

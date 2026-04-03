@@ -3,13 +3,21 @@ import {ElementSize} from "../elementSize"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
 import {setProperty, UIElement, UIElementProperties} from "../uiElement"
-import {UIRenderContext} from "../uiRenderContext"
+import {RenderUIContext} from "../renderUIContext"
 import {Id, Nothing, nothing} from "../../../infrastructure/nothing"
 import {MouseDown, MouseEnter, MouseLeave} from "../../events"
 import {UIElementType} from "../uiElementType"
 import {UIContext} from "../uiContext"
 
 const rowHeight = 18
+
+export function link(title: string, onClick?: (() => void) | Nothing, linkProperties: LinkProperties | Nothing = nothing) {
+  return new Link({
+    ...linkProperties,
+    title: title,
+    onClick: onClick
+  })
+}
 
 export interface LinkProperties extends UIElementProperties {
   id?: Id
@@ -61,11 +69,14 @@ export class Link extends UIElement {
     return this.titleValue
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
+
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
-    // context.fillPath(Colors.highlight, elementArea.toPath())
-    context.text(Colors.ui.titleText, elementArea.left, elementArea.top + 1, this.titleValue, {underline: this.hover})
+    //context.fillPath(elementArea.toPath(), Colors.highlightMax)
+    const textArea = elementArea.addTop(1)
+    context.text(this.titleValue, Colors.ui.titleText, textArea.position, {underline: this.hover})
+
     return elementArea
   }
 

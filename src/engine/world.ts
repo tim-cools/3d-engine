@@ -5,16 +5,18 @@ import {Scene} from "./scenes"
 import {Object, Object3D} from "./objects"
 import {Selectable, SelectableObject, SelectableState} from "./shapes/selectable"
 import {nothing, Nothing} from "../infrastructure/nothing"
-import {UI, UIRenderContext} from "./ui"
+import {UI, RenderUIContext} from "./ui"
 import {Context} from "./context"
 import {Colors} from "../infrastructure/colors"
 import {Object2D} from "./objects/object2D"
 import {ElementArea} from "./ui/elementArea"
 import {MouseDown, MouseOver, Update} from "./events"
 import {SceneState, SceneStateType, SelectionState, SelectionStateType} from "./state"
-import {CanvasUIRenderContext} from "./ui/rendering/canvasUIRenderContext"
+import {RenderUICanvasContext} from "./ui/rendering/renderUICanvasContext"
 import {RoundEnumerator} from "./roundEnumerator"
 import {SelectionListState, SelectionListStateType} from "./state/selectionListState"
+import {UIElement} from "./ui/uiElement"
+import {UIElementType} from "./ui/uiElementType"
 
 type ShapeRender = {
   z: number
@@ -42,17 +44,14 @@ class RenderContextFactory {
     return new RenderShape2DContext(space, this.view, this.selectables, this.canvasContext)
   }
 
-  createUI(): UIRenderContext {
-    return new CanvasUIRenderContext(this.canvasContext)
+  createUI(): RenderUIContext {
+    return new RenderUICanvasContext(this.canvasContext)
   }
 }
 
 export class World {
 
-  private readonly logEnabled = false
-
   private readonly ui: UI;
-  private readonly lastZ: Map<string, number> = new Map()
   private readonly view: View
   private readonly context: Context
   private readonly selectionState: SelectionState
@@ -115,6 +114,10 @@ export class World {
       console.log("-- " + objectShape.shape.toString())
     }
     console.log("Shapes End ----------------------------------------------------------------------")
+
+    console.log("UI         ----------------------------------------------------------------------")
+    this.logElements(this.ui.children, 0)
+    console.log("UI End     ----------------------------------------------------------------------")
   }
 
   pointInUI(point: Point2D) {
@@ -172,11 +175,12 @@ export class World {
     for (const selectable of this.selectables) {
       const selectionState = this.selectionState
       const selectionListState = this.selectionListState
-      if (selectable.id == selectionState.hover) {
+      const id = selectable.source.primitive.id
+      if (selectionState.hover != nothing && selectionState.hover.id == id) {
         hoverSelectable = selectable
-      } else if (selectionState.selected == selectable.id) {
+      } else if (selectionState.selected != nothing && selectionState.selected.id == id) {
         selected = selectable
-      } else if (selectionListState.faceIds.indexOf(selectable.id) >= 0) {
+      } else if (selectionListState.primitives.findIndex(where => where.id == id) >= 0) {
         selectable.state = SelectableState.Group
         this.renderShape2D(selectable, space2D, result)
       }
@@ -216,8 +220,6 @@ export class World {
     const boundaries = shape.boundaries(space)
     const z = this.view.toViewCoordinateZ(boundaries.averageZ)
 
-    this.logZ(shape, z)
-
     result.push({
       z: z,
       shape: shape,
@@ -253,13 +255,6 @@ export class World {
     })
   }
 
-  private logZ(shape: Shape, z: number) {
-    if (!this.logEnabled) return
-    if (!this.lastZ.has(shape.id) || this.lastZ.get(shape.id) != z) {
-      this.lastZ.set(shape.id, z)
-    }
-  }
-
   private hoverAt(point: Point2D) {
 
     const selectionState = this.selectionState
@@ -267,8 +262,9 @@ export class World {
     for (let index = this.selectables.length - 1; index >= 0; index--) {
       const selectable = this.selectables[index]
       if (selectable.includes(point)) {
-        if (selectionState.hover != selectable.id) {
-          selectionState.hover = selectable.id
+        const id = selectable.source.primitive.id
+        if (selectionState.hover == nothing || selectionState.hover.id != id) {
+          selectionState.hover = selectable.source
           this.lastSelectedIndex = nothing
         }
         return
@@ -286,7 +282,7 @@ export class World {
     while (roundEnumerator.current != nothing) {
       const selectable = roundEnumerator.current
       if (selectable.includes(point)) {
-        selectionState.selected = selectable.id
+        selectionState.selected = selectable.source
         this.lastSelectedIndex = roundEnumerator.index
         return
       }
@@ -299,5 +295,12 @@ export class World {
 
   private clearSelection() {
     this.selectionState.hover = nothing
+  }
+
+  private logElements(children: readonly UIElement[], indent: number) {
+    for (const child of children) {
+      console.log(`${" ".repeat(indent * 2)}- ${child.id} (${UIElementType[child.elementType]}): ${child.calculateSize()} (last: ${child.lastArea}}`)
+      this.logElements(child.children, indent + 1)
+    }
   }
 }

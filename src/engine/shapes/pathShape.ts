@@ -6,21 +6,23 @@ import {
   Space,
   Point,
   Triangle,
-  modelColor, Path, ModelType, Point2D
+  modelColor, Path, ModelType, Point2D, PrimitiveSource
 } from "../models"
 import {colorLuminance, Colors} from "../../infrastructure/colors"
 import {SelectablePath} from "./selectablePath"
+import {nothing, Nothing} from "../../infrastructure/nothing"
 
 export class PathShape implements Shape {
 
+  private readonly source: PrimitiveSource | Nothing
+
   readonly color: string
   readonly points: readonly TransformablePoint[]
-  readonly id: string
   readonly solid: boolean
 
-  constructor(id: string, color: string, points: readonly Point[], solid: boolean = true) {
-    this.id = id
+  constructor(color: string, points: readonly Point[], solid: boolean = true, source: PrimitiveSource | Nothing = nothing) {
     this.color = color
+    this.source = source
     this.points = points.map(point => new TransformablePoint(point))
     this.solid = solid
   }
@@ -44,7 +46,9 @@ export class PathShape implements Shape {
     this.setStyle(canvas, colorFactor)
     this.addPath(canvas, pointsView)
 
-    context.rendered(new SelectablePath(this.id + ".selectable", pointsView, this.solid))
+    if (this.source != nothing) {
+      context.rendered(new SelectablePath(this.source, pointsView, this.solid))
+    }
   }
 
   private setStyle(canvas: CanvasRenderingContext2D, colorFactor: number) {
@@ -89,14 +93,14 @@ export class PathShape implements Shape {
     return sum / points.length
   }
 
-  static fromTriangle(id: string, debugColors: boolean, triangle: Triangle, solid: boolean = true) {
+  static fromTriangle(triangle: Triangle, debugColors: boolean, solid: boolean = true, source: PrimitiveSource | Nothing = nothing) {
     const color = this.segmentColor(debugColors, triangle.type)
-    return new PathShape(triangle.hash.toString(), color, [triangle.point1, triangle.point2, triangle.point3], solid)
+    return new PathShape(color, [triangle.point1, triangle.point2, triangle.point3], solid, source)
   }
 
-  static fromPolygon(id: string, debugColors: boolean, path: Path, solid: boolean = true) {
+  static fromPolygon(path: Path, debugColors: boolean, solid: boolean = true, source: PrimitiveSource | Nothing = nothing) {
     const color = this.segmentColor(debugColors, path.type)
-    return new PathShape(path.hash.toString(), color, path.points, solid)
+    return new PathShape(color, path.points, solid, source)
   }
 
   private static segmentColor(debugColors: boolean, type: ModelType) {

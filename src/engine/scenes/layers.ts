@@ -2,7 +2,7 @@ import {Colors} from "../../infrastructure/colors"
 import {Point, Size} from "../models"
 import {Rectangle} from "../objects"
 import {ApplicationContext} from "../applicationContext"
-import {RenderStyle} from "../state/renderStyle"
+import {RenderStyle} from "../state"
 import {Scene} from "./scene"
 
 export function layers(): Scene {

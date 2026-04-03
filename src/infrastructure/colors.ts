@@ -1,3 +1,11 @@
+const randomColors = [
+  "#cc7b0a",
+  "#ffab35",
+  "#f3d3a7",
+]
+
+let randomColorsIndex = 0
+
 export class Colors {
 
   static readonly white = "#fff"
@@ -47,13 +55,20 @@ export class Colors {
     tabBackground: "#494949",
     tabBackgroundInactive: "#343434",
     buttonBackground: "#8d8d8d",
+    slider: "#8d8d8d",
     buttonHover: "#DDEEFA",
     buttonClicked: "#5485a7",
     buttonText: "#eeeeee",
     titleBackground: "#5d5d5d",
     titleText: "#a9a9a9",
     itemBackground: "#eeeeee",
-    itemSelected: "#5485a7"
+    itemSelected: "#5485a7",
+    listBackground: "#cccccc"
+  }
+
+  static random() {
+    randomColorsIndex = randomColorsIndex + 1 % randomColors.length
+    return randomColors[randomColorsIndex]
   }
 }
 

@@ -1,14 +1,19 @@
 import {ElementArea} from "../elementArea"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
-import {UIRenderContext} from "../uiRenderContext"
+import {RenderUIContext} from "../renderUIContext"
 import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {UIElementType} from "../uiElementType"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
 import {createAttachmentProperty} from "../attachmentProperty"
 
+export function canvas(canvasProperties: CanvasProperties, elements: readonly UIElement[] | undefined = undefined) {
+  return new Canvas({...canvasProperties, elements: elements})
+}
+
 export interface CanvasProperties extends UIElementProperties {
   elements?: readonly UIElement[]
+  size?: ElementSize
 }
 
 export class Canvas extends UIElement {
@@ -20,6 +25,7 @@ export class Canvas extends UIElement {
 
   private elementsValue: readonly UIElement[] = []
 
+  size: ElementSize | Nothing = nothing
   readonly elementType: UIElementType = UIElementType.Canvas
 
   get elements(): readonly UIElement[] {
@@ -39,25 +45,27 @@ export class Canvas extends UIElement {
   constructor(properties: CanvasProperties | Nothing = nothing) {
     super(properties)
     if (properties === nothing) return
+
     this.elementsValue = setProperty(properties.elements, this.elementsValue)
+    this.size = setProperty(properties.size, this.size)
   }
 
   calculateSize(): ElementSize {
-    return new ElementSize(ElementSizeValue.full, ElementSizeValue.full)
+    return this.size ?? new ElementSize(ElementSizeValue.full, ElementSizeValue.full)
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
+  protected renderElement(area: ElementArea, context: RenderUIContext): ElementArea {
     this.renderElements(area, context)
     return area
   }
 
-  protected renderElements(area: ElementArea, context: UIRenderContext) {
+  protected renderElements(area: ElementArea, context: RenderUIContext) {
     for (const element of this.elements) {
       this.renderChild(element, area, context)
     }
   }
 
-  private renderChild(element: UIElement, area: ElementArea, context: UIRenderContext) {
+  private renderChild(element: UIElement, area: ElementArea, context: RenderUIContext) {
     if (!element.visible) return
     const childArea = this.calculateChildArea(element, area)
     element.render(childArea, context)

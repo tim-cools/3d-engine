@@ -5,7 +5,7 @@ import {Text} from "../../engine/ui/controls"
 import {getChildrenById} from "./getChildrenById"
 import {Nothing, nothing} from "../../infrastructure/nothing"
 import {Link} from "../../engine/ui/controls/link"
-import {Panel} from "../../engine/ui/layout/panel"
+import {CollapsablePanel} from "../../engine/ui/layout/collapsablePanel"
 
 export class VerifyUIElementContext {
 
@@ -38,7 +38,7 @@ export class VerifyUIElementContext {
 
   panelWith(idEnd: string, value: string) {
 
-    const element = this.getElement<Panel>(idEnd, UIElementType.Panel)
+    const element = this.getElement<CollapsablePanel>(idEnd, UIElementType.Panel)
     if (element == nothing) return this
 
     this.context.logging.logAssert(element.title == value, ` value: ${value}`, `element: ${idEnd} value is: '${element.title}'`)

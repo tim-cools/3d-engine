@@ -1,9 +1,8 @@
-import {Point, Size} from "../models"
+import {Path, Point, PrimitiveSource, Segment, Size} from "../models"
 import {LineShape, Shape} from "../shapes"
 import {Object3DBase} from "./object"
 import {PathShape} from "../shapes"
-import {RenderStyle} from "../state/renderStyle"
-import {darker} from "../../infrastructure/colors"
+import {RenderStyle} from "../state"
 
 export class Rectangle extends Object3DBase {
 
@@ -37,18 +36,18 @@ export class Rectangle extends Object3DBase {
 
   private wireframe() {
     return [
-      ...this.segments(this.color, Rectangle.leftBottom, Rectangle.rightBottom),
-      ...this.segments(this.color, Rectangle.leftBottom, Rectangle.leftTop),
-      ...this.segments(this.color, Rectangle.rightBottom, Rectangle.rightBottom),
-      ...this.segments(this.color, Rectangle.rightBottom, Rectangle.rightTop),
+      ...Rectangle.segments(this.color, Rectangle.leftBottom, Rectangle.rightBottom),
+      ...Rectangle.segments(this.color, Rectangle.leftBottom, Rectangle.leftTop),
+      ...Rectangle.segments(this.color, Rectangle.rightBottom, Rectangle.rightBottom),
+      ...Rectangle.segments(this.color, Rectangle.rightBottom, Rectangle.rightTop),
     ]
   }
 
   private solid() {
-    return this.rectangle(this.color, Rectangle.leftBottom, Rectangle.leftTop, Rectangle.rightBottom, Rectangle.rightTop)
+    return Rectangle.rectangle(Rectangle.leftBottom, Rectangle.leftTop, Rectangle.rightBottom, Rectangle.rightTop)
   }
 
-  private segments(color: string, begin: Point, end: Point) {
+  private static segments(color: string, begin: Point, end: Point) {
 
     const segmentsNumber = 25
     const animateX = begin.x != end.x
@@ -70,54 +69,25 @@ export class Rectangle extends Object3DBase {
         animateY ? ySize * ratio * index + begin.y : begin.y,
         animateZ ? zSize * ratio * index + begin.z : begin.z)
 
-      result.push(
-        new LineShape(`${this.id}.line.${index}`, color, start, target))
+      result.push(new LineShape(color, start, target))
 
       start = target
     }
     return result
   }
 
-  private rectangle(color: string, leftBottom: Point, leftTop: Point, rightBottom: Point, rightTop: Point) {
-    const borderColor = darker(color)
+  private static rectangle(leftBottom: Point, leftTop: Point, rightBottom: Point, rightTop: Point) {
+    const segment1 = new Segment(leftBottom, leftTop)
+    const segment2 = new Segment(leftTop, rightTop)
+    const segment3 = new Segment(rightTop, rightBottom)
+    const segment4 = new Segment(rightBottom, leftBottom)
+    const shape = Path.fromPoints([leftBottom, leftTop, rightTop, rightBottom])
     return [
-      new LineShape(`${this.id}.line.left`, borderColor, leftBottom, leftTop),
-      new LineShape(`${this.id}.line.top`, borderColor, leftTop, rightTop),
-      new LineShape(`${this.id}.line.right`, borderColor, rightTop, rightBottom),
-      new LineShape(`${this.id}.line.bottom`, borderColor, rightBottom, leftBottom),
-      new PathShape(`${this.id}.rect`, color, [leftBottom, leftTop, rightTop, rightBottom]),
-    ]
-  }
-
-  private triangles(color: string, leftBottom: Point, leftTop: Point, rightBottom: Point, rightTop: Point) {
-    return [
-      new LineShape(
-        `${this.id}.line.0`,
-        "black",
-        leftBottom,
-        leftTop),
-      new LineShape(
-        `${this.id}.line.1`,
-        "black",
-        leftTop,
-        rightTop),
-      new LineShape(
-        `${this.id}.line.2`,
-        "black",
-        rightTop,
-        rightBottom),
-      new LineShape(`${this.id}.line.3`,
-        "black",
-        rightBottom,
-        leftBottom),
-      new PathShape(
-        `${this.id}.path.0`,
-        color,
-        [leftBottom, leftTop, rightBottom]),
-      new PathShape(
-        `${this.id}.path.1`,
-        color,
-        [rightBottom, leftTop, rightTop]),
+      LineShape.fromSegment(segment1, false, new PrimitiveSource(segment1, "layers")),
+      LineShape.fromSegment(segment2, false, new PrimitiveSource(segment2, "layers")),
+      LineShape.fromSegment(segment3, false, new PrimitiveSource(segment3, "layers")),
+      LineShape.fromSegment(segment4, false, new PrimitiveSource(segment4, "layers")),
+      PathShape.fromPolygon(shape, false, true, new PrimitiveSource(shape, "layers"))
     ]
   }
 }

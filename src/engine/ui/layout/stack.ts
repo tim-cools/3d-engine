@@ -1,22 +1,32 @@
-import {setProperty, UIElement, UIElementProperties} from "../uiElement"
+import {setPaddingProperty, setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {ElementArea} from "../elementArea"
-import {UIRenderContext} from "../uiRenderContext"
+import {RenderUIContext} from "../renderUIContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
 import {Padding} from "../padding"
+import {EventHandler, MouseEnter, MouseLeave} from "../../events"
+import {UIContext} from "../uiContext"
+
+export function stack(stackProperties: StackProperties | Nothing = nothing, children: readonly UIElement[] | undefined = undefined) {
+  return new Stack({...stackProperties, children: children})
+}
 
 export interface StackProperties extends UIElementProperties {
   children?: readonly UIElement[]
-  spacing?: number,
-  padding?: Padding
+  spacing?: number
+  padding?: Padding | number
+  onEnter?: EventHandler
+  onLeave?: EventHandler
 }
 
 export class Stack extends UIElement {
 
   private readonly spacing: number = 4
   private readonly padding: Padding = Padding.single(0)
+  private readonly onEnter: EventHandler | Nothing = nothing
+  private readonly onLeave: EventHandler | Nothing = nothing
 
   private childrenValue: readonly UIElement[] = []
 
@@ -32,24 +42,41 @@ export class Stack extends UIElement {
     this.contextOptional?.attachElements(this.childrenValue)
   }
 
-  constructor(stackProperties: StackProperties | Nothing = nothing) {
-    super(stackProperties)
+  constructor(properties: StackProperties | Nothing = nothing) {
+    super(properties)
 
-    if (stackProperties === nothing) return
+    if (properties === nothing) return
 
-    this.spacing = setProperty(stackProperties.spacing, this.spacing)
-    this.padding = setProperty(stackProperties.padding, this.padding)
-    this.childrenValue = setProperty(stackProperties.children, this.childrenValue)
+    this.spacing = setProperty(properties.spacing, this.spacing)
+    this.padding = setPaddingProperty(properties.padding, this.padding)
+    this.childrenValue = setProperty(properties.children, this.childrenValue)
+    this.onEnter = setProperty(properties.onEnter, nothing)
+    this.onLeave = setProperty(properties.onLeave, nothing)
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
+  protected contextAttached(context: UIContext) {
+    if (this.onEnter != nothing) {
+      context.events.subscribe(MouseEnter, event => this.callOnEnter(), this)
+    }
+    if (this.onLeave != nothing) {
+      context.events.subscribe(MouseLeave, event => this.callOnLeave(), this)
+    }
+  }
+
+  private callOnLeave() {
+    return this.onLeave?.call(this)
+  }
+
+  private callOnEnter() {
+    return this.onEnter?.call(this)
+  }
+
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
 
     area = area.pad(this.padding)
 
     const stackSize = this.stackSize()
-    const ratioHeight = stackSize.totalPercentage > 0 ? area.height / stackSize.totalPercentage : 0
-
-    //context.fillPath("green", area.resize(stackSize.value).toPath())
+    const ratioHeight = stackSize.totalPercentage > 0 ? (area.height - stackSize.contentHeight) / stackSize.totalPercentage : 0
 
     let top = area.top
     for (let index = 0; index < this.children.length; index++){
@@ -58,12 +85,17 @@ export class Stack extends UIElement {
       if (!element.visible) continue
 
       const elementSize = element.calculateSize()
-      const height = elementSize.height.proportion ? elementSize.height.value * ratioHeight : elementSize.height.value
+      const height = elementSize.height.proportion
+        ? elementSize.height.value * ratioHeight
+        : elementSize.height.value
       const elementArea = new ElementArea(area.left, top, area.calculateWidth(elementSize.width), height)
+
       element.render(elementArea, context)
 
       top += index < this.children.length - 1 ? height + this.spacing : height
     }
+
+    super.renderElement(area, context)
 
     return area.resize(stackSize.value)
   }
@@ -80,6 +112,7 @@ export class Stack extends UIElement {
     let heightPercentage = 0
 
     for (let index = 0; index < this.children.length; index++) {
+
       const child = this.children[index]
       if (!child.visible) continue
 
@@ -88,19 +121,24 @@ export class Stack extends UIElement {
       if (childSize.height.proportion) {
         heightPercentage += childSize.height.value
       } else {
-        height += index == 0 ? childSize.height.value : this.spacing + childSize.height.value
+        height += index == 0 ? childSize.height.value : childSize.height.value
       }
 
       if (childSize.width.proportion) {
-        widthPercentage += childSize.width.value
+        widthPercentage = Math.max(widthPercentage, childSize.width.value)
       } else {
         width = Math.max(width, childSize.width.value)
       }
     }
 
-    const elementWidth = widthPercentage > 0 ? ElementSizeValue.full : new ElementSizeValue(width)
-    const elementHeight = heightPercentage > 0 ? ElementSizeValue.full : new ElementSizeValue(height)
+    const spacing = (this.children.length - 1) * this.spacing
+    const elementWidth = widthPercentage > 0 ? ElementSizeValue.full : new ElementSizeValue(width + this.padding.horizontal)
+    const elementHeight = heightPercentage > 0 ? ElementSizeValue.full : new ElementSizeValue(height + spacing + this.padding.vertical)
 
-    return {totalPercentage: heightPercentage, value: new ElementSize(elementWidth, elementHeight)}
+    return {
+      totalPercentage: heightPercentage,
+      contentHeight: height + spacing,
+      value: new ElementSize(elementWidth, elementHeight)
+    }
   }
 }

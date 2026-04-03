@@ -1,14 +1,18 @@
-import {ElementSizeValue} from "../elementSizeValue"
+import {fullSize} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
 import {ObjectState, ObjectStateType} from "../../state/objectState"
-import {Row, Stack, Panel, ContentElement} from "../layout"
+import {Stack, CollapsablePanel, ContentElement, row, stack, collapsablePanel} from "../layout"
 import {Object} from "../../objects"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
-import {ObjectProperty} from "../../objects/objectProperties"
-import {Text, IconButton} from "../controls"
+import {ObjectProperty} from "../../objects"
+import {iconButton, text} from "../controls"
 import {Icon} from "../rendering/icons"
 import {UIElement} from "../uiElement"
 import {UIContext} from "../uiContext"
+
+export function objectDetails() {
+  return new ObjectDetails()
+}
 
 export class ObjectDetails extends ContentElement {
 
@@ -17,7 +21,7 @@ export class ObjectDetails extends ContentElement {
   private readonly noPropertiesCaption = "No properties"
 
   private readonly properties: Stack
-  private readonly panel: Panel
+  private readonly panel: CollapsablePanel
 
   private lastObject: Object | Nothing = nothing
 
@@ -26,8 +30,8 @@ export class ObjectDetails extends ContentElement {
   constructor() {
     super()
 
-    this.properties = new Stack()
-    this.panel = new Panel({id: "objectDetails", title: this.noObjectsCaption, content: this.properties})
+    this.properties = stack()
+    this.panel = collapsablePanel(this.noObjectsCaption, this.properties, {id: "objectDetails"})
     this.content = this.panel
   }
 
@@ -48,7 +52,7 @@ export class ObjectDetails extends ContentElement {
 
     this.lastObject = object
     if (object == nothing || object.properties.values.length == 0) {
-      this.properties.children = [new Text({ id: "noProperties", width: ElementSizeValue.full, text: this.noPropertiesCaption})]
+      this.properties.children = [text(this.noPropertiesCaption, { id: "noProperties", width: fullSize})]
       return
     }
 
@@ -62,12 +66,12 @@ export class ObjectDetails extends ContentElement {
 
   private static createPropertyRow(property: ObjectProperty) {
     const elements: UIElement[] = [
-      new Text({width: new ElementSizeValue(160), text: property.name}),
-      new Text({width: new ElementSizeValue(1, true), text: property.value})
+      text(property.name, {width: 160}),
+      text(property.value, {width: fullSize})
     ]
     if (property.update != nothing) {
-      elements.push(new IconButton({id: "change", size: new ElementSizeValue(18), icon: Icon.Loop, onClick: property.update}))
+      elements.push(iconButton(Icon.Loop, {id: "change", size: 18, onClick: property.update}))
     }
-    return new Row({children: elements})
+    return row({id: "ObjectProperty", padding: 0}, elements)
   }
 }

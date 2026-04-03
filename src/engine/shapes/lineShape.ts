@@ -1,26 +1,32 @@
 import {RenderShapeContext, Shape} from "."
-import {Boundaries, modelColor, ModelType, Point, Segment, Space, TransformablePoint, Transformer} from "../models"
+import {
+  Boundaries,
+  modelColor,
+  ModelType,
+  Point,
+  PrimitiveSource,
+  Segment,
+  Space,
+  TransformablePoint,
+  Transformer
+} from "../models"
 import {Colors} from "../../infrastructure/colors"
 import {SelectableSegment} from "./selectableSegment"
+import {nothing, Nothing} from "../../infrastructure/nothing"
 
 export class LineShape implements Shape {
 
-  readonly id: string
+  private source: PrimitiveSource | Nothing
+
   readonly color: string
   readonly begin: TransformablePoint
   readonly end: TransformablePoint
 
-  constructor(id: string, color: string, begin: Point, end: Point) {
-    this.id = id
+  constructor(color: string, begin: Point, end: Point, source: PrimitiveSource | Nothing = nothing) {
     this.color = color
     this.begin = new TransformablePoint(begin)
     this.end = new TransformablePoint(end)
-  }
-
-  static new(id: string, color: string, xBegin: number, yBegin: number, zBegin: number, xEnd: number, yEnd: number, zEnd: number) {
-    const begin = TransformablePoint.new(xBegin, yBegin, zBegin)
-    const end = TransformablePoint.new(xEnd, yEnd, zEnd)
-    return new LineShape(id,  color, begin, end)
+    this.source = source
   }
 
   boundaries(space: Space) {
@@ -43,7 +49,9 @@ export class LineShape implements Shape {
     canvas.lineTo(endView.x, endView.y)
     canvas.stroke()
 
-    context.rendered(new SelectableSegment(this.id + ".selectable", beginView, endView))
+    if (this.source != nothing) {
+      context.rendered(new SelectableSegment(this.source, beginView, endView))
+    }
   }
 
   update(transformers: readonly Transformer[]) {
@@ -52,7 +60,7 @@ export class LineShape implements Shape {
   }
 
   toString() {
-    return `line '${this.id}' - begin: '${this.begin}' end: '${this.end}' color: '${this.color}'`
+    return `line - begin: '${this.begin}' end: '${this.end}' color: '${this.color}'`
   }
 
   private transform(space: Space) {
@@ -61,14 +69,9 @@ export class LineShape implements Shape {
     return {begin, end}
   }
 
-  static fromSegment(id: string, segment: Segment, debugColors: boolean) {
+  static fromSegment(segment: Segment, debugColors: boolean, source: PrimitiveSource | Nothing = nothing) {
     const color = this.segmentColor(debugColors, segment.type)
-    return new LineShape(id, color, new TransformablePoint(segment.begin), new TransformablePoint(segment.end))
-  }
-
-  static fromPoints(id: string, debugColors: boolean, type: ModelType, point1: Point, point2: Point) {
-    const color = this.segmentColor(debugColors, type)
-    return new LineShape(id, color, new TransformablePoint(point1), new TransformablePoint(point2))
+    return new LineShape(color, new TransformablePoint(segment.begin), new TransformablePoint(segment.end), source)
   }
 
   private static segmentColor(debugColors: boolean, type: ModelType) {

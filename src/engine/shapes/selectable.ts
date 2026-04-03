@@ -1,4 +1,4 @@
-import {Point2D} from "../models"
+import {Point2D, PrimitiveSource} from "../models"
 import {SelectablePath} from "./selectablePath"
 import {SelectableSegment} from "./selectableSegment"
 import {SelectablePoint} from "./selectablePoint"
@@ -14,6 +14,7 @@ export type SelectableObject = SelectablePoint | SelectableSegment | SelectableP
 
 export interface Selectable {
   includes(point: Point2D): Boolean
+  source: PrimitiveSource
 }
 
 export const SelectableMargin = 7

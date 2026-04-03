@@ -3,19 +3,26 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
 import {Padding} from "../padding"
 import {ElementArea} from "../elementArea"
-import {ElementPosition} from "../elementPosition"
 import {Colors} from "../../../infrastructure/colors"
-import {UIRenderContext} from "../uiRenderContext"
-import {Stack} from "./stack"
+import {RenderUIContext} from "../renderUIContext"
+import {stack, Stack} from "./stack"
 import {ContentElement} from "./contentElement"
 import {UIElementType} from "../uiElementType"
-import {Box, IconButton} from "../controls"
+import {box, Box, IconButton} from "../controls"
 import {Icon} from "../rendering/icons"
-import {Canvas} from "./canvas"
+import {canvas, Canvas} from "./canvas"
 
 export enum SidePanelLocation {
   Left,
   Right
+}
+
+export function sidePanel(location: SidePanelLocation, id: string, children: UIElement[]) {
+  return new SidePanel({
+    id: id,
+    location: location,
+    children: children
+  })
 }
 
 export interface SidePanelProperties extends UIElementProperties {
@@ -25,13 +32,15 @@ export interface SidePanelProperties extends UIElementProperties {
 
 export class SidePanel extends ContentElement {
 
-  private readonly expandButton: IconButton
-  private readonly stack: Stack
-  private readonly box: Box
+  private readonly collapseButton: IconButton
+  private readonly list: Stack
+  private readonly header: Box
+  private readonly headerPanel : Canvas
+
   private open: boolean = true
 
-  readonly sizeOpen = new ElementSize(new ElementSizeValue(350), new ElementSizeValue(100, true))
-  readonly sizeClosed = new ElementSize(new ElementSizeValue(26), new ElementSizeValue(100, true))
+  readonly sizeOpen = new ElementSize(new ElementSizeValue(350), ElementSizeValue.full)
+  readonly sizeClosed = new ElementSize(new ElementSizeValue(26), ElementSizeValue.full)
   readonly elementType: UIElementType = UIElementType.SidePanel
   readonly location: SidePanelLocation
 
@@ -43,7 +52,8 @@ export class SidePanel extends ContentElement {
     super(properties)
 
     this.location = properties.location
-    this.expandButton = new IconButton({
+    this.collapseButton = new IconButton({
+      id: "Collapse",
       size: new ElementSizeValue(18),
       icon: this.icon(),
       onClick: () => this.toggleExpand(),
@@ -53,16 +63,19 @@ export class SidePanel extends ContentElement {
       ]
     })
 
-    const stackPadding = new Padding(36, 16, 16, 16)
-    this.stack = new Stack({spacing: 16, children: properties.children, padding: stackPadding})
-    this.box = new Box({size: this.headerSize() })
-    this.content = new Canvas({
-      elements: [
-        this.box,
-        this.stack,
-        this.expandButton
-      ]
-    })
+    const stackPadding = Padding.single(16)
+    const headerSize = this.headerSize()
+
+    this.list = stack({id: "Panels", spacing: 16, padding: stackPadding}, properties.children)
+    this.header = box({id: "Header", size: headerSize})
+    this.headerPanel = canvas({id: "SidePanelHeader", size: headerSize},
+      [this.header, this.collapseButton])
+
+    this.content = stack({spacing: 0}, [this.headerPanel,this.list])
+  }
+
+  calculateSize(): ElementSize {
+    return new ElementSize(this.size.width, ElementSizeValue.full)
   }
 
   private icon() {
@@ -71,31 +84,24 @@ export class SidePanel extends ContentElement {
       : this.open ? Icon.ArrowRight : Icon.ArrowLeft
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
-    const size = this.size
-    const position = this.location == SidePanelLocation.Right
-      ? new ElementPosition(area.width - size.width.value, -1)
-      : new ElementPosition(-1, -1)
-
-    const elementArea = area.part(position, size)
-    const points = elementArea.toPath()
-    context.fillPathStroke(Colors.ui.background, Colors.ui.border, 2, points)
-
-    this.content.render(elementArea, context)
-
-    return elementArea
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
+    const points = area.toPath()
+    context.fillPathStroke(points, 2, Colors.ui.background, Colors.ui.border)
+    super.renderElement(area, context)
+    return area
   }
 
   private toggleExpand() {
     this.open = !this.open
-    this.expandButton.icon = this.icon()
-    this.stack.visible = this.open
-    this.box.size = this.headerSize()
+    this.collapseButton.icon = this.icon()
+    this.list.visible = this.open
+
+    const headerSize = this.headerSize()
+    this.header.size = headerSize
+    this.headerPanel.size = headerSize
   }
 
   private headerSize() {
-    return this.open
-      ? new ElementSize(this.size.width, new ElementSizeValue(24))
-      : new ElementSize(this.size.width, new ElementSizeValue(24))
+    return new ElementSize(this.size.width, new ElementSizeValue(24))
   }
 }

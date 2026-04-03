@@ -1,25 +1,25 @@
 import {State, StateIdentifier} from "./state"
 import {PublishStateEvents} from "./stateManager"
-import {nothing, Nothing} from "../../infrastructure/nothing"
-import {Id} from "../ui/id"
+import {nothing} from "../../infrastructure/nothing"
 import {SceneStateType} from "./sceneState"
 import {Context} from "../context"
 import {KeyDown} from "../events"
 import {SelectionStateType} from "./selectionState"
+import {PrimitiveSource} from "../models"
 
 export const SelectionListStateType = new StateIdentifier<SelectionListState>("selectionList")
 
 export interface SelectionListState {
 
-  readonly faceIds: string[]
+  readonly primitives: PrimitiveSource[]
 
-  select(id: string): void
-  remove(id: string): void
+  select(primitive: PrimitiveSource): void
+  remove(primitive: PrimitiveSource): void
 }
 
 export class SelectionListStateHandler extends State<SelectionListState> implements SelectionListState {
 
-  faceIds: string[] = []
+  primitives: PrimitiveSource[] = []
 
   constructor(publishStateEvents: PublishStateEvents, private context: Context) {
     super(SelectionListStateType, publishStateEvents)
@@ -27,31 +27,33 @@ export class SelectionListStateHandler extends State<SelectionListState> impleme
     context.events.subscribe(KeyDown, event => this.keyDown(event), nothing)
   }
 
-  select(id: string) {
-    const selected = this.faceIds.indexOf(id)
+  select(primitive: PrimitiveSource) {
+    const id = primitive.primitive.id
+    const selected = this.primitives.findIndex(where => where.primitive.id == id)
     if (selected < 0) {
-      this.faceIds.push(id)
+      this.primitives.push(primitive)
     } else {
-      this.faceIds.splice(selected, 1)
+      this.primitives.splice(selected, 1)
     }
 
     const selectionState = this.context.state.get(SelectionStateType)
-    if (selectionState.selected == id) {
+    if (selectionState.selected != nothing && selectionState.selected.id == id) {
       selectionState.selected = nothing
     }
     this.updated()
   }
 
-  remove(id: string) {
-    const selected = this.faceIds.indexOf(id)
+  remove(primitive: PrimitiveSource) {
+    const id = primitive.primitive.id
+    const selected = this.primitives.findIndex(where => where.primitive.id == id)
     if (selected >= 0) {
-      this.faceIds.splice(selected, 1)
+      this.primitives.splice(selected, 1)
     }
     this.updated()
   }
 
   private clear() {
-    this.faceIds = []
+    this.primitives = []
     this.updated()
   }
 

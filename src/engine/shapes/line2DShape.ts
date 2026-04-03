@@ -1,26 +1,23 @@
-import {Point2D} from "../models"
-import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
-import {SelectableSegment} from "./selectableSegment"
+import {Point2D, Primitive, PrimitiveSource} from "../models"
+import {RenderShape2DContext, Shape2D} from "./shape2D"
 
 export class Line2DShape implements Shape2D {
 
   readonly color: string
   readonly begin: Point2D
   readonly end: Point2D
-  readonly id: string
   readonly z: number = 0
 
-  constructor(id: string, color: string, begin: Point2D, end: Point2D) {
-    this.id = id
+  constructor(color: string, begin: Point2D, end: Point2D) {
     this.color = color
     this.begin = begin
     this.end = end
   }
 
-  static new(id: string, color: string, xBegin: number, yBegin: number, xEnd: number, yEnd: number) {
+  static new(color: string, xBegin: number, yBegin: number, xEnd: number, yEnd: number) {
     const begin = new Point2D(xBegin, yBegin)
     const end = new Point2D(xEnd, yEnd)
-    return new Line2DShape(id, color, begin, end)
+    return new Line2DShape(color, begin, end)
   }
 
   render(context: RenderShape2DContext) {
@@ -35,7 +32,5 @@ export class Line2DShape implements Shape2D {
     canvas.moveTo(begin.x, begin.y)
     canvas.lineTo(end.x, end.y)
     canvas.stroke()
-
-    context.rendered(new SelectableSegment(this.id + ".selectable", begin, end))
   }
 }

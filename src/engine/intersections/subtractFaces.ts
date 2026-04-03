@@ -1,4 +1,4 @@
-import {Face, FaceType, Model, ModelType, Path, PathBuilder, Point, Segment, SpaceModel, Triangle} from "../models"
+import {Face, FaceType, Model, ModelType, Path, Point, Segment, SpaceModel, Triangle} from "../models"
 import {Nothing, nothing} from "../../infrastructure/nothing"
 import {IntersectionType, SegmentIntersection} from "./intersectionResult"
 import {equalsTolerancePoint} from "../models/equals"
@@ -6,6 +6,7 @@ import {intersectsTriangleModel, SpaceModelIntersectionResult} from "./intersect
 import {Logger} from "../models/logger"
 import {any, pushMany} from "../../infrastructure"
 import {SubtractModels} from "./subtractModels"
+import {PathBuilder} from "../models/pathBuilder"
 
 export type SubtractFacesResult = {points: Point[], segments: Segment[], faces: Face[]}
 
@@ -49,7 +50,7 @@ function addMasterFaces(master: Model, subtract: SpaceModel, log: Logger, faces:
 
 function addMasterTriangle(subtract: SpaceModel, triangle: Triangle, log: Logger, faces: Face[], points: Point[], segments: Segment[], debugInfo: DebugInfo) {
 
-  if (debugInfo.highlightTriangle(triangle.hash)) {
+  if (debugInfo.highlightTriangle(triangle.id)) {
     faces.push(triangle.highlightMax())
     return
   }
@@ -194,7 +195,7 @@ function addSubtractTriangle(triangle: Triangle, subtract: SpaceModel, master: M
   //addIntersections(intersection, points, segments)
 
   //console.log(`----- addMasterTriangle - outside model: ${intersection.outsideModel} - hasIntersections: ${intersection.hasIntersections}`)
-  if (debugInfo.highlightTriangle(triangle.hash)) {
+  if (debugInfo.highlightTriangle(triangle.id)) {
     faces.push(triangle.highlightMax())
     highlightIntersectionTriangles(triangle, faces, intersection)
   } else if (intersection.outsideModel) {

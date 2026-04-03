@@ -1,29 +1,26 @@
 import {equalsTolerance} from "./equals"
-import {Finite, ModelType, Plane, Point, Segment, Vector} from "./primitives"
+import {Plane, Point, Segment, Vector} from "./primitives"
 import {Boundaries} from "./boundaries"
 import {Space} from "./transformations"
 import {FaceType} from "./faceType"
 import {ValuesCache} from "../../infrastructure/valuesCache"
-import {hashCode} from "../../infrastructure/stringFunctions"
+import {Finite} from "./finite"
+import {ModelType} from "./modelType"
+import {nextPrimitiveId, Primitive, PrimitiveType} from "./primitiveType"
 
 export class Triangle implements Finite {
 
   private readonly cache: ValuesCache = new ValuesCache()
 
+  readonly primitiveType: PrimitiveType = PrimitiveType.Triangle
   readonly faceType = FaceType.Triangle;
 
+  readonly id = nextPrimitiveId()
   readonly point1: Point
   readonly point2: Point
   readonly point3: Point
   readonly type: ModelType
   readonly debug: boolean
-
-  get hash(): number {
-    return this.cache.get("hash", () => {
-      const key = `${this.point1.toString()}|${this.point2.toString()}|${this.point3.toString()}`
-      return hashCode(key)
-    })
-  }
 
   get boundaries(): Boundaries {
     return this.cache.get("boundaries", () => this.createBoundaries())
@@ -71,16 +68,9 @@ export class Triangle implements Finite {
     return this.cache.get("caSegment", () => new Segment(this.point3, this.point1))
   }
 
-  get key() {
-
-    const parts = [this.point1.toString(), this.point2.toString(), this.point3.toString()]
-    parts.sort((value1: string, value2: string) => value1 < value2 ? -1 : 1)
-    return parts.join('|')
-  }
-
   constructor(point1: Point, point2: Point, point3: Point, type: ModelType = ModelType.Primary, debug: boolean = false) {
     if (point1.equals(point2) || point2.equals(point3) || point3.equals(point1)) {
-      //throw new Error(`Triangle with equal points and end are not supported: point 1: ${point1} 2: ${point2} 3: ${point3}`)
+      //todo check algorithms throw new Error(`Triangle with equal points and end are not supported: point 1: ${point1} 2: ${point2} 3: ${point3}`)
     }
     this.point1 = point1
     this.point2 = point2

@@ -4,11 +4,10 @@ import {firstOrDefault} from "../infrastructure"
 import {Point2D} from "./models"
 import {Context} from "./context"
 import {KeyDown} from "./events"
-import {debug} from "util"
 
 type KeyHandler = { key: string, handler: () => void }
 
-export class Controller {
+export class HumanInterface {
 
   private readonly keyHandlers: KeyHandler[]
 
@@ -19,6 +18,8 @@ export class Controller {
   private mouseIsDown: boolean = false
   private mouseX: number = 0
   private mouseY: number = 0
+  private mouseOriginalX: number = 0
+  private mouseOriginalY: number = 0
   private shiftDown: boolean = false
 
   constructor(view: View, world: World, canvas: HTMLCanvasElement, context: Context) {
@@ -59,6 +60,8 @@ export class Controller {
     this.mouseIsDown = true
     this.mouseX = event.x
     this.mouseY = event.y
+    this.mouseOriginalX = event.x
+    this.mouseOriginalY = event.y
   }
 
   private mouseUp() {
@@ -72,20 +75,33 @@ export class Controller {
 
     this.context.events.mouse.move(point, this.mouseIsDown, pointInUI)
 
-    if (this.mouseIsDown && !pointInUI) {
-      this.moveCamera(event)
+    if (this.mouseIsDown) {
+      this.mouseMoveDown(event, pointInUI, point)
     }
   }
 
-  private moveCamera(event: MouseEvent) {
-    const offsetX = this.mouseX - event.x
-    const offsetY = this.mouseY - event.y
+  private mouseMoveDown(event: MouseEvent, pointInUI: boolean, point: Point2D) {
+
+    const offsetX = event.x - this.mouseX
+    const offsetY = event.y - this.mouseY
+
+    if (offsetX == 0 && offsetY == 0) return
+
+    if (pointInUI) {
+      this.context.events.mouse.drag(point, offsetX, offsetY, new Point2D(this.mouseOriginalX, this.mouseOriginalY))
+    } else {
+      this.moveCamera(event, offsetX, offsetY)
+    }
+
+    this.mouseX = event.x
+    this.mouseY = event.y
+  }
+
+  private moveCamera(event: MouseEvent, offsetX: number, offsetY: number) {
     if (this.shiftDown) {
       this.view.moveCamera(offsetX, offsetY, null)
     } else {
       this.view.rotate(-offsetY / 100, offsetX / 100)
     }
-    this.mouseX = event.x
-    this.mouseY = event.y
   }
 }

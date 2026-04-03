@@ -1,7 +1,7 @@
-import {SidePanelRight} from "./content/sidePanelRight"
 import {Canvas} from "./layout"
 import {UIElementType} from "./uiElementType"
-import {SidePanelLeft} from "./content/sidePanelLeft"
+import {sidePanelLeft, SidePanelLeft} from "./content/sidePanelLeft"
+import {sidePanelRight, SidePanelRight} from "./content/sidePanelRight"
 import {Point2D} from "../models"
 
 export class UI extends Canvas {
@@ -13,13 +13,14 @@ export class UI extends Canvas {
 
   constructor() {
     super()
-    this.sidePanelLeft = new SidePanelLeft()
-    this.sidePanelRight = new SidePanelRight()
+    this.sidePanelLeft = sidePanelLeft()
+    this.sidePanelRight = sidePanelRight()
     this.elements = [this.sidePanelLeft, this.sidePanelRight]
+    //this.elements = [this.sidePanelLeft]
   }
 
   pointInUI(point: Point2D) {
-    return this.sidePanelLeft.content.lastArea.contains(point)
-        || this.sidePanelRight.content.lastArea.contains(point)
+    return !!this.sidePanelLeft.content?.lastArea.contains(point)
+        || !!this.sidePanelRight.content?.lastArea.contains(point)
   }
 }

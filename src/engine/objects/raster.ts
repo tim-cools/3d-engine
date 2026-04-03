@@ -23,7 +23,7 @@ export class Raster extends Object3DBase {
       for (let y = -half; y <= half; y += this.step) {
         for (let z = -half; z <= half; z += this.step) {
           const position = new Point(x, y, z)
-          const pointShape = new PointShape(`${this.id}.point.${x}.${y}.${z}`, Colors.gray.darker, position, 2)
+          const pointShape = new PointShape(Colors.gray.darker, position, 2)
           result.push(pointShape)
         }
       }

@@ -1,12 +1,23 @@
 import {ElementArea} from "./elementArea"
 import {ElementSize} from "./elementSize"
 import {ElementSizeValue} from "./elementSizeValue"
-import {UIRenderContext} from "./uiRenderContext"
+import {RenderUIContext} from "./renderUIContext"
 import {UIElementType} from "./uiElementType"
 import {Id, Nothing, nothing} from "../../infrastructure/nothing"
 import {UIContext} from "./uiContext"
 import {AttachmentProperty, AttachmentPropertyValue, TypedAttachmentProperty} from "./attachmentProperty"
 import {firstOrDefault} from "../../infrastructure"
+import {Padding} from "./padding"
+
+export function setSizeProperty<T extends ElementSizeValue | number>(propertyValue: T | undefined, defaultValue: T): ElementSizeValue {
+  const value = setProperty(propertyValue, defaultValue)
+  return ElementSizeValue.parse(value)
+}
+
+export function setPaddingProperty<T extends Padding | number>(propertyValue: T | undefined, defaultValue: T): Padding {
+  const value = setProperty(propertyValue, defaultValue)
+  return Padding.parse(value)
+}
 
 export function setProperty<T>(propertyValue: T | undefined, defaultValue: T): T {
   return propertyValue == undefined ? defaultValue : propertyValue
@@ -57,8 +68,9 @@ export abstract class UIElement {
     this.attachmentProperties = setProperty(properties.attach, nothing)
   }
 
-  render(area: ElementArea, context: UIRenderContext): ElementArea {
-    this.lastAreaValue = this.renderElement(area, context)
+  render(area: ElementArea, context: RenderUIContext): ElementArea {
+    const renderedArea = this.renderElement(area, context)
+    this.lastAreaValue = renderedArea.add(context.offset)
     return area
   }
 
@@ -101,7 +113,9 @@ export abstract class UIElement {
   protected contextDetaching() {
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
+  protected renderElement(area: ElementArea, context: RenderUIContext): ElementArea {
+    //context.rectangle(Colors.gray.light, area)
+    //context.text(`${area.left}:${area.top}-${area.width} x ${area.height}`, "black", area.position, {backgroundColor: 'white', fontSize: 26})
     return area
   }
 }

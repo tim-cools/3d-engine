@@ -11,6 +11,14 @@ export class ElementArea {
   readonly width: number
   readonly height: number
 
+  get position(): Point2D {
+    return new Point2D(this.left, this.top)
+  }
+
+  get bottom(): number {
+    return this.top + this.height
+  }
+
   constructor(left: number, top: number, width: number, height: number) {
     this.top = top
     this.left = left
@@ -47,7 +55,7 @@ export class ElementArea {
   }
 
   calculateHeight(height: ElementSizeValue) {
-    return height.proportion ? this.width * height.value : height.value
+    return height.proportion ? this.height * height.value : height.value
   }
 
   pad(padding: Padding) {
@@ -67,8 +75,8 @@ export class ElementArea {
     return new ElementArea(this.left, this.top + height, this.width, this.height)
   }
 
-  add(left: number, top: number) {
-    return new ElementArea(this.left + left, this.top + top, this.width - left, this.height - top)
+  add(point: Point2D) {
+    return new ElementArea(this.left + point.x, this.top + point.y, this.width, this.height)
   }
 
   static square(value: number) {
@@ -84,5 +92,9 @@ export class ElementArea {
 
   middle(): Point2D {
     return new Point2D(this.left + this.width / 2, this.top + this.height / 2)
+  }
+
+  toString() {
+    return `left: ${this.left} top: ${this.top} width: ${this.width} height: ${this.height}`
   }
 }

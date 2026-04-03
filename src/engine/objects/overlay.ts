@@ -6,6 +6,7 @@ export class Overlay extends Object2DBase {
 
   constructor(id: string) {
     super(id)
+    this.setShapes(this.createShapes())
   }
 
   protected createShapes(): readonly Shape2D[] {
@@ -15,8 +16,8 @@ export class Overlay extends Object2DBase {
     const widthMiddle = 0.5
     const heightMiddle = 0.5
 
-    const horizontal = Line2DShape.new(this.id + ".h", Colors.gray.darker, 0, heightMiddle, width, heightMiddle)
-    const vertical = Line2DShape.new(this.id + ".v", Colors.gray.darker, widthMiddle, 0, widthMiddle, height)
+    const horizontal = Line2DShape.new(Colors.gray.darker, 0, heightMiddle, width, heightMiddle)
+    const vertical = Line2DShape.new(Colors.gray.darker, widthMiddle, 0, widthMiddle, height)
 
     return [horizontal, vertical]
   }

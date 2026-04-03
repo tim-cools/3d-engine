@@ -1,37 +1,37 @@
 import {State, StateIdentifier} from "./state"
 import {PublishStateEvents} from "./stateManager"
 import {nothing, Nothing} from "../../infrastructure/nothing"
-import {Id} from "../ui/id"
 import {SceneStateType} from "./sceneState"
 import {Context} from "../context"
+import {PrimitiveSource} from "../models"
 
 export const SelectionStateType = new StateIdentifier<SelectionState>("selection")
 
 export interface SelectionState {
-  selected: Id | Nothing
-  hover: Id | Nothing
+  selected: PrimitiveSource | Nothing
+  hover: PrimitiveSource | Nothing
 }
 
 export class SelectionStateHandler extends State<SelectionState> implements SelectionState {
 
-  private hoverValue: Id | Nothing = nothing
-  private selectedValue: Id | Nothing = nothing
+  private hoverValue: PrimitiveSource | Nothing = nothing
+  private selectedValue: PrimitiveSource | Nothing = nothing
 
-  get hover(): Id | Nothing {
+  get hover(): PrimitiveSource | Nothing {
     return this.hoverValue
   }
 
-  set hover(id: Id | Nothing) {
-    this.hoverValue = id
+  set hover(primitive: PrimitiveSource | Nothing) {
+    this.hoverValue = primitive
     this.updated()
   }
 
-  get selected(): Id | Nothing {
+  get selected(): PrimitiveSource | Nothing {
     return this.selectedValue
   }
 
-  set selected(id: Id | Nothing) {
-    this.selectedValue = id
+  set selected(primitive: PrimitiveSource | Nothing) {
+    this.selectedValue = primitive
     this.updated()
   }
 

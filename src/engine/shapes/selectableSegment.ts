@@ -1,5 +1,5 @@
-import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
-import {Point2D, Segment2D} from "../models"
+import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape2D"
+import {Point2D, Primitive, PrimitiveSource, Segment2D} from "../models"
 import {Colors} from "../../infrastructure/colors"
 import {Selectable, SelectableMargin, SelectableState} from "./selectable"
 
@@ -8,13 +8,13 @@ export class SelectableSegment implements Shape2D, Selectable {
   private readonly segment: Segment2D
   private readonly margin: number
 
-  readonly id: string
   readonly z: number = FrontShape2D
+  readonly source: PrimitiveSource
 
   state: SelectableState = SelectableState.Hover
 
-  constructor(id: string, begin: Point2D, end: Point2D, margin: number = SelectableMargin) {
-    this.id = id
+  constructor(source: PrimitiveSource, begin: Point2D, end: Point2D, margin: number = SelectableMargin) {
+    this.source = source
     this.margin = margin
     this.segment = new Segment2D(begin, end)
   }

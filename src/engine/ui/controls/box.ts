@@ -1,6 +1,6 @@
-import {setProperty, UIElement, UIElementProperties} from "../uiElement"
+import {setPaddingProperty, setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {ElementArea} from "../elementArea"
-import {UIRenderContext} from "../uiRenderContext"
+import {RenderUIContext} from "../renderUIContext"
 import {ElementSize} from "../elementSize"
 import {UIElementType} from "../uiElementType"
 import {ContentElement} from "../layout"
@@ -8,11 +8,18 @@ import {Padding} from "../padding"
 import {Colors} from "../../../infrastructure/colors"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
 
+export function box(boxProperties: BoxProperties | Nothing = nothing, content: UIElement | undefined = undefined) {
+  return new Box({
+    content: content,
+    ...boxProperties
+  })
+}
+
 export interface BoxProperties extends UIElementProperties {
   backgroundColor?: string
   size?: ElementSize
   content?: UIElement
-  padding?: Padding
+  padding?: Padding | number
 }
 
 export class Box extends ContentElement {
@@ -21,22 +28,23 @@ export class Box extends ContentElement {
   private readonly padding: Padding = Padding.single(8)
 
   size: ElementSize = ElementSize.full
-  readonly elementType: UIElementType = UIElementType.Stack
+  readonly elementType: UIElementType = UIElementType.Box
 
   constructor(properties: BoxProperties | Nothing = nothing) {
     super(properties)
     if (properties == nothing) return
     this.backgroundColor = setProperty(properties.backgroundColor, this.backgroundColor)
-    this.padding = setProperty(properties.padding, this.padding)
+    this.padding = setPaddingProperty(properties.padding, this.padding)
     this.size = setProperty(properties.size, this.size)
     this.content = setProperty(properties.content, this.content)
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
-    context.fillPath(this.backgroundColor, area.toPath())
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
+
+    context.fillPath(area.toPath(), this.backgroundColor)
     const contentArea = area.pad(this.padding)
     super.renderElement(contentArea, context)
-    return contentArea
+    return area
   }
 
   calculateSize(): ElementSize {

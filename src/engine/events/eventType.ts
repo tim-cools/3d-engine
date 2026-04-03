@@ -4,5 +4,6 @@ export enum EventType {
   MouseLeave,
   MouseOver,
   MouseDown,
+  MouseDrag,
   KeyDown
 }

@@ -9,9 +9,9 @@ export class ElementSize {
   readonly width: ElementSizeValue
   readonly height: ElementSizeValue
 
-  constructor(width: ElementSizeValue, height: ElementSizeValue) {
-    this.width = width
-    this.height = height
+  constructor(width: ElementSizeValue | number, height: ElementSizeValue | number) {
+    this.width = typeof width === 'number' ? new ElementSizeValue(width as number) : width
+    this.height =  typeof height === 'number' ? new ElementSizeValue(height as number) : height
   }
 
   pad(padding: Padding) {
@@ -19,4 +19,9 @@ export class ElementSize {
     const height = this.height.proportion ? this.height : new ElementSizeValue(this.height.value + padding.top + padding.bottom)
     return new ElementSize(width, height)
   }
+
+  toString() {
+    return `width: ${this.width} height: ${this.height}`
+  }
 }
+

@@ -1,27 +1,34 @@
 import {setProperty, UIElement, UIElementProperties} from "../uiElement"
 import {ElementArea} from "../elementArea"
-import {UIRenderContext} from "../uiRenderContext"
+import {RenderUIContext} from "../renderUIContext"
 import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
 import {Nothing, nothing} from "../../../infrastructure/nothing"
 import {EventHandler, MouseEnter, MouseLeave} from "../../events"
 import {UIContext} from "../uiContext"
+import {Padding} from "../padding"
+
+export function row(rowProperties: RowProperties, children: UIElement[] | undefined = undefined) {
+  return new Row({...rowProperties, children: children})
+}
 
 export interface RowProperties extends UIElementProperties {
   children?: readonly UIElement[]
   spacing?: number
+  padding?: Padding | number
   onEnter?: EventHandler
   onLeave?: EventHandler
 }
 
 export class Row extends UIElement {
 
-  private readonly spacing: number = 8
+  private readonly spacing: number = 4
+  private readonly padding: Padding = Padding.single(0)
+  private readonly onEnter: EventHandler | Nothing = nothing
+  private readonly onLeave: EventHandler | Nothing = nothing
 
   private childrenValue: readonly UIElement[] = []
-  private onEnter: EventHandler | Nothing
-  private onLeave: EventHandler| Nothing
 
   readonly elementType: UIElementType = UIElementType.Row
 
@@ -35,9 +42,13 @@ export class Row extends UIElement {
     this.contextOptional?.attachElements(this.childrenValue)
   }
 
-  constructor(properties: RowProperties ) {
+  constructor(properties: RowProperties | Nothing = nothing) {
     super(properties)
+
+    if (properties === nothing) return
+
     this.spacing = setProperty(properties.spacing, this.spacing)
+    this.padding = Padding.parse(setProperty(properties.padding, this.padding))
     this.childrenValue = setProperty(properties.children, this.childrenValue)
     this.onEnter = setProperty(properties.onEnter, nothing)
     this.onLeave = setProperty(properties.onLeave, nothing)
@@ -60,12 +71,14 @@ export class Row extends UIElement {
     return this.onEnter?.call(this)
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
+
+    area = area.pad(this.padding)
 
     const rowSize = this.rowSize()
-    const ratioWidth = rowSize.totalPercentage > 0 ? (area.width - rowSize.width) / rowSize.totalPercentage : 0
+    const ratioWidth = rowSize.totalPercentage > 0 ? (area.width - rowSize.contentWidth) / rowSize.totalPercentage : 0
 
-    //context.fillPath("yellow", area.resize(rowSize.value).toPath())
+    //context.fillPath(area.toPath(), Colors.highlightMax)
 
     let left = area.left
     for (let index = 0; index < this.children.length; index++){
@@ -74,12 +87,17 @@ export class Row extends UIElement {
       if (!element.visible) continue
 
       const elementSize = element.calculateSize()
-      const width = elementSize.width.proportion ? elementSize.width.value * ratioWidth : elementSize.width.value
+      const width = elementSize.width.proportion
+        ? elementSize.width.value * ratioWidth
+        : elementSize.width.value
       const elementArea = new ElementArea(left, area.top, width, area.calculateHeight(elementSize.height))
+
       element.render(elementArea, context)
 
       left += index < this.children.length - 1 ? width + this.spacing : width
     }
+
+    super.renderElement(area, context)
 
     return area.resize(rowSize.value)
   }
@@ -91,8 +109,9 @@ export class Row extends UIElement {
   private rowSize() {
 
     let width = 0
+    let widthPercentage = 0
     let height = 0
-    let totalRelevant = 0
+    let heightPercentage = 0
 
     for (let index = 0; index < this.children.length; index++) {
 
@@ -102,15 +121,26 @@ export class Row extends UIElement {
       const childSize = child.calculateSize()
 
       if (childSize.width.proportion) {
-        totalRelevant += childSize.width.value
+        widthPercentage += childSize.width.value
       } else {
-        width += index == 0 ? childSize.width.value : this.spacing + childSize.width.value
+        width += index == 0 ? childSize.width.value : childSize.width.value
       }
 
-      height = Math.max(height, childSize.height.value)
+      if (childSize.height.proportion) {
+        heightPercentage = Math.max(heightPercentage, childSize.height.value)
+      } else {
+        height = Math.max(height, childSize.height.value)
+      }
     }
 
-    let elementWith = totalRelevant > 0 ? ElementSizeValue.full : new ElementSizeValue(width)
-    return {totalPercentage: totalRelevant, width: width, value: new ElementSize(elementWith, new ElementSizeValue(height))}
+    const spacing = (this.children.length - 1) * this.spacing
+    const elementWidth = widthPercentage > 0 ? ElementSizeValue.full : new ElementSizeValue(width + spacing + this.padding.horizontal)
+    const elementHeight = heightPercentage > 0 ? ElementSizeValue.full : new ElementSizeValue(height + this.padding.vertical)
+
+    return {
+      totalPercentage: widthPercentage,
+      contentWidth: width + spacing,
+      value: new ElementSize(elementWidth, elementHeight)
+    }
   }
 }

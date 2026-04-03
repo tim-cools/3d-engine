@@ -2,8 +2,8 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {setProperty, UIElement, UIElementProperties} from "../uiElement"
-import {UIRenderContext} from "../uiRenderContext"
+import {setProperty, setSizeProperty, UIElement, UIElementProperties} from "../uiElement"
+import {RenderUIContext} from "../renderUIContext"
 import {UIElementType} from "../uiElementType"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
 import {Icon} from "../rendering/icons"
@@ -11,8 +11,15 @@ import {ButtonState} from "./button"
 import {MouseDown, MouseEnter, MouseLeave} from "../../events"
 import {UIContext} from "../uiContext"
 
+export function iconButton(icon: Icon, iconButtonProperties: IconButtonProperties) {
+  return new IconButton({
+    ...iconButtonProperties,
+    icon: icon
+  })
+}
+
 export interface IconButtonProperties extends UIElementProperties {
-  size?: ElementSizeValue
+  size?: ElementSizeValue | number
   icon?: Icon
   onClick?: (() => void)
 }
@@ -34,7 +41,7 @@ export class IconButton extends UIElement {
 
   constructor(properties: IconButtonProperties) {
     super(properties)
-    this.size = setProperty(properties.size, this.size)
+    this.size = setSizeProperty(properties.size, this.size)
     this.icon = setProperty(properties.icon, this.icon)
     this.onClick = setProperty(properties.onClick, this.onClick)
   }
@@ -45,16 +52,16 @@ export class IconButton extends UIElement {
     context.events.subscribe(MouseDown, () => this.mouseDown(), this)
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
 
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
 
     if (this.state == ButtonState.Hover) {
-      context.fillRectangle(Colors.ui.buttonBackground, elementArea.left, elementArea.top, elementArea.width, elementArea.height)
-      context.icon(Colors.ui.buttonText, this.icon, area.left, area.top, area.width - 7)
+      context.fillRectangle(Colors.ui.buttonBackground, elementArea)
+      context.icon(this.icon, Colors.ui.buttonText, area.position, area.width - 7)
     } else {
-      context.icon(Colors.ui.text, this.icon, area.left, area.top, area.width - 7)
+      context.icon(this.icon, Colors.ui.text, area.position, area.width - 7)
     }
 
     return elementArea

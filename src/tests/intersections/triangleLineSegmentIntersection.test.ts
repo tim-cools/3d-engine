@@ -27,7 +27,7 @@ describe("triangle line segment intersection", () => {
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
     if (intersection.type != IntersectionType.Point) throw new Error("intersection.type != IntersectionType.Point: " + IntersectionType[intersection.type])
-    expect(intersection.point).toEqual(new Point(1, 1, 0))
+    expect(intersection.point.equals(new Point(1, 1, 0))).toBeTruthy()
   })
 
   test('skewed triangle', async () => {
@@ -53,7 +53,7 @@ describe("triangle line segment intersection", () => {
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
     if (intersection.type != IntersectionType.Point) throw new Error("intersection.type != IntersectionType.Point: " + IntersectionType[intersection.type])
-    expect(intersection.point).toEqual(new Point(0.85, 0.8, 0))
+    expect(intersection.point.equals(new Point(0.85, 0.8, 0))).toBeTruthy()
   })
 
   test('skewed', async () => {
@@ -81,9 +81,9 @@ describe("triangle line segment intersection", () => {
     const intersection = intersectionTriangleSegment(triangle, lineSegment)
 
     if (intersection.type != IntersectionType.Segment) throw new Error("intersection.type != IntersectionType.Segment: " + IntersectionType[intersection.type])
-    expect(intersection.segment).toEqual(new Segment(
+    expect(intersection.segment.equals(new Segment(
       new Point(0, 0, 0),
-      new Point(1, 1, 0)))
+      new Point(1, 1, 0)))).toBeTruthy()
   })
 
   test('segment partial', async () => {

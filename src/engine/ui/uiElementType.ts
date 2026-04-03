@@ -1,4 +1,5 @@
 export enum UIElementType {
+  Box,
   UI,
   EmptyElement,
   ContentElement,
@@ -16,4 +17,6 @@ export enum UIElementType {
   SidePanelRight,
   SceneInfo,
   ScenesInfo,
+  ScrollablePanel,
+  ScrollBar,
 }

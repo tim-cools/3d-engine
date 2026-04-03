@@ -1,5 +1,5 @@
-import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape"
-import {Path, PathSegment, Point2D, Segment2D, Triangle} from "../models"
+import {FrontShape2D, RenderShape2DContext, Shape2D} from "./shape2D"
+import {Path, PathSegment, Point2D, PrimitiveSource, Segment2D, Triangle} from "../models"
 import {Colors} from "../../infrastructure/colors"
 import {Selectable, SelectableMargin, SelectableState} from "./selectable"
 import {any} from "../../infrastructure"
@@ -11,13 +11,14 @@ export class SelectablePath implements Shape2D, Selectable {
   private readonly triangles: readonly Triangle[]
   private readonly segments: readonly Segment2D[]
 
-  readonly id: string
   readonly z: number = FrontShape2D
+  readonly source: PrimitiveSource
 
   state: SelectableState = SelectableState.Hover
 
-  constructor(id: string, points: readonly Point2D[], solid: boolean) {
-    this.id = id
+  constructor(source: PrimitiveSource, points: readonly Point2D[], solid: boolean) {
+
+    this.source = source
     this.points = points
     this.solid = solid
 

@@ -2,11 +2,18 @@ import {ElementSizeValue} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
 import {ElementArea} from "../elementArea"
 import {Colors} from "../../../infrastructure/colors"
-import {setProperty, UIElement, UIElementProperties} from "../uiElement"
-import {AlignHorizontal, AlignVertical, UIRenderContext} from "../uiRenderContext"
+import {setProperty, setSizeProperty, UIElement, UIElementProperties} from "../uiElement"
+import {AlignHorizontal, AlignVertical, RenderUIContext} from "../renderUIContext"
 import {UIElementType} from "../uiElementType"
 
 const defaultHeight = 32
+
+export function button(title: string, properties: ButtonProperties) {
+  return new Button({
+    ...properties,
+    title: title
+  })
+}
 
 export enum ButtonState {
   Normal,
@@ -15,7 +22,7 @@ export enum ButtonState {
 
 export interface ButtonProperties extends UIElementProperties {
   content?: UIElement
-  width?: ElementSizeValue
+  width?: ElementSizeValue | number
   title?: string
 }
 
@@ -42,19 +49,19 @@ export class Button extends UIElement {
 
   constructor(properties: ButtonProperties) {
     super(properties)
-    this.width = setProperty(properties.width, this.width)
+    this.width = setSizeProperty(properties.width, this.width)
     this.titleValue = setProperty(properties.title, this.titleValue)
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext) {
+  protected renderElement(area: ElementArea, context: RenderUIContext) {
 
     const size: ElementSize = this.calculateSize()
     const elementArea = area.resize(size)
 
-    context.fillPath(Colors.ui.buttonBackground, elementArea.toPath())
+    context.fillPath(elementArea.toPath(), Colors.ui.buttonBackground)
 
     const middle = elementArea.middle()
-    context.text(Colors.ui.buttonText, middle.x, middle.y, this.titleValue, textStyle)
+    context.text(this.titleValue, Colors.ui.buttonText, middle, textStyle)
 
     return elementArea
   }

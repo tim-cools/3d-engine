@@ -9,7 +9,7 @@ import {intersectsTriangleModel, SpaceModelIntersectionResult} from "./intersect
 import {Logger, noLogger} from "../models/logger"
 import {SubtractModels} from "./subtractModels"
 import {ValuesCache} from "../../infrastructure/valuesCache"
-import {selectMany, sum} from "../../infrastructure"
+import {sum} from "../../infrastructure"
 
 class Counter {
   value: number = 0
@@ -24,7 +24,6 @@ export class AnalyseSubtractFacesResult {
 
   process(intersection: SpaceModelIntersectionResult) {
     const triangles = sum(intersection.intersections, value => value.triangles.length)
-    const hash = intersection.triangle.hash
     const key = "points: " + intersection.pointIntersections
       + ", segments: " + intersection.segmentIntersections
       + ", triangles: " + triangles

@@ -1,6 +1,6 @@
 import {EventSubscribers} from "./eventSubscribers"
 import {UIElement} from "../ui/uiElement"
-import {MouseDown, MouseEnter, MouseLeave, MouseOver} from "./mouseEvents"
+import {MouseDown, MouseDrag, MouseEnter, MouseLeave, MouseOver} from "./mouseEvents"
 import {Point2D} from "../models"
 import {nothing} from "../../infrastructure/nothing"
 import {EventType} from "./eventType"
@@ -22,6 +22,15 @@ export class ElementMouseEventHandler {
     for (const subscriber of subscribers) {
       if (subscriber.handler != undefined && (subscriber.element == nothing || subscriber.element.lastArea.contains(point))) {
         subscriber.handler(new MouseDown(point))
+      }
+    }
+  }
+
+  drag(point: Point2D, offsetX: number, offsetY: number, originalDragPoint: Point2D) {
+    const subscribers = this.subscribers.get(EventType.MouseDrag)
+    for (const subscriber of subscribers) {
+      if (subscriber.handler != undefined && (subscriber.element == nothing || subscriber.element.lastArea.contains(originalDragPoint))) {
+        subscriber.handler(new MouseDrag(point, offsetX, offsetY))
       }
     }
   }

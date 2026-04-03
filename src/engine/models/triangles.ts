@@ -1,7 +1,8 @@
-import {ModelType, Point} from "./primitives"
+import {Point} from "./primitives"
 import {add, multiply, transform, Transformer} from "./transformations"
 import {Size} from "./size"
 import {Triangle} from "./triangle"
+import {ModelType} from "./modelType"
 
 export function rectangleTriangles(segments: number, position: Point, sizeHorizontal: number, sizeVertical: number, rotation: Transformer, type: ModelType = ModelType.Primary) {
 

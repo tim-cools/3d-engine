@@ -1,80 +1,17 @@
 import {Space, transform, Transformer} from "./transformations"
 import {equalsTolerance, tolerance} from "./equals"
 import {Size} from "./size"
-import {Colors} from "../../infrastructure/colors"
-import {Lazy} from "../../infrastructure/lazy"
-import {Nothing} from "../../infrastructure/nothing"
-import {hashCode} from "../../infrastructure/stringFunctions"
+import {Lazy} from '../../infrastructure/lazy'
+import {Nothing} from '../../infrastructure/nothing'
 import {ValuesCache} from "../../infrastructure/valuesCache"
 import {round} from "../../infrastructure/numberFunctions"
-
-export enum ModelType {
-  Primary,
-  Secondary,
-  Third,
-  Highlight,
-  HighlightMax,
-  Utility,
-  UtilityLight,
-  Disabled,
-}
-
-export function modelColor(modelType: ModelType) {
-  if (modelType == ModelType.Primary) {
-    return Colors.primary.middle
-  } else if (modelType == ModelType.Secondary) {
-    return Colors.secondary.middle
-  } else if (modelType == ModelType.Third) {
-    return Colors.third.lighter
-  } else if (modelType == ModelType.Highlight) {
-    return Colors.highlight
-  } else if (modelType == ModelType.HighlightMax) {
-    return Colors.highlightMax
-  } else if (modelType == ModelType.Utility) {
-    return Colors.gray.darker
-  } else if (modelType == ModelType.UtilityLight) {
-    return Colors.gray.lighter
-  } else if (modelType == ModelType.Disabled){
-    return Colors.primary.light
-  }
-  throw new Error("Unknown model type: " + ModelType[modelType])
-}
-
-export interface Finite {
-  pointLocation(point: Point): number
-}
-
-export interface Linear {
-  direction: Vector
-  isOriented: boolean
-}
-
-export interface Coordinate {
-  readonly x: number
-  readonly y: number
-  readonly z: number
-}
-
-export function angleTo(obj1: Linear, obj2: Linear): number {
-
-  if (obj1.isOriented && obj2.isOriented) {
-    const product = obj1.direction.dot(obj2.direction)
-    if (product > 1) {
-      Math.acos(1)
-    } else if (product < -1) {
-      Math.acos(-1)
-    }
-    return Math.acos(product)
-  }
-
-  // return smallest angle
-  const angle = angleTo(obj1.direction, obj2.direction)
-  if (angle <= Math.PI / 2) {
-    return angle
-  } else {
-    return Math.PI - angle
-  }
-}
+import {SegmentBase} from "./segmentBase"
+import {angleTo} from "./angleTo"
+import {Coordinate} from "./coordinate"
+import {Linear} from "./linear"
+import {Finite} from "./finite"
+import {ModelType} from "./modelType"
+import {nextPrimitiveId, Primitive, PrimitiveType} from "./primitiveType"
 
 export class Point implements Coordinate {
 
@@ -100,13 +37,8 @@ export class Point implements Coordinate {
     return this.zValue
   }
 
-  get hash(): number {
-    return this.cache.get("hash", () => {
-      const key = this.toString()
-      return hashCode(key)
-    })
-  }
-
+  readonly id = nextPrimitiveId()
+  readonly primitiveType: PrimitiveType = PrimitiveType.Point
   readonly type: ModelType
   readonly debug: boolean
 
@@ -259,25 +191,6 @@ export class Point implements Coordinate {
   }
 }
 
-export class TransformablePoint extends Point {
-
-  private readonly original: Point
-
-  constructor(point: Point) {
-    super(point.x, point.y, point.z)
-    this.original = point
-  }
-
-  static new(x: number, y: number, z: number) {
-    const coordinate = new Point(x, y, z)
-    return new TransformablePoint(coordinate)
-  }
-
-  transform(transformers: readonly Transformer[]) {
-    super.set(transform(this.original, transformers))
-  }
-}
-
 export class Point2D {
 
   static default: Point2D = new Point2D(0, 0)
@@ -300,6 +213,25 @@ export class Point2D {
 
   equals(point: Point2D) {
     return equalsTolerance(this.x, point.x) && equalsTolerance(this.y, point.y)
+  }
+}
+
+export class TransformablePoint extends Point {
+
+  private readonly original: Point
+
+  constructor(point: Point) {
+    super(point.x, point.y, point.z)
+    this.original = point
+  }
+
+  static new(x: number, y: number, z: number) {
+    const coordinate = new Point(x, y, z)
+    return new TransformablePoint(coordinate)
+  }
+
+  transform(transformers: readonly Transformer[]) {
+    super.set(transform(this.original, transformers))
   }
 }
 
@@ -377,8 +309,7 @@ export class Plane {
 
 export class Vector implements Coordinate, Linear {
 
-  private normLazy = new Lazy(() => this.getNorm())
-  private directionLazy = new Lazy(() => this.getNormal())
+  private readonly cache: ValuesCache = new ValuesCache()
 
   readonly x: number
   readonly y: number
@@ -386,11 +317,11 @@ export class Vector implements Coordinate, Linear {
   readonly isOriented = true
 
   get norm(): number {
-    return this.normLazy.value
+    return this.cache.get<number>("norm", () => this.getNorm())
   }
 
   get direction(): Vector {
-    return this.directionLazy.value
+    return this.cache.get<Vector>("direction", () => this.getNormal())
   }
 
   constructor(x: number, y: number, z: number) {
@@ -570,20 +501,17 @@ export class Ray implements Linear {
   }
 }
 
-export interface SegmentBase {
-  readonly begin: Point
-  readonly end: Point
-  equals(segment: SegmentBase): boolean
-}
-
-export class Segment implements Finite, SegmentBase, Linear {
+export class Segment implements SegmentBase, Finite, Linear {
 
   private readonly cache: ValuesCache = new ValuesCache()
 
+  readonly primitiveType: PrimitiveType = PrimitiveType.Segment
+  readonly type: ModelType
+
+  readonly id = nextPrimitiveId()
   readonly isOriented: boolean = false
   readonly begin: Point
   readonly end: Point
-  readonly type: ModelType
   readonly debug: boolean
 
   get length(): number {
@@ -599,7 +527,7 @@ export class Segment implements Finite, SegmentBase, Linear {
   }
 
   get line() {
-    return Line.fromPoints(this.begin, this.end)
+    return this.cache.get("line", () => Line.fromPoints(this.begin, this.end))
   }
 
   constructor(begin: Point, end: Point, type: ModelType = ModelType.Primary, debug: boolean = false) {

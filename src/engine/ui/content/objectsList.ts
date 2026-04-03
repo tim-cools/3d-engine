@@ -1,16 +1,21 @@
 import {SceneState, SceneStateType} from "../../state"
 import {UIElementType} from "../uiElementType"
-import {Link} from "../controls"
-import {ElementSizeValue} from "../elementSizeValue"
+import {link} from "../controls"
+import {fullSize} from "../elementSizeValue"
 import {Object} from "../../objects"
 import {ObjectState, ObjectStateType} from "../../state/objectState"
-import {Panel, Row, Stack, ContentElement} from "../layout"
+import {CollapsablePanel, Row, Stack, ContentElement, row, stack, collapsablePanel} from "../layout"
 import {UIContext} from "../uiContext"
+import {Padding} from "../padding"
+
+export function objectsList() {
+  return new ObjectsList()
+}
 
 export class ObjectsList extends ContentElement {
 
-  private readonly panel: Panel
-  private readonly stack: Stack
+  private readonly panel: CollapsablePanel
+  private readonly objectsList: Stack
 
   private get sceneState(): SceneState {
     return this.context.state.get(SceneStateType)
@@ -25,8 +30,8 @@ export class ObjectsList extends ContentElement {
   constructor() {
     super()
 
-    this.stack = new Stack()
-    this.panel = new Panel({title: "Objects", content: this.stack})
+    this.objectsList = stack()
+    this.panel = collapsablePanel("Objects", this.objectsList)
     this.content = this.panel
   }
 
@@ -38,15 +43,15 @@ export class ObjectsList extends ContentElement {
   private updateScenes() {
     this.panel.title = "Scene: " + this.sceneState.title
     const state = this.context.state.get(SceneStateType)
-    this.stack.children = state.objects.map((object: Object) => this.row(object))
+    this.objectsList.children = state.objects.map((object: Object) => this.sceneRow(object))
   }
 
-  private row(object: Object) {
-    return new Row({
-      children: [
-        new Link({width: ElementSizeValue.full, title: object.id, onClick: () => this.selectObject(object)})
-      ]
-    })
+  private sceneRow(object: Object) {
+    return row({
+      padding: Padding.single(0)
+    }, [
+      link(object.id, () => this.selectObject(object), {width: fullSize})
+    ])
   }
 
   private selectObject(object: Object) {

@@ -6,39 +6,37 @@ import {Face} from "./face"
 import {Lazy} from "../../infrastructure/lazy"
 import {Boundaries} from "./boundaries"
 import {Triangle} from "./triangle"
+import {ValuesCache} from "../../infrastructure/valuesCache"
 
 export class SpaceModel implements ModelBase, Space, SpaceObject, CanContainPoint {
 
   static empty: SpaceModel = new SpaceModel(Model.empty, Point.null, Size.default)
 
-  private readonly middleLazy = new Lazy<Point>(() => this.translate(this.model.middle))
-  private readonly pointsLazy = new Lazy<readonly Point[]>(() => this.translatePoints())
-  private readonly faceLazy = new Lazy<readonly Face[]>(() => this.translateFaces())
-  private readonly segmentsLazy = new Lazy<readonly Segment[]>(() => this.translateSegments())
-  private readonly boundariesLazy = new Lazy<Boundaries>(() => this.translateBoundaries())
+  private readonly cache: ValuesCache = new ValuesCache()
+
   readonly model: Model
 
   readonly position: Point
   readonly scale: Size
 
   get middle(): Point {
-    return this.middleLazy.value
+    return this.cache.get("middle", () => this.translate(this.model.middle))
   }
 
   get points(): readonly Point[] {
-    return this.pointsLazy.value
+    return this.cache.get("points", () => this.translatePoints())
   }
 
   get faces(): readonly Face[] {
-    return this.faceLazy.value
+    return this.cache.get("faces", () => this.translateFaces())
   }
 
   get segments(): readonly Segment[] {
-    return this.segmentsLazy.value
+    return this.cache.get("segments", () => this.translateSegments())
   }
 
   get boundaries(): Boundaries {
-    return this.boundariesLazy.value
+    return this.cache.get("boundaries", () => this.translateBoundaries())
   }
 
   constructor(model: Model, position: Point, scale: Size) {

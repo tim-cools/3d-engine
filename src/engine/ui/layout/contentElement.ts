@@ -1,11 +1,16 @@
 import {UIElement, UIElementProperties} from "../uiElement"
 import {ElementArea} from "../elementArea"
-import {UIRenderContext} from "../uiRenderContext"
+import {RenderUIContext} from "../renderUIContext"
 import {ElementSize} from "../elementSize"
-import {EmptyElement} from "./emptyElement"
 import {nothing, Nothing} from "../../../infrastructure/nothing"
 import {UIElementType} from "../uiElementType"
-import {UIContext} from "../uiContext"
+
+export function contentElement(title: string, content: UIElement, properties: UIElement | undefined = undefined) {
+  return new ContentElement({
+    ...properties,
+    content: content
+  })
+}
 
 export interface ContentProperties extends UIElementProperties {
   content?: UIElement
@@ -13,37 +18,48 @@ export interface ContentProperties extends UIElementProperties {
 
 export class ContentElement extends UIElement {
 
-  private contentValue: UIElement
+  private contentValue: UIElement | Nothing
 
   readonly elementType: UIElementType = UIElementType.ContentElement
 
-  get content(): UIElement {
+  get content(): UIElement | Nothing {
     return this.contentValue
   }
 
-  set content(element: UIElement) {
+  set content(element: UIElement | Nothing) {
     if (element === this.contentValue) return
 
-    this.contextOptional?.detachElement(this.contentValue)
+    if (this.contentValue != nothing) {
+      this.contextOptional?.detachElement(this.contentValue)
+    }
+
     this.contentValue = element
-    this.contextOptional?.attachElement(element)
+
+    if (element != nothing) {
+      this.contextOptional?.attachElement(element)
+    }
   }
 
   get children(): readonly UIElement[] {
-    return [this.contentValue]
+    return this.contentValue != nothing ? [this.contentValue] : []
   }
 
   constructor(properties: ContentProperties | Nothing = nothing) {
     super(properties)
-    this.contentValue = properties != nothing && properties.content != undefined ? properties.content : new EmptyElement()
+    this.contentValue = properties != nothing && properties.content != undefined ? properties.content : nothing
   }
 
-  protected renderElement(area: ElementArea, context: UIRenderContext): ElementArea {
-    this.content.render(area, context)
+  protected renderElement(area: ElementArea, context: RenderUIContext): ElementArea {
+    if (this.content != nothing) {
+      this.content.render(area, context)
+    }
     return area
   }
 
   calculateSize(): ElementSize {
-    return this.content.calculateSize()
+    if (this.content != nothing) {
+      return this.content.calculateSize()
+    }
+    return super.calculateSize()
   }
 }

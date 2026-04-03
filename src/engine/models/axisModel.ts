@@ -1,6 +1,7 @@
 import {Model} from "./model"
 import {Size} from "./size"
-import {Point, Segment, ModelType} from "./primitives"
+import {Point, Segment} from "./primitives"
+import {ModelType} from "./modelType"
 
 export class AxisModel extends Model {
 

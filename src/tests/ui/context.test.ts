@@ -4,6 +4,7 @@ import {ApplicationContext} from "../../engine/applicationContext"
 import {Object2DBase} from "../../engine/objects/object2D"
 import {nothing} from "../../infrastructure/nothing"
 import {SelectionListState, SelectionListStateType} from "../../engine/state/selectionListState"
+import {Point, PrimitiveSource} from "../../engine/models"
 
 class TestEventObject extends Object2DBase {
 
@@ -26,6 +27,10 @@ function getSceneTestObject(scenes: Scene[], number: number, scene1context: Appl
   return scenes[number].createObjects(scene1context)[0] as TestEventObject
 }
 
+function newPrimitive() {
+  return new PrimitiveSource(Point.null, "test")
+}
+
 describe('application context', () => {
 
   test('create new scene context', async () => {
@@ -42,10 +47,10 @@ describe('application context', () => {
     const testObject1 = getSceneTestObject(scenes, 0, scene1context)
     expect(testObject1.called).toBe(0)
 
-    selectionState.select("1")
+    selectionState.select(newPrimitive())
     expect(testObject1.called).toBe(1)
 
-    selectionState.select("2")
+    selectionState.select(newPrimitive())
     expect(testObject1.called).toBe(2)
   })
 
@@ -63,7 +68,7 @@ describe('application context', () => {
     const testObject1 = getSceneTestObject(scenes, 0, scene1context)
     expect(testObject1.called).toBe(0)
 
-    selectionState.select("1")
+    selectionState.select(newPrimitive())
     expect(testObject1.called).toBe(1)
 
     const scene2context = context.newScene()
@@ -71,7 +76,7 @@ describe('application context', () => {
     expect(testObject1.called).toBe(1)
     expect(testObject2.called).toBe(0)
 
-    selectionState.select("2")
+    selectionState.select(newPrimitive())
     expect(testObject1.called).toBe(1)
     expect(testObject2.called).toBe(1)
   })

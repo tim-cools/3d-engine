@@ -1,4 +1,5 @@
-import {Point2D} from "../../engine/models"
+import {Point2D, PrimitiveSource} from "../../engine/models"
+import {Path} from "../../engine/models"
 import {SelectablePath} from "../../engine/shapes/selectablePath"
 
 type AssertInclude = {x: number, y: number, result: boolean}
@@ -42,9 +43,15 @@ describe('selectable path', () => {
   ])("include point '%s'", verifyInclude);
 
   function verifyInclude(assert: AssertInclude) {
-    const selectable = new SelectablePath("id", points, true)
+    const source = new PrimitiveSource(createPath(), "test")
+    const selectable = new SelectablePath(source, points, true)
     const point2D = new Point2D(assert.x, assert.y)
     const result = selectable.includes(point2D)
     expect(result).toBe(assert.result)
+  }
+
+  function createPath() {
+    const points3D = points.map(point2D => point2D.to3D())
+    return Path.fromPoints(points3D)
   }
 })

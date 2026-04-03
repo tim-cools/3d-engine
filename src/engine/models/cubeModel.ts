@@ -1,12 +1,13 @@
 import {Model} from "./model"
 import {segments} from "./segments"
 import {Size} from "./size"
-import {ModelType, Point, Segment} from "./primitives"
+import {Point, Segment} from "./primitives"
 import {rectangleTriangles} from "./triangles"
 import {Rotation} from "./rotation"
 import {dontTransform, rotateX, rotateY} from "./transformations"
 import {Boundaries} from "./boundaries"
 import {Face} from "./face"
+import {ModelType} from "./modelType"
 
 export class CubeModel extends Model {
 
