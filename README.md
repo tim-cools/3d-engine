@@ -4,6 +4,7 @@ Todo:
 - Finish addSegmentFaces
 - Finish subtractSegments
 - Improve mouse rotation
+- There is a bug in the handling of mouse events when you scroll down in the ScrollablePanel
 
 ## Available Scripts
 
