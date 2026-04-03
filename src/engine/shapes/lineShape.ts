@@ -71,7 +71,7 @@ export class LineShape implements Shape {
 
   static fromSegment(segment: Segment, debugColors: boolean, source: PrimitiveSource | Nothing = nothing) {
     const color = this.segmentColor(debugColors, segment.type)
-    return new LineShape(color, new TransformablePoint(segment.begin), new TransformablePoint(segment.end), source)
+    return new LineShape(color, new TransformablePoint(segment.begin), new TransformablePoint(segment.end), source ?? new PrimitiveSource(segment))
   }
 
   private static segmentColor(debugColors: boolean, type: ModelType) {

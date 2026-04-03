@@ -16,7 +16,6 @@ export class UI extends Canvas {
     this.sidePanelLeft = sidePanelLeft()
     this.sidePanelRight = sidePanelRight()
     this.elements = [this.sidePanelLeft, this.sidePanelRight]
-    //this.elements = [this.sidePanelLeft]
   }
 
   pointInUI(point: Point2D) {

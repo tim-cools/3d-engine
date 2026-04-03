@@ -4,8 +4,8 @@ import {UIElementType} from "../../engine/ui/uiElementType"
 import {Text} from "../../engine/ui/controls"
 import {getChildrenById} from "./getChildrenById"
 import {Nothing, nothing} from "../../infrastructure/nothing"
-import {Link} from "../../engine/ui/controls/link"
-import {CollapsablePanel} from "../../engine/ui/layout/collapsablePanel"
+import {Link} from "../../engine/ui/controls"
+import {CollapsablePanel, Row} from "../../engine/ui/layout"
 
 export class VerifyUIElementContext {
 
@@ -35,13 +35,20 @@ export class VerifyUIElementContext {
     return this
   }
 
-
   panelWith(idEnd: string, value: string) {
 
     const element = this.getElement<CollapsablePanel>(idEnd, UIElementType.Panel)
     if (element == nothing) return this
 
     this.context.logging.logAssert(element.title == value, ` value: ${value}`, `element: ${idEnd} value is: '${element.title}'`)
+
+    return this
+  }
+
+  containsRow(id: string) {
+
+    const element = this.getElement<Row>(id, UIElementType.Row)
+    this.context.logging.logAssert(element != nothing, ` value`, `element: ${id} not found'`)
 
     return this
   }

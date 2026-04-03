@@ -18,7 +18,7 @@ export class SidePanelRight extends ContentElement {
 
     this.content = sidePanel(SidePanelLocation.Right, "Right", [
       collapsablePanel("Instructions", SidePanelRight.instructionsInfo()),
-      worldDetails(),
+      //worldDetails(),
       selection(),
     ])
   }

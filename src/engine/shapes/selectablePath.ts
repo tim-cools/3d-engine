@@ -17,11 +17,9 @@ export class SelectablePath implements Shape2D, Selectable {
   state: SelectableState = SelectableState.Hover
 
   constructor(source: PrimitiveSource, points: readonly Point2D[], solid: boolean) {
-
     this.source = source
     this.points = points
     this.solid = solid
-
     const {triangles, segments} = SelectablePath.createTriangles(points)
     this.triangles = triangles
     this.segments = segments

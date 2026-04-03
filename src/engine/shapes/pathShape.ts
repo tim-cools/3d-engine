@@ -14,13 +14,13 @@ import {nothing, Nothing} from "../../infrastructure/nothing"
 
 export class PathShape implements Shape {
 
-  private readonly source: PrimitiveSource | Nothing
+  private readonly source: PrimitiveSource
 
   readonly color: string
   readonly points: readonly TransformablePoint[]
   readonly solid: boolean
 
-  constructor(color: string, points: readonly Point[], solid: boolean = true, source: PrimitiveSource | Nothing = nothing) {
+  constructor(color: string, points: readonly Point[], solid: boolean = true, source: PrimitiveSource) {
     this.color = color
     this.source = source
     this.points = points.map(point => new TransformablePoint(point))
@@ -95,12 +95,12 @@ export class PathShape implements Shape {
 
   static fromTriangle(triangle: Triangle, debugColors: boolean, solid: boolean = true, source: PrimitiveSource | Nothing = nothing) {
     const color = this.segmentColor(debugColors, triangle.type)
-    return new PathShape(color, [triangle.point1, triangle.point2, triangle.point3], solid, source)
+    return new PathShape(color, [triangle.point1, triangle.point2, triangle.point3], solid, source ?? new PrimitiveSource(triangle))
   }
 
   static fromPolygon(path: Path, debugColors: boolean, solid: boolean = true, source: PrimitiveSource | Nothing = nothing) {
     const color = this.segmentColor(debugColors, path.type)
-    return new PathShape(color, path.points, solid, source)
+    return new PathShape(color, path.points, solid, source ?? new PrimitiveSource(path))
   }
 
   private static segmentColor(debugColors: boolean, type: ModelType) {

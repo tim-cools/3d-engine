@@ -1,5 +1,5 @@
 import {UIElement, UIElementProperties} from "../uiElement"
-import {ElementSizeValue} from "../elementSizeValue"
+import {ElementSizeValue, fullSize} from "../elementSizeValue"
 import {ElementSize} from "../elementSize"
 import {Padding} from "../padding"
 import {ElementArea} from "../elementArea"
@@ -8,7 +8,7 @@ import {RenderUIContext} from "../renderUIContext"
 import {stack, Stack} from "./stack"
 import {ContentElement} from "./contentElement"
 import {UIElementType} from "../uiElementType"
-import {box, Box, IconButton} from "../controls"
+import {box, Box, iconButton, IconButton} from "../controls"
 import {Icon} from "../rendering/icons"
 import {canvas, Canvas} from "./canvas"
 
@@ -39,8 +39,8 @@ export class SidePanel extends ContentElement {
 
   private open: boolean = true
 
-  readonly sizeOpen = new ElementSize(new ElementSizeValue(350), ElementSizeValue.full)
-  readonly sizeClosed = new ElementSize(new ElementSizeValue(26), ElementSizeValue.full)
+  readonly sizeOpen = new ElementSize(350, fullSize)
+  readonly sizeClosed = new ElementSize(26, fullSize)
   readonly elementType: UIElementType = UIElementType.SidePanel
   readonly location: SidePanelLocation
 
@@ -52,10 +52,9 @@ export class SidePanel extends ContentElement {
     super(properties)
 
     this.location = properties.location
-    this.collapseButton = new IconButton({
+    this.collapseButton = iconButton(this.icon(), {
       id: "Collapse",
-      size: new ElementSizeValue(18),
-      icon: this.icon(),
+      size: 18,
       onClick: () => this.toggleExpand(),
       attach: [
         this.location == SidePanelLocation.Left ? Canvas.right(4) : Canvas.left(4),

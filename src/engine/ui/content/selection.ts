@@ -1,8 +1,8 @@
 import {box, button, iconButton, text} from "../controls"
 import {UIElementType} from "../uiElementType"
-import {ContentElement,  Stack, stack, collapsablePanel, row} from "../layout"
+import {collapsablePanel, ContentElement, row, Stack, stack} from "../layout"
 import {UIContext} from "../uiContext"
-import {SelectionStateType} from "../../state"
+import {SelectionState, SelectionStateType} from "../../state"
 import {Icon} from "../rendering/icons"
 import {nothing} from "../../../infrastructure/nothing"
 import {Colors} from "../../../infrastructure/colors"
@@ -10,9 +10,77 @@ import {SelectionListState, SelectionListStateType} from "../../state/selectionL
 import {Path, Point, PrimitiveSource, PrimitiveType, Segment, Triangle} from "../../models"
 import {UIElement} from "../uiElement"
 import {scrollablePanel} from "../layout/scrollablePanel"
+import {generateModelCode} from "./generateModelCode"
+
 
 export function selection() {
   return new Selection()
+}
+
+function item(primitive: PrimitiveSource, index: number, onEnterRow: (primitive: PrimitiveSource) => void, onLeaveRow: () => void, remove: (primitive: PrimitiveSource) => void) {
+
+  function details(primitive: PrimitiveSource): UIElement[] {
+    if (primitive.primitive.primitiveType == PrimitiveType.Point) {
+      return addPoint(primitive.primitive as Point)
+    } else if (primitive.primitive.primitiveType == PrimitiveType.Segment) {
+      return addSegment(primitive.primitive as Segment)
+    } else if (primitive.primitive.primitiveType == PrimitiveType.Triangle) {
+      return addTriangle(primitive.primitive as Triangle)
+    } else if (primitive.primitive.primitiveType == PrimitiveType.Path) {
+      return addPath(primitive.primitive as Path)
+    }
+    return []
+  }
+
+  function addPoint(primitive: Point) {
+    return [pointRow("point", primitive)]
+  }
+
+  function addSegment(segment: Segment) {
+    return [
+      pointRow("begin", segment.begin),
+      pointRow("end", segment.end),
+    ]
+  }
+
+  function addTriangle(triangle: Triangle) {
+    return [
+      pointRow("point 1", triangle.point1),
+      pointRow("point 2", triangle.point2),
+      pointRow("point 3", triangle.point3)
+    ]
+  }
+
+  function addPath(path: Path) {
+    return path.points.map((point, index) => pointRow("point " + index, point))
+  }
+
+  function pointRow(label: string, point: Point) {
+    return row({
+      id: "Primitive" + index,
+      padding: 0
+    }, [
+      text(label),
+      text("x: " + point.x.toFixed(2)),
+      text("y: " + point.y.toFixed(2)),
+      text("z: " + point.z.toFixed(2))
+    ])
+  }
+
+  return box({backgroundColor: Colors.ui.titleBackground},
+    row({
+      onEnter: () => onEnterRow(primitive),
+      onLeave: () => onLeaveRow()
+    }, [
+      stack({padding: 0}, [
+        text("type: " + PrimitiveType[primitive.primitive.primitiveType]),
+        text("id: " + primitive.id),
+        text("source: " + primitive.source),
+        ...details(primitive)
+      ]),
+      iconButton(Icon.Close, {size: 18, onClick: () => remove(primitive)})
+    ])
+  )
 }
 
 export class Selection extends ContentElement {
@@ -20,6 +88,14 @@ export class Selection extends ContentElement {
   private readonly list: Stack
 
   readonly elementType: UIElementType = UIElementType.ScenesInfo
+
+  get selectionListState(): SelectionListState {
+    return this.context.state.get(SelectionListStateType)
+  }
+
+  get selectionState(): SelectionState {
+    return this.context.state.get(SelectionStateType)
+  }
 
   constructor() {
     super()
@@ -29,88 +105,24 @@ export class Selection extends ContentElement {
         text("Press 'g' to add selected element to group."),
         box({backgroundColor: Colors.ui.listBackground, padding: 2}, scrollablePanel(this.list)),
         stack({}, [
-          Selection.button("Select intersection"),
-          Selection.button("Copy model clipboard"),
+          Selection.button("Copy model clipboard", () => this.copyToClipboard()),
         ])
       ])
     )
   }
 
-  private static button(title: string) {
-    return row({padding: 0}, [button(title, {width: 250})])
+  private static button(title: string, onClick: () => void) {
+    return row({padding: 0}, [button(title, onClick,{width: 250})])
   }
 
   protected contextAttached(context: UIContext) {
     this.context.state.subscribeUpdate(SelectionListStateType, state => this.setSelected(state), this)
-    this.setSelected(this.context.state.get(SelectionListStateType))
+    this.setSelected(this.selectionListState)
   }
 
   private setSelected(state: SelectionListState) {
-    this.list.children = state.primitives.map(primitive => this.item(primitive) )
-  }
-
-  private item(primitive: PrimitiveSource) {
-    return box({
-      backgroundColor: Colors.ui.titleBackground
-    }, row({
-        onEnter: () => this.onEnterRow(primitive),
-        onLeave: () => this.onLeaveRow()
-      }, [
-        stack({padding: 0}, [
-          text("type: " + PrimitiveType[primitive.primitive.primitiveType]),
-          text("id: " + primitive.id),
-          text("source: " + primitive.source),
-          ...Selection.details(primitive)
-        ]),
-        iconButton(Icon.Close, {size: 18, onClick: () => this.remove(primitive)})
-      ]))
-  }
-
-  private static details(primitive: PrimitiveSource): UIElement[] {
-    if (primitive.primitive.primitiveType == PrimitiveType.Point) {
-      return this.addPoint(primitive.primitive as Point)
-    } else if (primitive.primitive.primitiveType == PrimitiveType.Segment) {
-      return this.addSegment(primitive.primitive as Segment)
-    } else if (primitive.primitive.primitiveType == PrimitiveType.Triangle) {
-      return this.addTriangle(primitive.primitive as Triangle)
-    } else if (primitive.primitive.primitiveType == PrimitiveType.Path) {
-      return this.addPath(primitive.primitive as Path)
-    }
-    return []
-  }
-
-  private static addPoint(primitive: Point) {
-    return [this.pointRow("point", primitive)]
-  }
-
-  private static addSegment(segment: Segment) {
-    return [
-      this.pointRow("begin", segment.begin),
-      this.pointRow("end", segment.end),
-    ]
-  }
-
-  private static addTriangle(triangle: Triangle) {
-    return [
-      this.pointRow("point 1", triangle.point1),
-      this.pointRow("point 2", triangle.point2),
-      this.pointRow("point 3", triangle.point3)
-    ]
-  }
-
-  private static addPath(path: Path) {
-    return path.points.map((point, index) => this.pointRow("point " + index, point))
-  }
-
-  private static pointRow(label: string, point: Point) {
-    return row({
-      padding: 0
-    }, [
-      text(label),
-      text("x: " + point.x),
-      text("y: " + point.y),
-      text("z: " + point.z)
-    ])
+    this.list.children = state.primitives.map((primitive, index) =>
+      item(primitive, index, () => this.onEnterRow(primitive), () => this.onLeaveRow(), () => this.remove(primitive)))
   }
 
   private remove(primitive: PrimitiveSource) {
@@ -119,12 +131,16 @@ export class Selection extends ContentElement {
   }
 
   private onLeaveRow() {
-    const selectionState = this.context.state.get(SelectionStateType)
-    selectionState.hover = nothing
+    this.selectionState.hover = nothing
   }
 
   private onEnterRow(primitive: PrimitiveSource) {
-    const selectionState = this.context.state.get(SelectionStateType)
-    selectionState.hover = primitive
+    this.selectionState.hover = primitive
+  }
+
+  private copyToClipboard() {
+    const modelCode = generateModelCode(this.selectionListState.primitives)
+
+    navigator.clipboard.writeText(modelCode)
   }
 }

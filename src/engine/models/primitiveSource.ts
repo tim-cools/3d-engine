@@ -9,7 +9,7 @@ export class PrimitiveSource {
     return this.primitive.id
   }
 
-  constructor(primitive: Primitive, source: string) {
+  constructor(primitive: Primitive, source: string = "model") {
     this.primitive = primitive
     this.source = source
   }

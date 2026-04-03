@@ -5,6 +5,7 @@ import {ElementSize} from "../elementSize"
 import {ElementSizeValue} from "../elementSizeValue"
 import {UIElementType} from "../uiElementType"
 import {scrollBar, ScrollBar} from "./scrollBar"
+import {Colors} from "../../../infrastructure/colors"
 
 export function scrollablePanel(content: UIElement, properties: ScrollablePanelProperties | undefined = undefined) {
   return new ScrollablePanel({
@@ -20,7 +21,7 @@ export interface ScrollablePanelProperties extends UIElementProperties {
 
 export class ScrollablePanel extends UIElement {
 
-  private readonly spacing = 2
+  private readonly spacing = 4
 
   private readonly scrollBar: ScrollBar
   private readonly content: UIElement
@@ -50,6 +51,7 @@ export class ScrollablePanel extends UIElement {
     if (height > 0) {
       const contentContext = context.createImage(width, height, area.position)
       const contentArea = new ElementArea(0, 0, width, height)
+      contentContext.fillRectangle(Colors.ui.listBackground, contentArea)
       this.content.render(contentArea, contentContext)
 
       context.drawImage(contentContext, contentArea.addTop(this.contentTop), area)

@@ -47,23 +47,23 @@ export class Colors {
   }
 
   static ui = {
-    background: "#444",
+    background: "#444444",
     text: "#abaca9",
     textHighlight: "#eeeeee",
     textInactive: "#8d8d8d",
     border: "#363636",
     tabBackground: "#494949",
     tabBackgroundInactive: "#343434",
-    buttonBackground: "#8d8d8d",
     slider: "#8d8d8d",
-    buttonHover: "#DDEEFA",
+    buttonBackground: "#8d8d8d",
+    buttonHover: "#aaaaaa",
     buttonClicked: "#5485a7",
     buttonText: "#eeeeee",
     titleBackground: "#5d5d5d",
     titleText: "#a9a9a9",
     itemBackground: "#eeeeee",
     itemSelected: "#5485a7",
-    listBackground: "#cccccc"
+    listBackground: "#444444"
   }
 
   static random() {
