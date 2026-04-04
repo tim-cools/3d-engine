@@ -66,7 +66,6 @@ export class SubtractModelObject extends ModelObject {
       : Subtract.faces(this.models, nothing, this.debugInfo)
 
     this.model = new SpaceModel(model, this.subtractPosition, this.subtractSize)
-    this.updateShapes()
   }
 
   private static switchAlgorithm(value: Algorithm) {

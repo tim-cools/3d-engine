@@ -26,12 +26,22 @@ export class ModelObject extends Object3DBase {
   private readonly debugShapes: ((translate: Transformer) => readonly Shape[]) | Nothing
   private readonly context: ApplicationContext
 
-  protected model: SpaceModel
+  private modelValue: SpaceModel
+
+  get model(): SpaceModel {
+    return this.modelValue
+  }
+
+  set model(value: SpaceModel) {
+    this.modelValue = value
+    this.updateShapes()
+  }
+
   protected shapesValue: readonly Shape[]
 
   constructor(context: ApplicationContext, id: string, spaceModel: SpaceModel, debugShape: ((translate: Transformer) => readonly Shape[]) | Nothing = nothing) {
     super(id, Point.null)
-    this.model = spaceModel
+    this.modelValue = spaceModel
     this.debugShapes = debugShape
     this.context = context
     this.renderStyleProperty = this.properties.add<RenderStyle>("Render Style", RenderStyle.Solid, value => RenderStyle[value], value => ModelObject.switchRenderStyle(value))
