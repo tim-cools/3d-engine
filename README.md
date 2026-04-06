@@ -15,7 +15,7 @@ Todo:
 
 ## Credits
 
-Big thank you to Sergey Tarasov who created [https://github.com/RiSearcher](RiSearcher)!
+Big thank you to Sergey Tarasov who created [RiSearcher](https://github.com/RiSearcher)!
 
 ## Available Scripts
 
