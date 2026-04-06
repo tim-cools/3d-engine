@@ -14,15 +14,15 @@ class TestElement extends UIElement {
   public eventReceived: number = 0
 
   get children(): readonly UIElement[] {
-    return this.child != nothing ? [this.child] : [];
+    return this.child != nothing ? [this.child] : []
   }
 
   get elementType(): UIElementType {
-    return UIElementType.Text;
+    return UIElementType.Text
   }
 
   public constructor(child: UIElement | Nothing = nothing) {
-    super();
+    super()
     this.child = child
   }
 

@@ -4,7 +4,6 @@ import {IntersectionType} from "./intersectionResult"
 import {equalsTolerance} from "../models/equals"
 
 type SegmentNode = {point: Point, segments: Segment[]}
-type SegmentLength = {segment: Segment, length: number}
 type Segment2Length = {segment1: Segment, segment2: Segment, segment3: Segment, angle: number, length: number}
 
 function countPerAmount(pointsPerAmount: Map<number, SegmentNode[]>, value: SegmentNode) {
@@ -46,7 +45,6 @@ function triangleIntersects(triangle: Triangle, faces: Face[]) {
 
 function addSegmentFaces(pointNode: SegmentNode, nodes: Map<string, SegmentNode>, faces: Face[], trianglesAdded: Map<string, Triangle>) {
 
-  //countPerAmount(pointsPerAmount, pointNode)
   if (pointNode.segments.length > 4) return
 
   for (const segment of pointNode.segments) {
@@ -59,45 +57,49 @@ function addSegmentFaces(pointNode: SegmentNode, nodes: Map<string, SegmentNode>
 
     const options: Segment2Length[] = []
     for (const connectingSegment of connectingNode.segments) {
-      if (connectingSegment.equals(segment)) continue
-
-      const firstSegment = createFirstSegment(segment, connectingSegment)
-      const secondSegment = createSecondSegment(segment, connectingSegment)
-
-      if (firstSegment.vector.direction.equals(secondSegment.vector.direction)) {
-        continue
-      }
-
-      const closingSegment = createClosingSegment(firstSegment, secondSegment)
-      if (equalsTolerance(closingSegment.length, 0)) {
-        throw new Error("Not expected")
-      }
-
-      let angle = angleTo(firstSegment, secondSegment)
-      console.log(angle)
-      if (angle < 1) {
-        continue
-      }
-
-      options.push({
-        segment1: firstSegment,
-        segment2: secondSegment,
-        segment3: closingSegment,
-        angle: angle,
-        length: closingSegment.length
-      })
+      addSegmentFaceOptions(connectingSegment, segment, options)
     }
 
     options.sort((first, second) => first.length > second.length ? -1 : 1)
 
-    for (let i = 0; i < Math.min(options.length, 999); i++) {
-      const option = options[i]
+    for (let index = 0; index < Math.min(options.length, 999); index++) {
+      const option = options[index]
       const triangle = createTriangle(option.segment1, option.segment2, option.segment3)
       if (!triangleIntersects(triangle, faces)) {
         faces.push(triangle)
       }
     }
   }
+}
+
+function addSegmentFaceOptions(connectingSegment: Segment, segment: Segment, options: Segment2Length[]) {
+  if (connectingSegment.equals(segment)) return
+
+  const firstSegment = createFirstSegment(segment, connectingSegment)
+  const secondSegment = createSecondSegment(segment, connectingSegment)
+
+  if (firstSegment.vector.direction.equals(secondSegment.vector.direction)) {
+    return
+  }
+
+  const closingSegment = createClosingSegment(firstSegment, secondSegment)
+  if (equalsTolerance(closingSegment.length, 0)) {
+    throw new Error("Not expected")
+  }
+
+  let angle = angleTo(firstSegment, secondSegment)
+  console.log(angle)
+  if (angle < 1) {
+    return
+  }
+
+  options.push({
+    segment1: firstSegment,
+    segment2: secondSegment,
+    segment3: closingSegment,
+    angle: angle,
+    length: closingSegment.length
+  })
 }
 
 export function addTrianglesBySegments(segments: Segment[], faces: Face[]) {
