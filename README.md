@@ -2,7 +2,7 @@
 
 The goal of the exercise was to explore 3d-graphics formulas and algorithms, hence everything is written from scratch. 
 
-Most applications can be created using WebGL, or somethings else.
+Most applications should use WebGL, or somethings else.
 
 Todo: 
 - Finish addSegmentFaces algorithm
