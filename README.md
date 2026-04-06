@@ -5,13 +5,13 @@ The goal of the exercise was to explore 3d-graphics formulas and algorithms, hen
 Most applications should use WebGL, or somethings else.
 
 Todo: 
-- Finish addSegmentFaces algorithm
-- Finish subtractSegments algorithm
-- Finish subtractFaces algorithm
-- Improve mouse rotation
-- There is a bug in the handling of mouse events when you scroll down in the ScrollablePanel
-- Layout bug when windows is resized to smalle size
-- Layout bug in the object details when labels are too long
+- [ ] Finish addSegmentFaces algorithm
+- [ ] Finish subtractSegments algorithm
+- [ ] Finish subtractFaces algorithm
+- [ ] Improve mouse rotation
+- [ ] There is a bug in the handling of mouse events when you scroll down in the ScrollablePanel
+- [ ] Layout bug when windows is resized to smalle size
+- [ ] Layout bug in the object details when labels are too long
 
 ## Credits
 
