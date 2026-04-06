@@ -15,7 +15,7 @@ Todo:
 
 ## Credits
 
-Big thank you to Sergey Tarasov who created [RiSearcher](https://github.com/RiSearcher)!
+Big thank you to [Sergey Tarasov](https://github.com/RiSearcher) who created [GeometRi](https://github.com/RiSearcher/GeometRi)!
 
 ## Available Scripts
 
