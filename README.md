@@ -13,6 +13,10 @@ Todo:
 - Layout bug when windows is resized to smalle size
 - Layout bug in the object details when labels are too long
 
+## Credits
+
+Big thank you to Sergey Tarasov who created [https://github.com/RiSearcher](RiSearcher)!
+
 ## Available Scripts
 
 In the project directory, you can run:
