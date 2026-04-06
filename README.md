@@ -1,10 +1,13 @@
 # 3d-Graphic Try-out
 
 Todo: 
-- Finish addSegmentFaces
-- Finish subtractSegments
+- Finish addSegmentFaces algorithm
+- Finish subtractSegments algorithm
+- Finish subtractFaces algorithm
 - Improve mouse rotation
 - There is a bug in the handling of mouse events when you scroll down in the ScrollablePanel
+- Layout bug when windows is resized to smalle size
+- Layout bug in the object details when labels are too long
 
 ## Available Scripts
 
