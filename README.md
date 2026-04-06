@@ -1,5 +1,9 @@
 # 3d-Graphic Try-out
 
+The goal of the exercise was to explore 3d-graphics formulas and algorithms, hence everything written from scratch. 
+
+Most applications can be created using WebGL, or somethings else.
+
 Todo: 
 - Finish addSegmentFaces algorithm
 - Finish subtractSegments algorithm
